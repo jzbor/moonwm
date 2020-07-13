@@ -8,7 +8,7 @@ static const unsigned int gappih    = 5;       /* horiz inner gap between window
 static const unsigned int gappiv    = 5;       /* vert inner gap between windows */
 static const unsigned int gappoh    = 5;       /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov    = 5;       /* vert outer gap between windows and screen edge */
-static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
+static const int smartgaps          = 1;        /* 1 means no outer gap when there is only one window */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
@@ -40,6 +40,7 @@ static const Rule rules[] = {
 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
 	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 },
 	{ "Firefox", NULL,     NULL,           1 << 8,    0,          0,          -1,        -1 },
+	{ "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ "polybar", NULL,     NULL,           0,         0,          1,           1,        -1 },
 	{ NULL,      NULL,     "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
@@ -126,12 +127,11 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,			    6)
 	TAGKEYS(                        XK_8,			    7)
 	TAGKEYS(                        XK_9,			    8)
-	{ MODKEY|ShiftMask,             XK_q,	    quit,           {0} },
+	{ MODKEY|ControlMask|ShiftMask, XK_Escape,  quit,           {0} },
 	{ MODKEY|ShiftMask,		XK_d,	    spawn,	    SHCMD("rofi -show run") },
 	{ MODKEY,			XK_Home,    spawn,	    SHCMD("menu.sh") },
 	{ MODKEY,			XK_Menu,    spawn,	    SHCMD("menu.sh") },
-	{ MODKEY|Mod1Mask,		XK_Delete,  spawn,	    SHCMD("menu.sh system") },
-	{ MODKEY|Mod1Mask,		XK_Delete,  spawn,	    SHCMD("menu.sh system") },
+	{ ControlMask|Mod1Mask,		XK_Delete,  spawn,	    SHCMD("menu.sh system") },
 	{ MODKEY,			XK_x,	    spawn,	    SHCMD("lock.sh") },
 	{ MODKEY|ShiftMask,		XK_x,	    spawn,	    SHCMD("music.sh pause && lock.sh") },
 	{ 0,		XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("pactl set-sink-volume @DEFAULT_SINK@ +5%") },
@@ -172,6 +172,10 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,	XK_s,		    spawn,	    SHCMD("rofi-unicode.sh") },
 	{ MODKEY|ShiftMask,	XK_c,		    spawn,	    SHCMD("rofi-projects.sh") },
 	{ MODKEY,		XK_Delete,	    spawn,	    SHCMD("rofi-kill.sh") },
+	// Programs
+	{ MODKEY,		XK_w,		    spawn,	    SHCMD("firefox") },
+	{ MODKEY,		XK_b,		    spawn,	    SHCMD("pcmanfm") },
+	{ MODKEY,		XK_b,		    spawn,	    SHCMD("terminal.sh nvim") },
 };
 
 /* button definitions */
