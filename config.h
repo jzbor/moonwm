@@ -98,6 +98,10 @@ ResourcePref resources[] = {
 		{ "mfact",      	 	FLOAT,   &mfact },
 };
 
+/* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
+static char *statuscmds[] = { "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh" };
+static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
+
 static Key keys[] = {
 	/* modifier                     key	    function	    argument */
 	STACKKEYS(MODKEY,			    focus)
@@ -134,19 +138,19 @@ static Key keys[] = {
 	{ ControlMask|Mod1Mask,		XK_Delete,  spawn,	    SHCMD("menu.sh system") },
 	{ MODKEY,			XK_x,	    spawn,	    SHCMD("lock.sh") },
 	{ MODKEY|ShiftMask,		XK_x,	    spawn,	    SHCMD("music.sh pause && lock.sh") },
-	{ 0,		XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("pamixer -i 5") },
-	{ 0,		XF86XK_AudioLowerVolume,    spawn,	    SHCMD("pamixer -d 5") },
-	{ ShiftMask,	XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("pamixer -i 1") },
-	{ ShiftMask,	XF86XK_AudioLowerVolume,    spawn,	    SHCMD("pamixer -d 1") },
-	{ 0,		XF86XK_AudioMute,	    spawn,	    SHCMD("(pamixer --get-mute && pamixer -u) || pamixer -m") },
-	{ MODKEY,	XK_plus,		    spawn,	    SHCMD("pamixer -i 5") },
-	{ MODKEY,	XK_minus,		    spawn,	    SHCMD("pamixer -d 5") },
-	{ MODKEY|ShiftMask,	XK_plus,		    spawn,	    SHCMD("pamixer -i 1") },
-	{ MODKEY|ShiftMask,	XK_minus,		    spawn,	    SHCMD("pamixer -d 1") },
-	{ MODKEY,		XK_numbersign,		    spawn,	    SHCMD("(pamixer --get-mute && pamixer -u) || pamixer -m") },
-	{ MODKEY|ShiftMask, XK_numbersign,	    spawn,	    SHCMD("(pamixer --default-source --get-mute && pamixer --default-source -u) || pamixer --default-source -m") },
-	{ MODKEY|ControlMask, XK_numbersign,	    spawn,	    SHCMD("pamixer --default-source -u") },
-	{ 0,		XF86XK_AudioMicMute,	    spawn,	    SHCMD("(pamixer --default-source --get-mute && pamixer --default-source -u) || pamixer --default-source -m") },
+	{ 0,		XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("volume.sh -i") },
+	{ 0,		XF86XK_AudioLowerVolume,    spawn,	    SHCMD("volume.sh -d") },
+	{ ShiftMask,	XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("volume.sh -i 1") },
+	{ ShiftMask,	XF86XK_AudioLowerVolume,    spawn,	    SHCMD("volume.sh -d 1") },
+	{ 0,		XF86XK_AudioMute,	    spawn,	    SHCMD("volume.sh -t") },
+	{ MODKEY,	XK_plus,		    spawn,	    SHCMD("volume.sh -i") },
+	{ MODKEY,	XK_minus,		    spawn,	    SHCMD("volume.sh -d") },
+	{ MODKEY|ShiftMask,	XK_plus,	    spawn,	    SHCMD("volume.sh -i 1") },
+	{ MODKEY|ShiftMask,	XK_minus,	    spawn,	    SHCMD("volume.sh -d 1") },
+	{ MODKEY,		XK_numbersign,	    spawn,	    SHCMD("volume.sh -t") },
+	{ MODKEY|ShiftMask, XK_numbersign,	    spawn,	    SHCMD("volume.sh -t mic") },
+	{ MODKEY|ControlMask, XK_numbersign,	    spawn,	    SHCMD("volume.sh -t mic-unmute") },
+	{ 0,		XF86XK_AudioMicMute,	    spawn,	    SHCMD("volume.sh -t mic") },
 	{ 0,		XF86XK_AudioPlay,		    spawn,	    SHCMD("music.sh play") },
 	{ 0,		XF86XK_AudioPause,		    spawn,	    SHCMD("music.sh pause") },
 	{ 0,		XF86XK_AudioPrev,		    spawn,	    SHCMD("music.sh previous") },
@@ -165,9 +169,9 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,	XK_b,		    spawn,	    SHCMD("bluetooth.sh toggle") },
 	{ MODKEY|ShiftMask,	XK_e,		    spawn,	    SHCMD("ethernet.sh toggle") },
 	{ MODKEY,		XK_s,		    spawn,	    SHCMD("setup_displays.sh") },
-	{ MODKEY,		XK_Print,	    spawn,	    SHCMD("scrot.sh") },
-	{ MODKEY|ShiftMask,	XK_Print,	    spawn,	    SHCMD("scrot.sh focused") },
-	{ MODKEY|ControlMask,	XK_Print,	    spawn,	    SHCMD("scrot.sh screen") },
+	{ MODKEY,		XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh") },
+	{ MODKEY|ShiftMask,	XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh focused") },
+	{ MODKEY|ControlMask,	XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh screen") },
 	// Programs
 	{ MODKEY,		XK_w,		    spawn,	    SHCMD("firefox") },
 	{ MODKEY,		XK_b,		    spawn,	    SHCMD("pcmanfm") },
@@ -188,7 +192,9 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
+	{ ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
+	{ ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
+	{ ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
