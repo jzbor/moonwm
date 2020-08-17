@@ -920,6 +920,7 @@ deck(Monitor *m) {
 		mw = m->ww;
 		ns = 1;
 	}
+	int gappx = gappih; // This does not respect outer borders so you may have problems there
 	for(i = 0, my = gappx, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
 		if(i < m->nmaster) {
 			h = (m->wh - my) / (MIN(n, m->nmaster) - i) - gappx;
