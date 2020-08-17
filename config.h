@@ -39,12 +39,12 @@ static const Rule rules[] = {
 	 */
 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
 	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "Firefox", NULL,     NULL,           1 << 8,    0,          0,          -1,        -1 },
+	{ "firefox", NULL,     NULL,           0,	  0,          0,	   1,        -1 },
 	{ "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
 	{ "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
-	{ "alacritty", NULL,   NULL,           0,         1,          1,           1,        -1 },
+	{ "Alacritty", NULL,   NULL,           0,         0,          1,           1,        -1 },
 	{ NULL,      NULL,     "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
 };
 
@@ -83,7 +83,7 @@ static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -config ~/.config/rofi
 static const char *termcmd[]  = { "/bin/sh", "-c", "alacritty", NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
-static char *statuscmds[] = { "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh $BUTTON" };
+static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh $BUTTON" };
 static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 
 static Key keys[] = {
