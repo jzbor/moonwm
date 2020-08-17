@@ -42,7 +42,9 @@ static const Rule rules[] = {
 	{ "Firefox", NULL,     NULL,           1 << 8,    0,          0,          -1,        -1 },
 	{ "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
-	{ "polybar", NULL,     NULL,           0,         0,          1,           1,        -1 },
+	{ "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
+	{ "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
+	{ "alacritty", NULL,   NULL,           0,         1,          1,           1,        -1 },
 	{ NULL,      NULL,     "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
 };
 
@@ -99,7 +101,7 @@ ResourcePref resources[] = {
 };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
-static char *statuscmds[] = { "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh" };
+static char *statuscmds[] = { "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh $BUTTON" };
 static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 
 static Key keys[] = {
