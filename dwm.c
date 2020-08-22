@@ -947,7 +947,7 @@ deck(Monitor *m) {
 	if(n > m->nmaster) {
 		mw = m->nmaster ? m->ww * m->mfact : 0;
 		ns = m->nmaster > 0 ? 2 : 1;
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n - m->nmaster);
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[]%d", n - m->nmaster);
 	} else {
 		mw = m->ww;
 		ns = 1;
