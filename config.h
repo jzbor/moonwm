@@ -52,14 +52,24 @@ static const Rule rules[] = {
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+#include "vanitygaps.h"
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
-	{ "[M]",      monocle },
-	{ "[]D",      deck },
-	{ NULL,       NULL },
+ 	{ "[]=",	tile },			/* Default: Master on left, slaves on right */
+	{ "><>",	NULL },			/* no layout function means floating behavior */
+
+	/* { "[@]",	spiral },		/1* Fibonacci spiral *1/ */
+	/* { "[\\]",	dwindle },		/1* Decreasing in size right and leftward *1/ */
+
+	{ "[]D",	deck },			/* Master on left, slaves in monocle-like mode on right */
+ 	{ "[M]",	monocle },		/* All windows on top of eachother */
+
+	/* { "|M|",	centeredmaster },		/1* Master in middle, slaves on sides *1/ */
+	/* { ">M>",	centeredfloatingmaster },	/1* Same but master floats *1/ */
+
+	/* { "TTT",	bstack },		/1* Master on top, slaves on bottom *1/ */
+	{ NULL,		NULL },
 };
 
 /* key definitions */
