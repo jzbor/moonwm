@@ -73,12 +73,8 @@ static const Layout layouts[] = {
 };
 
 static const Layout cyclablelayouts[] = {
-	/* symbol     arrange function */
- 	{ "[]=",	tile },			/* Default: Master on left, slaves on right */
-	{ "><>",	NULL },			/* no layout function means floating behavior */
-	{ "[]D",	deck },			/* Master on left, slaves in monocle-like mode on right */
- 	{ "[M]",	monocle },		/* All windows on top of eachother */
-	{ NULL,		NULL },
+	layouts[0], layouts[8], layouts[4], layouts[5],
+	layouts[9], /* needs to be the last layouts[] element */
 };
 
 /* key definitions */
