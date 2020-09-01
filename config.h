@@ -113,6 +113,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Tab,	    view,           {0} },
 	{ MODKEY,			XK_q,	    killclient,     {0} },
 	{ MODKEY,			XK_f,	    togglefullscr,  {0} },
+	{ MODKEY,                       XK_F1,	    togglebar,      {0} },
 	{ MODKEY,                       XK_t,	    setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask,             XK_t,	    setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,			XK_z,	    setlayout,      {.v = &layouts[2]} },
@@ -138,12 +139,21 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,			    7)
 	TAGKEYS(                        XK_9,			    8)
 	{ MODKEY|ControlMask|ShiftMask, XK_Escape,  quit,           {0} },
+	{ MODKEY,                       XK_F5,	    xrdb,           {.v = NULL } },
 	{ MODKEY|ShiftMask,		XK_d,	    spawn,	    SHCMD("rofi -show run") },
 	{ MODKEY,			XK_Home,    spawn,	    SHCMD("menu.sh") },
 	{ MODKEY,			XK_Menu,    spawn,	    SHCMD("menu.sh") },
 	{ ControlMask|Mod1Mask,		XK_Delete,  spawn,	    SHCMD("menu.sh system") },
 	{ MODKEY,			XK_x,	    spawn,	    SHCMD("lock.sh") },
 	{ MODKEY|ShiftMask,		XK_x,	    spawn,	    SHCMD("music.sh pause && lock.sh") },
+	{ MODKEY|ShiftMask,	XK_w,		    spawn,	    SHCMD("wifi.sh toggle") },
+	{ MODKEY|ShiftMask,	XK_b,		    spawn,	    SHCMD("bluetooth.sh toggle") },
+	{ MODKEY|ShiftMask,	XK_e,		    spawn,	    SHCMD("ethernet.sh toggle") },
+	{ MODKEY,		XK_s,		    spawn,	    SHCMD("setup_displays.sh") },
+	{ MODKEY,		XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh") },
+	{ MODKEY|ShiftMask,	XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh focused") },
+	{ MODKEY|ControlMask,	XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh screen") },
+	/* media and brightness controll */
 	{ 0,		XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("volume.sh -i") },
 	{ 0,		XF86XK_AudioLowerVolume,    spawn,	    SHCMD("volume.sh -d") },
 	{ ShiftMask,	XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("volume.sh -i 1") },
@@ -171,18 +181,11 @@ static Key keys[] = {
 	{ 0,		XF86XK_MonBrightnessDown,    spawn,	    SHCMD("backlight.sh -dec 10") },
 	{ MODKEY|ControlMask,	XK_plus,	    spawn,	    SHCMD("backlight.sh -inc 10") },
 	{ MODKEY|ControlMask,	XK_minus,	    spawn,	    SHCMD("backlight.sh -dec 10") },
-	{ MODKEY|ShiftMask,	XK_w,		    spawn,	    SHCMD("wifi.sh toggle") },
-	{ MODKEY|ShiftMask,	XK_b,		    spawn,	    SHCMD("bluetooth.sh toggle") },
-	{ MODKEY|ShiftMask,	XK_e,		    spawn,	    SHCMD("ethernet.sh toggle") },
-	{ MODKEY,		XK_s,		    spawn,	    SHCMD("setup_displays.sh") },
-	{ MODKEY,		XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh") },
-	{ MODKEY|ShiftMask,	XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh focused") },
-	{ MODKEY|ControlMask,	XK_Print,	    spawn,	    SHCMD("sleep 0.2; scrot.sh screen") },
-	// Programs
+	/* programs */
 	{ MODKEY,		XK_w,		    spawn,	    SHCMD("firefox") },
 	{ MODKEY,		XK_b,		    spawn,	    SHCMD("pcmanfm") },
 	{ MODKEY,		XK_BackSpace,	    spawn,	    SHCMD("terminal.sh nvim") },
-	// Rofi scripts
+	/* rofi scripts */
 	{ MODKEY|ShiftMask,	XK_m,		    spawn,	    SHCMD("rofi-mount.sh mnt") },
 	{ MODKEY|ControlMask,	XK_m,		    spawn,	    SHCMD("rofi-mount.sh umnt") },
 	{ MODKEY|ShiftMask,	XK_s,		    spawn,	    SHCMD("rofi-unicode.sh insert") },
