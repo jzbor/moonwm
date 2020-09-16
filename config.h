@@ -1,5 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
+# define Button8 8
+# define Button9 9
+
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 16;       /* snap pixel */
@@ -199,18 +202,45 @@ static Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
-	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
-	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+	{ ClkTagBar,            0,              Button1,        view,           {0} },
+	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+	/* tagtoleft, tagtoright */
+	/* { ClkTagBar,            0,              Button4,        view,		{.i = -1} }, */
+	/* { ClkTagBar,            0,              Button5,        view,		{.i = +1} }, */
+	/* { ClkTagBar,            0,              Button8,        view,		{.i = -1} }, */
+	/* { ClkTagBar,            0,              Button9,        view,		{.i = +1} }, */
+	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+	{ ClkLtSymbol,          0,              Button1,	cyclelayout,    {.i = +1 } },
+	{ ClkLtSymbol,		0,		Button2,        setlayout,	{.v = &layouts[0]} },
+	{ ClkLtSymbol,          0,              Button3,	cyclelayout,    {.i = -1 } },
+	{ ClkLtSymbol,          0,              Button4,	cyclelayout,    {.i = +1 } },
+	{ ClkLtSymbol,          0,              Button5,	cyclelayout,    {.i = -1 } },
+	{ ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[2]} },
+	{ ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
+	{ ClkWinTitle,          0,              Button2,        togglefloating,	{0} },
+	{ ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
+	{ ClkWinTitle,          0,              Button3,        zoom,		{0} },
+	{ ClkWinTitle,          MODKEY,         Button3,        spawn,          SHCMD("menu.sh system") },
+	{ ClkWinTitle,          0,              Button4,        focusstack,	{.i = INC(+1) } },
+	{ ClkWinTitle,          0,              Button5,        focusstack,	{.i = INC(-1) } },
+	{ ClkWinTitle,          0,              Button8,        focusstack,	{.i = INC(-1) } },
+	{ ClkWinTitle,          MODKEY,         Button8,        spawn,          SHCMD("alacritty") },
+	{ ClkWinTitle,          0,              Button9,        focusstack,	{.i = INC(+1) } },
+	{ ClkWinTitle,          MODKEY,         Button9,        spawn,          SHCMD("firefox") },
 	{ ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
 	{ ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
+	{ ClkStatusText,        0,              Button4,        spawn,          {.v = statuscmd } },
+	{ ClkStatusText,        0,              Button5,        spawn,          {.v = statuscmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-	{ ClkTagBar,            0,              Button1,        view,           {0} },
-	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
-	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
-	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+	{ ClkClientWin,         MODKEY,         Button8,        focusstack,	{.i = INC(-1) } },
+	{ ClkClientWin,         MODKEY,         Button9,        focusstack,	{.i = INC(+1) } },
+	{ ClkRootWin,		0,		Button2,        setlayout,	{.v = &layouts[8]} },
+	{ ClkRootWin,		0,		Button3,        spawn,		{.v = dmenucmd} },
+	{ ClkRootWin,		0,		Button8,        spawn,          SHCMD("alacritty") },
+	{ ClkRootWin,          	0,         	Button9,        spawn,          SHCMD("firefox") },
 };
 
