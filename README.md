@@ -5,8 +5,8 @@
 * save floats 
 * stacker 
 * swallow 
+* systray 
 * vanitygaps 
 * xresources 
-* single tagset
-* systray
+* Many more...
 
