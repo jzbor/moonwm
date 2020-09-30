@@ -59,8 +59,8 @@ static const int resizehints = 0;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]D",	deck },			/* Master on left, slaves in monocle-like mode on right */
  	{ "[]=",	tile },			/* Default: Master on left, slaves on right */
+	{ "[]D",	deck },			/* Master on left, slaves in monocle-like mode on right */
 
  	{ "[M]",	monocle },		/* All windows on top of eachother */
 	{ "TTT",	bstack },		/* Master on top, slaves on bottom */
@@ -117,8 +117,8 @@ static Key keys[] = {
 	{ MODKEY,			XK_q,	    killclient,     {0} },
 	{ MODKEY,			XK_f,	    togglefullscr,  {0} },
 	{ MODKEY,                       XK_F1,	    togglebar,      {0} },
-	{ MODKEY,                       XK_c,	    setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_t,	    setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_t,	    setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_c,	    setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,	    setlayout,      {.v = &layouts[2]} },
 	{ MODKEY|ShiftMask,             XK_t,	    setlayout,      {.v = &layouts[3]} },
 	{ MODKEY,			XK_z,	    setlayout,      {.v = &layouts[4]} },
@@ -142,7 +142,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,			    6)
 	TAGKEYS(                        XK_8,			    7)
 	TAGKEYS(                        XK_9,			    8)
-	{ MODKEY|ControlMask|ShiftMask, XK_Escape,  quit,           {0} },
+	{ ControlMask|Mod1Mask,		XK_BackSpace,  quit,           {0} },
 	{ MODKEY,                       XK_F5,	    xrdb,           {.v = NULL } },
 	{ MODKEY|ShiftMask,		XK_d,	    spawn,	    SHCMD("rofi -show run") },
 	{ MODKEY,			XK_Home,    spawn,	    SHCMD("menu.sh") },
@@ -157,9 +157,13 @@ static Key keys[] = {
 	{ MODKEY,			XK_Print,   spawn,	    SHCMD("sleep 0.2; scrot.sh") },
 	{ MODKEY|ShiftMask,		XK_Print,   spawn,	    SHCMD("sleep 0.2; scrot.sh focused") },
 	{ MODKEY|ControlMask,		XK_Print,   spawn,	    SHCMD("sleep 0.2; scrot.sh screen") },
-	{ MODKEY|ShiftMask,		XK_p,	    spawn,	    SHCMD("mpv \"$(clipit -c)\"") },
 	{ MODKEY,			XK_p,	    spawn,	    SHCMD("mpv") },
-	/* media and brightness controll */
+	{ MODKEY|ShiftMask,		XK_p,	    spawn,	    SHCMD("mpv \"$(clipit -c)\"") },
+	{ MODKEY|ControlMask,		XK_p,	    spawn,	    SHCMD("spotify") },
+	{ MODKEY,			XK_n,	    spawn,	    SHCMD("notes.sh view") },
+	{ MODKEY|ShiftMask,		XK_n,	    spawn,	    SHCMD("$TERMINAL -e notes.sh") },
+	{ MODKEY,			XK_F2,	    spawn,	    SHCMD("weather.sh") },
+	/* media and brightness control */
 	{ 0,		XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("volume.sh -i") },
 	{ 0,		XF86XK_AudioLowerVolume,    spawn,	    SHCMD("volume.sh -d") },
 	{ ShiftMask,	XF86XK_AudioRaiseVolume,    spawn,	    SHCMD("volume.sh -i 1") },
@@ -213,9 +217,9 @@ static Button buttons[] = {
 	/* { ClkTagBar,            0,              Button9,        view,		{.i = +1} }, */
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-	{ ClkLtSymbol,          0,              Button1,	cyclelayout,    {.i = +1 } },
-	{ ClkLtSymbol,		0,		Button2,        setlayout,	{.v = &layouts[0]} },
-	{ ClkLtSymbol,          0,              Button3,	cyclelayout,    {.i = -1 } },
+	{ ClkLtSymbol,          0,              Button1,	setlayout,	{.v = &layouts[0]} },
+	{ ClkLtSymbol,		0,		Button2,        setlayout,	{.v = &layouts[8]} },
+	{ ClkLtSymbol,          0,              Button3,	setlayout,	{.v = &layouts[1]} },
 	{ ClkLtSymbol,          0,              Button4,	cyclelayout,    {.i = +1 } },
 	{ ClkLtSymbol,          0,              Button5,	cyclelayout,    {.i = -1 } },
 	{ ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[2]} },
