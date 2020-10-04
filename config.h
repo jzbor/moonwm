@@ -99,7 +99,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -config ~/.config/rofi/apps.rasi -combi-modi drun,window,ssh -show combi", NULL };
+static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -combi-modi drun,window,ssh -show combi", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "alacritty", NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
@@ -146,6 +146,7 @@ static Key keys[] = {
 	{ ControlMask|Mod1Mask,	XK_BackSpace,	quit,       {0} },
 	{ MODKEY,               XK_F5,	    xrdb,           {.v = NULL } },
 	{ MODKEY|ShiftMask,		XK_d,	    spawn,	    SHCMD("rofi -show run") },
+	{ MODKEY|ControlMask,	XK_w,	    spawn,	    SHCMD("rofi -show window") },
 	{ MODKEY,				XK_Home,    spawn,	    SHCMD("menu.sh") },
 	{ MODKEY,				XK_Menu,    spawn,	    SHCMD("menu.sh") },
 	{ ControlMask|Mod1Mask,	XK_Delete,  spawn,	    SHCMD("menu.sh system") },
