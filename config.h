@@ -81,6 +81,9 @@ static const Layout layouts[] = {
 /* 	layouts[9], /1* needs to be the last layouts[] element *1/ */
 /* }; */
 
+/* signals */
+#include "signal.h"
+
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \

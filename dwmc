@@ -7,7 +7,7 @@ signal() {
 case $# in
 1)
 	case $1 in
-	setlayout | view | viewall | togglebar | togglefloating | zoom | killclient | quit)
+	togglefullscr | setlayout | view | viewall | togglebar | togglefloating | zoom | killclient | quit)
 		signal $1
 		;;
 	*)
@@ -21,7 +21,7 @@ case $# in
 	view)
 		signal $1 ui $2
 		;;
-	viewex | toggleviewex | tagex | toggletagex | setlayoutex | focusstack | incnmaster | focusmon | tagmon)
+	shiftview | viewex | toggleviewex | tagex | toggletagex | setlayoutex | focusstack | incnmaster | focusmon | tagmon)
 		signal $1 i $2
 		;;
 	setmfact)
