@@ -42,14 +42,16 @@ static const Rule rules[] = {
 	 */
 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
 	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "firefox", NULL,     NULL,           0,	  0,          0,	   1,        -1 },
+	{ "firefox", NULL,     NULL,           0,		  0,          0,	   1,        -1 },
 	{ "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
 	{ "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
 	{ "Alacritty", NULL,   NULL,           0,         0,          1,           1,        -1 },
+	{ "UXterm",	 NULL,	   NULL,           0,         0,          1,           1,        -1 },
 	{ NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
 	{ "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
+	{ NULL,      NULL,     "[debug]",	   0,         1,          0,           1,        -1 }, /* personal debugging */
 };
 
 /* layout(s) */
@@ -103,7 +105,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -combi-modi drun,window,ssh -show combi", NULL };
-static const char *termcmd[]  = { "/bin/sh", "-c", "alacritty", NULL };
+static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
 static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh $BUTTON" };
@@ -179,7 +181,7 @@ static Button buttons[] = {
 	{ ClkWinTitle,          0,              Button5,        focusstack,		{.i = INC(+1) } },
 	{ ClkWinTitle,          ShiftMask,      Button5,        pushstack,		{.i = INC(+1) } },
 	{ ClkWinTitle,          0,              Button8,        spawn,			SHCMD("rofi-windows.sh") },
-	{ ClkWinTitle,          MODKEY,         Button8,        spawn,          SHCMD("alacritty") },
+	{ ClkWinTitle,          MODKEY,         Button8,        spawn,          SHCMD("$TERMINAL") },
 	{ ClkWinTitle,          0,              Button9,        spawn,			{.v = dmenucmd } },
 	{ ClkWinTitle,          MODKEY,         Button9,        spawn,          SHCMD("firefox") },
 	{ ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
@@ -199,7 +201,7 @@ static Button buttons[] = {
 	{ ClkClientWin,         MODKEY, 		Button9,      	spawn,			{.v = dmenucmd} },
 	{ ClkRootWin,			0,				Button2,        setlayout,		{.v = &layouts[8]} },
 	{ ClkRootWin,			0,				Button3,        spawn,			SHCMD("xmenu.sh") },
-	{ ClkRootWin,			0,				Button8,        spawn,          SHCMD("alacritty") },
+	{ ClkRootWin,			0,				Button8,        spawn,          SHCMD("$TERMINAL") },
 	{ ClkRootWin,			MODKEY, 		Button8,      	spawn,			SHCMD("rofi-windows.sh") },
 	{ ClkRootWin,          	0,				Button9,        spawn,          SHCMD("firefox") },
 	{ ClkRootWin,			MODKEY, 		Button9,      	spawn,			{.v = dmenucmd} },
