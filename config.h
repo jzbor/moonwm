@@ -111,22 +111,62 @@ static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh $BUTTON" };
 static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 
+/* dynamic functions to perform different actions on floating windows vs tiled windows */
+void
+movex(const Arg *arg) {
+	if (IS_FLOATING) {
+		movexfloating(arg);
+	} else if (arg->i < 0) {
+		pushstack(&((Arg) { .i = 0 }));
+	} else {
+		pushstack(&((Arg) { .i = PREVSEL }));
+	}
+}
+
+void
+movey(const Arg *arg) {
+	if (IS_FLOATING) {
+		arg = &(Arg) { .i = -arg->i };
+		moveyfloating(arg);
+	} else if (arg->i < 0) {
+		pushstack(&((Arg) { .i = INC(+1) }));
+	} else {
+		pushstack(&((Arg) { .i = INC(-1) }));
+	}
+}
+
+void
+resizex(const Arg *arg) {
+	if (IS_FLOATING) {
+		incwidth(arg);
+	} else if (arg->i < 0) {
+		setmfact(&((Arg) { .f = +0.05 }));
+	} else {
+		setmfact(&((Arg) { .f = -0.05 }));
+	}
+}
+
+void
+resizey(const Arg *arg) {
+	if (IS_FLOATING) {
+		incheight(arg);
+	}
+}
+
+#define DIRECTIONKEY(KEY, AXIS, ARG) \
+	{ MODKEY|ShiftMask,		KEY,	move##AXIS,		ARG }, \
+	{ MODKEY|ControlMask,	KEY,	resize##AXIS,		ARG },
+
 static Key keys[] = {
 	/* modifier             key			function	    argument */
 	STACKKEYS(MODKEY,						focus)
-	STACKKEYS(MODKEY|ShiftMask,				push)
-	{ MODKEY|ShiftMask,		XK_u,	    movexfloating,  {.i = -20} },
-	{ MODKEY|ShiftMask,		XK_i,	    moveyfloating,  {.i = -20} },
-	{ MODKEY|ShiftMask,   	XK_o,	    moveyfloating,  {.i = 20} },
-	{ MODKEY|ShiftMask,     XK_p,	    movexfloating,  {.i = 20} },
-	{ MODKEY|ControlMask,   XK_u,	    incwidth,       {.i = -20} },
-	{ MODKEY|ControlMask,   XK_i,	    incheight,      {.i = -20} },
-	{ MODKEY|ControlMask,   XK_o,	    incheight,      {.i = 20} },
-	{ MODKEY|ControlMask,   XK_p,	    incwidth,       {.i = 20} },
+	/* STACKKEYS(MODKEY|ShiftMask,				push) */
+	DIRECTIONKEY(XK_h, x, {.i = -20})
+	DIRECTIONKEY(XK_j, y, {.i = -20})
+	DIRECTIONKEY(XK_k, y, {.i = 20})
+	DIRECTIONKEY(XK_l, x, {.i = 20})
 	/* { MODKEY,               XK_d,	    spawn,          {.v = dmenucmd } }, */
 	/* { MODKEY,				XK_Return,  spawn,          {.v = termcmd } }, */
-	{ MODKEY|ControlMask,   XK_h,	    setmfact,       {.f = -0.05} },
-	{ MODKEY|ControlMask,   XK_l,	    setmfact,       {.f = +0.05} },
 	{ MODKEY,               XK_Tab,	    view,           {0} },
 	{ MODKEY,				XK_q,	    killclient,     {0} },
 	{ MODKEY,				XK_f,	    togglefullscr,  {0} },
