@@ -150,6 +150,7 @@ static Key keys[] = {
 	TAGKEYS(                XK_9,			    		8)
 	{ ControlMask|Mod1Mask,	XK_BackSpace,	quit,       {0} },
 	{ MODKEY,               XK_F5,	    xrdb,           {.v = NULL } },
+	{ MODKEY|ControlMask,   XK_c,	    center,			{0} },
 };
 
 /* button definitions */

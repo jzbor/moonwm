@@ -218,6 +218,7 @@ static void attachaside(Client *c);
 static void attachstack(Client *c);
 static int fake_signal(void);
 static void buttonpress(XEvent *e);
+static void center(const Arg *arg);
 static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
@@ -651,6 +652,26 @@ buttonpress(XEvent *e)
 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+}
+
+void
+center(const Arg *arg)
+{
+    if(!selmon->sel) {
+        return;
+    }
+	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
+		return;
+
+    int cx = selmon->mx + (selmon->mw - WIDTH(selmon->sel)) / 2;
+	int cy = selmon->my + (selmon->mh - HEIGHT(selmon->sel)) / 2;
+
+    resize(selmon->sel, cx, cy,
+           selmon->sel->w,
+           selmon->sel->h,
+           borderpx, 0);
+
+    /* arrange(selmon); */
 }
 
 void
