@@ -115,6 +115,10 @@ static Key keys[] = {
 	/* modifier             key			function	    argument */
 	STACKKEYS(MODKEY,						focus)
 	STACKKEYS(MODKEY|ShiftMask,				push)
+	{ MODKEY|ShiftMask,		XK_u,	    movexfloating,  {.i = -20} },
+	{ MODKEY|ShiftMask,		XK_i,	    moveyfloating,  {.i = -20} },
+	{ MODKEY|ShiftMask,   	XK_o,	    moveyfloating,  {.i = 20} },
+	{ MODKEY|ShiftMask,     XK_p,	    movexfloating,  {.i = 20} },
 	{ MODKEY|ControlMask,   XK_u,	    incwidth,       {.i = -20} },
 	{ MODKEY|ControlMask,   XK_i,	    incheight,      {.i = -20} },
 	{ MODKEY|ControlMask,   XK_o,	    incheight,      {.i = 20} },

@@ -260,6 +260,8 @@ static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
+static void movexfloating(const Arg *arg);
+static void moveyfloating(const Arg *arg);
 static Client *nexttagged(Client *c);
 static Client *nexttiled(Client *c);
 static void pop(Client *);
@@ -1694,6 +1696,58 @@ movemouse(const Arg *arg)
 		selmon = m;
 		focus(NULL);
 	}
+}
+
+void
+movexfloating(const Arg *arg)
+{
+    if(!selmon->sel) {
+        return;
+    }
+	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
+		return;
+
+    int dist = arg->i;
+    int x = selmon->sel->x + dist;
+
+    if ((selmon->sel->x > selmon->wx) && (x < selmon->wx)) {
+        x = selmon->wx;
+    } else if ((selmon->sel->x + WIDTH(selmon->sel) < selmon->wx + selmon->ww)
+            && (x + WIDTH(selmon->sel) > selmon->wx + selmon->ww)) {
+        x = selmon->wx + selmon->ww - WIDTH(selmon->sel);
+    }
+
+
+    resize(selmon->sel, x, selmon->sel->y,
+           selmon->sel->w,
+           selmon->sel->h,
+           borderpx, 0);
+}
+
+void
+moveyfloating(const Arg *arg)
+{
+    if(!selmon->sel) {
+        return;
+    }
+	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
+		return;
+
+    int dist = arg->i;
+    int y = selmon->sel->y + dist;
+
+    if ((selmon->sel->y > selmon->wy) && (y < selmon->wy)) {
+        y = selmon->wy;
+    } else if ((selmon->sel->y + HEIGHT(selmon->sel) < selmon->wy + selmon->wh)
+            && (y + HEIGHT(selmon->sel) > selmon->wy + selmon->wh)) {
+        y = selmon->wy + selmon->wh - HEIGHT(selmon->sel);
+    }
+
+
+    resize(selmon->sel, selmon->sel->x, y,
+           selmon->sel->w,
+           selmon->sel->h,
+           borderpx, 0);
 }
 
 Client *
