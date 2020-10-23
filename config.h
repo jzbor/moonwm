@@ -115,6 +115,10 @@ static Key keys[] = {
 	/* modifier             key			function	    argument */
 	STACKKEYS(MODKEY,						focus)
 	STACKKEYS(MODKEY|ShiftMask,				push)
+	{ MODKEY|ControlMask,   XK_u,	    incwidth,       {.i = -20} },
+	{ MODKEY|ControlMask,   XK_i,	    incheight,      {.i = -20} },
+	{ MODKEY|ControlMask,   XK_o,	    incheight,      {.i = 20} },
+	{ MODKEY|ControlMask,   XK_p,	    incwidth,       {.i = 20} },
 	/* { MODKEY,               XK_d,	    spawn,          {.v = dmenucmd } }, */
 	/* { MODKEY,				XK_Return,  spawn,          {.v = termcmd } }, */
 	{ MODKEY|ControlMask,   XK_h,	    setmfact,       {.f = -0.05} },

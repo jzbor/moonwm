@@ -249,6 +249,8 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void incheight(const Arg *arg);
+static void incwidth(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void loadxrdb(void);
@@ -1322,6 +1324,64 @@ incnmaster(const Arg *arg)
 {
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
 	arrange(selmon);
+}
+
+void
+incheight(const Arg *arg)
+{
+    if(!selmon->sel) {
+        return;
+    }
+	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
+		return;
+
+    int inc = arg->i;
+    int height = selmon->sel->h + inc;
+    int y = selmon->sel->y - inc/2;
+
+    if ((selmon->sel->y == selmon->wy) && (selmon->sel->y + selmon->sel->h + 2*selmon->sel->bw == selmon->wy + selmon->wh)
+            && (inc < 0)) {
+        // centered shrinking
+    } else if ((selmon->sel->y == selmon->wy) || (y < selmon->wy)) {
+        y = selmon->wy;
+    } else if ((selmon->sel->y + selmon->sel->h + 2*selmon->sel->bw == selmon->wy + selmon->wh)
+            || (y + height + 2*selmon->sel->bw > selmon->wy + selmon->wh)) {
+        y = selmon->wy + selmon->wh - height - 2*selmon->sel->bw;
+    }
+
+    resize(selmon->sel, selmon->sel->x, y,
+           selmon->sel->w,
+           height,
+           borderpx, 0);
+}
+
+void
+incwidth(const Arg *arg)
+{
+    if(!selmon->sel) {
+        return;
+    }
+	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
+		return;
+
+    int inc = arg->i;
+    int width = selmon->sel->w + inc;
+    int x = selmon->sel->x - inc/2;
+
+    if ((selmon->sel->x == selmon->wx) && (selmon->sel->x + selmon->sel->w + 2*selmon->sel->bw == selmon->wx + selmon->ww)
+            && (inc < 0)) {
+        // centered shrinking
+    } else if ((selmon->sel->x == selmon->wx) || (x < selmon->wx)) {
+        x = selmon->wx;
+    } else if ((selmon->sel->x + selmon->sel->w + 2*selmon->sel->bw == selmon->wx + selmon->ww)
+            || (x + width + 2*selmon->sel->bw > selmon->wx + selmon->ww)) {
+        x = selmon->wx + selmon->ww - width - 2*selmon->sel->bw;
+    }
+
+    resize(selmon->sel, x, selmon->sel->y,
+           width,
+           selmon->sel->h,
+           borderpx, 0);
 }
 
 #ifdef XINERAMA
