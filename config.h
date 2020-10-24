@@ -157,6 +157,7 @@ resizey(const Arg *arg) {
 	{ MODKEY|ShiftMask,		KEY,	move##AXIS,		ARG }, \
 	{ MODKEY|ControlMask,	KEY,	resize##AXIS,		ARG },
 
+/* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {
 	/* modifier             key			function	    argument */
 	STACKKEYS(MODKEY,						focus)
@@ -167,7 +168,7 @@ static Key keys[] = {
 	DIRECTIONKEY(XK_l, x, {.i = 20})
 	/* { MODKEY,               XK_d,	    spawn,          {.v = dmenucmd } }, */
 	/* { MODKEY,				XK_Return,  spawn,          {.v = termcmd } }, */
-	{ MODKEY,               XK_Tab,	    view,           {0} },
+	{ MODKEY,               XK_Escape,  view,           {0} },
 	{ MODKEY,				XK_q,	    killclient,     {0} },
 	{ MODKEY,				XK_f,	    togglefullscr,  {0} },
 	{ MODKEY,               XK_F1,	    togglebar,      {0} },
@@ -180,13 +181,11 @@ static Key keys[] = {
 	{ MODKEY,               XK_a,	    setlayout,      {.v = &layouts[6]} },
 	{ MODKEY|ShiftMask,     XK_a,	    setlayout,      {.v = &layouts[7]} },
 	{ MODKEY|ShiftMask,     XK_f,	    setlayout,      {.v = &layouts[8]} },
-	{ MODKEY,               XK_space,   cyclelayout,    {.i = +1 } },
-	{ MODKEY|ControlMask,   XK_space,   cyclelayout,    {.i = -1 } },
 	{ MODKEY|ShiftMask,     XK_space,   togglefloating, {0} },
-	{ MODKEY,               XK_comma,   focusmon,       {.i = -1 } },
-	{ MODKEY,               XK_period,  focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,     XK_comma,   tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,     XK_period,  tagmon,         {.i = +1 } },
+	{ MODKEY,               XK_Tab,		focusmon,       {.i = +1 } },
+	{ MODKEY|ShiftMask,     XK_Tab,  	tagmon,         {.i = +1 } },
+	{ MODKEY,               XK_comma,   cyclelayout,    {.i = -1 } },
+	{ MODKEY,               XK_period,  cyclelayout,    {.i = +1 } },
 	TAGKEYS(                XK_1,						0)
 	TAGKEYS(                XK_2,			    		1)
 	TAGKEYS(                XK_3,			    		2)
