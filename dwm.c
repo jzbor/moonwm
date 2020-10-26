@@ -274,6 +274,7 @@ static void removesystrayicon(Client *i);
 static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
+static void resizefloating(Client *c, int nx, int ny, int nw, int nh);
 static void resizemouse(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
@@ -1352,10 +1353,11 @@ incheight(const Arg *arg)
         y = selmon->wy + selmon->wh - height - 2*selmon->sel->bw;
     }
 
-    resize(selmon->sel, selmon->sel->x, y,
+    resizefloating(selmon->sel, selmon->sel->x, y,
            selmon->sel->w,
-           height,
-           borderpx, 0);
+           height);
+    Client *c = selmon->sel;
+    applysizehints(c, &c->x, &c->y, &c->w, &c->h, &c->bw, True);
 }
 
 void
@@ -1381,10 +1383,9 @@ incwidth(const Arg *arg)
         x = selmon->wx + selmon->ww - width - 2*selmon->sel->bw;
     }
 
-    resize(selmon->sel, x, selmon->sel->y,
+    resizefloating(selmon->sel, x, selmon->sel->y,
            width,
-           selmon->sel->h,
-           borderpx, 0);
+           selmon->sel->h);
 }
 
 #ifdef XINERAMA
@@ -1719,10 +1720,9 @@ movexfloating(const Arg *arg)
     }
 
 
-    resize(selmon->sel, x, selmon->sel->y,
+    resizefloating(selmon->sel, x, selmon->sel->y,
            selmon->sel->w,
-           selmon->sel->h,
-           borderpx, 0);
+           selmon->sel->h);
 }
 
 void
@@ -1745,10 +1745,9 @@ moveyfloating(const Arg *arg)
     }
 
 
-    resize(selmon->sel, selmon->sel->x, y,
+    resizefloating(selmon->sel, selmon->sel->x, y,
            selmon->sel->w,
-           selmon->sel->h,
-           borderpx, 0);
+           selmon->sel->h);
 }
 
 Client *
@@ -1911,6 +1910,15 @@ resizeclient(Client *c, int x, int y, int w, int h, int bw)
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
+}
+
+void
+resizefloating(Client *c, int nx, int ny, int nw, int nh) {
+ 	resize(c, nx, ny, nw, nh, c->bw, False);
+	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w / 2, c->h / 2);
+
+    /* XEvent ev; */
+    /* while(XCheckMaskEvent(dpy, EnterWindowMask, &ev)); */
 }
 
 void

@@ -139,7 +139,7 @@ void
 resizex(const Arg *arg) {
 	if (IS_FLOATING) {
 		incwidth(arg);
-	} else if (arg->i < 0) {
+	} else if (arg->i > 0) {
 		setmfact(&((Arg) { .f = +0.05 }));
 	} else {
 		setmfact(&((Arg) { .f = -0.05 }));
