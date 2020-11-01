@@ -168,7 +168,7 @@ static Key keys[] = {
 	DIRECTIONKEY(XK_l, x, {.i = 20})
 	/* { MODKEY,               XK_d,	    spawn,          {.v = dmenucmd } }, */
 	/* { MODKEY,				XK_Return,  spawn,          {.v = termcmd } }, */
-	{ MODKEY,               XK_Escape,  view,           {0} },
+	{ MODKEY,               XK_Tab,		view,           {0} },
 	{ MODKEY,				XK_q,	    killclient,     {0} },
 	{ MODKEY,				XK_f,	    togglefullscr,  {0} },
 	{ MODKEY,               XK_F1,	    togglebar,      {0} },
@@ -182,8 +182,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,     XK_a,	    setlayout,      {.v = &layouts[7]} },
 	{ MODKEY|ShiftMask,     XK_f,	    setlayout,      {.v = &layouts[8]} },
 	{ MODKEY|ShiftMask,     XK_space,   togglefloating, {0} },
-	{ MODKEY,               XK_Tab,		focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,     XK_Tab,  	tagmon,         {.i = +1 } },
+	{ MODKEY,               XK_Escape,	focusmon,       {.i = +1 } },
+	{ MODKEY|ShiftMask,     XK_Escape,  tagmon,         {.i = +1 } },
 	{ MODKEY,               XK_comma,   cyclelayout,    {.i = -1 } },
 	{ MODKEY,               XK_period,  cyclelayout,    {.i = +1 } },
 	TAGKEYS(                XK_1,						0)
