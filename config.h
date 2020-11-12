@@ -87,7 +87,7 @@ static const Layout layouts[] = {
 #include "signal.h"
 
 /* key definitions */
-#define MODKEY Mod4Mask
+#define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -195,7 +195,7 @@ static Key keys[] = {
 	TAGKEYS(                XK_7,			    		6)
 	TAGKEYS(                XK_8,			    		7)
 	TAGKEYS(                XK_9,			    		8)
-	{ ControlMask|Mod1Mask,	XK_BackSpace,	quit,       {0} },
+	{ ControlMask|MODKEY,	XK_BackSpace,	quit,       {0} },
 	{ MODKEY,               XK_F5,	    xrdb,           {.v = NULL } },
 	{ MODKEY|ControlMask,   XK_c,	    center,			{0} },
 };
@@ -242,7 +242,7 @@ static Button buttons[] = {
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-	{ ClkClientWin,         Mod1Mask,       Button3,        spawn,			SHCMD("xmenu.sh") },
+	/* { ClkClientWin,         Mod1Mask,       Button3,        spawn,			SHCMD("xmenu.sh") }, */
 	{ ClkClientWin,         MODKEY,			Button4,		pushstack,		{.i = INC(-1) } },
 	{ ClkClientWin,         MODKEY, 		Button5,      	pushstack,		{.i = INC(+1) } },
 	{ ClkClientWin,         MODKEY, 		Button8,      	spawn,			SHCMD("rofi-windows.sh") },
