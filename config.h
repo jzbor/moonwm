@@ -41,8 +41,8 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
-	{ "Gimp",    NULL,     NULL,           0,         1,          0,           0,        -1 },
-	{ "firefox", NULL,     NULL,           0,		  0,          0,	   1,        -1 },
+	{ "Gimp",    NULL,     NULL,           0,         0,          0,           0,        -1 },
+	{ "firefox", NULL,     NULL,           0,		  0,          0,		   1,        -1 },
 	{ "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
 	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
 	{ "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
@@ -52,6 +52,7 @@ static const Rule rules[] = {
 	{ NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
 	{ "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
 	{ NULL,      NULL,     "[debug]",	   0,         1,          0,           1,        -1 }, /* personal debugging */
+	{ NULL,      NULL,     "win0",		   0,         1,          0,           0,        -1 }, /* intellij startup */
 };
 
 /* layout(s) */
@@ -169,7 +170,8 @@ static Key keys[] = {
 	/* { MODKEY,               XK_d,	    spawn,          {.v = dmenucmd } }, */
 	/* { MODKEY,				XK_Return,  spawn,          {.v = termcmd } }, */
 	{ MODKEY,               XK_Tab,		view,           {0} },
-	{ MODKEY,				XK_q,	    killclient,     {0} },
+	{ MODKEY|ShiftMask,		XK_q,	    killclient,     {0} },
+	{ MODKEY,				XK_q,	    spawn,			SHCMD("notify-send \"Did you mean to create an 'a'? If so try win+q\"") },
 	{ MODKEY,				XK_f,	    togglefullscr,  {0} },
 	{ MODKEY,               XK_F1,	    togglebar,      {0} },
 	{ MODKEY,               XK_t,	    setlayout,      {.v = &layouts[0]} },
