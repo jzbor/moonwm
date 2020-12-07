@@ -199,6 +199,7 @@ static Key keys[] = {
 	TAGKEYS(                XK_8,			    		7)
 	TAGKEYS(                XK_9,			    		8)
 	{ ControlMask|MODKEY,	XK_BackSpace,	quit,       {0} },
+	{ ShiftMask|MODKEY,	    XK_BackSpace,	quit,       {1} },
 	{ MODKEY,               XK_F5,	    xrdb,           {.v = NULL } },
 	{ MODKEY|ControlMask,   XK_c,	    center,			{0} },
 };
