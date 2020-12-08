@@ -112,11 +112,13 @@
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
+       NetWMActionClose, NetWMActionMinimize, NetWMAction, NetWMMoveResize,
+       NetWMMaximizedVert, NetWMMaximizedHorz,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock,
        NetWMWindowTypeDialog, NetClientList, NetClientListStacking, NetLast }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
-enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
+enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
@@ -816,6 +818,11 @@ clientmessage(XEvent *e)
 			c->isurgent = (cme->data.l[0] == 1 || (cme->data.l[0] == 2 && !c->isurgent));
 			drawbar(c->mon);
 		}
+
+        unsigned int maximize_vert = (cme->data.l[1] == netatom[NetWMMaximizedVert] || cme->data.l[2] == netatom[NetWMMaximizedVert]);
+		unsigned int maximize_horz = (cme->data.l[1] == netatom[NetWMMaximizedHorz] || cme->data.l[2] == netatom[NetWMMaximizedHorz]);
+		if (maximize_vert || maximize_horz)
+			togglefloating(NULL);
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
 		for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
 		if (i < LENGTH(tags)) {
@@ -825,6 +832,13 @@ clientmessage(XEvent *e)
 			focus(c);
 			restack(selmon);
 		}
+	} else if (cme->message_type == wmatom[WMChangeState]) {
+        pushstack(&((Arg) { .i = PREVSEL }));
+	} else if (cme->message_type == netatom[NetWMActionClose]) {
+		selmon->sel = c;
+		killclient(NULL);
+	} else if (cme->message_type == netatom[NetWMMoveResize]) {
+		resizemouse(&((Arg) { .v = c }));
 	}
 }
 
@@ -2309,6 +2323,7 @@ setup(void)
 	wmatom[WMDelete] = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
 	wmatom[WMState] = XInternAtom(dpy, "WM_STATE", False);
 	wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+	wmatom[WMChangeState] = XInternAtom(dpy, "WM_CHANGE_STATE", False);
 	netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
 	netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
 	netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
@@ -2323,6 +2338,10 @@ setup(void)
 	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	netatom[NetWMWindowTypeDock] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+	netatom[NetWMActionClose] = XInternAtom(dpy, "_NET_WM_ACTION_CLOSE", False);
+	netatom[NetWMMoveResize] = XInternAtom(dpy, "_NET_WM_MOVE_RESIZE", False);
+	netatom[NetWMMaximizedVert] = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+	netatom[NetWMMaximizedHorz] = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
 	netatom[NetClientListStacking] = XInternAtom(dpy, "_NET_CLIENT_LIST_STACKING", False);
 	xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
