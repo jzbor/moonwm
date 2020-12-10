@@ -37,26 +37,26 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 /* static const char *tags[] = { "", "", "", "", "", "", "‭ﭮ", "", "" }; */
 
 static const Rule rules[] = {
-	/* xprop(1):
-	 *	WM_CLASS(STRING) = instance, class
-	 *	WM_NAME(STRING) = title
-	 */
-	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
-	{ "Gimp",    NULL,     NULL,           0,         0,          0,           0,        -1 },
-	{ "firefox", NULL,     NULL,           0,		  0,          0,		   1,        -1 },
-	{ "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
-	{ "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
-	{ "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
-	{ "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
-	{ "Alacritty", NULL,   NULL,           0,         0,          1,           1,        -1 },
-	{ "UXterm",	 NULL,	   NULL,           0,         0,          1,           1,        -1 },
-	{ NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
-	{ "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
-	{ NULL,      NULL,     "[debug]",	   0,         1,          0,           1,        -1 }, /* personal debugging */
-	{ NULL,      NULL,     "win0",		   1 << 4,    1,          0,           0,        -1 }, /* intellij startup */
-	{ "jetbrains-idea", NULL, NULL,	       1 << 4,    0,          0,           0,        -1 },
-	{ "discord", NULL,     NULL,	       1 << 7,    0,          0,           0,        -1 },
-	{ "TeamSpeak 3", NULL,     NULL,	       1 << 7,    0,          0,           0,        -1 },
+    /* xprop(1):
+     *    WM_CLASS(STRING) = instance, class
+     *    WM_NAME(STRING) = title
+     */
+    /* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
+    { "Gimp",    NULL,     NULL,           0,         0,          0,           0,        -1 },
+    { "firefox", NULL,     NULL,           0,          0,          0,           1,        -1 },
+    { "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
+    { "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
+    { "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
+    { "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
+    { "Alacritty", NULL,   NULL,           0,         0,          1,           1,        -1 },
+    { "UXterm",  NULL,     NULL,           0,         0,          1,           1,        -1 },
+    { NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
+    { "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
+    { NULL,      NULL,     "[debug]"       0,         1,          0,           1,        -1 }, /* personal debugging */
+    { NULL,      NULL,     "win0",         1 << 4,    1,          0,           0,        -1 }, /* intellij startup */
+    { "jetbrains-idea", NULL, NULL,        1 << 4,    0,          0,           0,        -1 },
+    { "discord", NULL,     NULL,           1 << 7,    0,          0,           0,        -1 },
+    { "TeamSpeak 3", NULL,     NULL,       1 << 7,    0,          0,           0,        -1 },
 };
 
 /* layout(s) */
@@ -67,26 +67,26 @@ static const int decorhints  = 1;    /* 1 means respect decoration hints */
 #include "vanitygaps.h"
 
 static const Layout layouts[] = {
-	/* symbol     arrange function */
- 	{ "[]=",	tile },			/* Default: Master on left, slaves on right */
-	{ "[]D",	deck },			/* Master on left, slaves in monocle-like mode on right */
+    /* symbol     arrange function */
+    { "[]=",    tile },            /* Default: Master on left, slaves on right */
+    { "[]D",    deck },            /* Master on left, slaves in monocle-like mode on right */
 
- 	{ "[M]",	monocle },		/* All windows on top of eachother */
-	{ "TTT",	bstack },		/* Master on top, slaves on bottom */
+    { "[M]",    monocle },        /* All windows on top of eachother */
+    { "TTT",    bstack },        /* Master on top, slaves on bottom */
 
-	{ "[@]",	spiral },		/* Fibonacci spiral */
-	{ "[\\]",	dwindle },		/* Decreasing in size right and leftward */
+    { "[@]",    spiral },        /* Fibonacci spiral */
+    { "[\\]",    dwindle },        /* Decreasing in size right and leftward */
 
-	{ "|M|",	centeredmaster },		/* Master in middle, slaves on sides */
-	{ ">M>",	centeredfloatingmaster },	/* Same but master floats */
+    { "|M|",    centeredmaster },        /* Master in middle, slaves on sides */
+    { ">M>",    centeredfloatingmaster },    /* Same but master floats */
 
-	{ "><>",	NULL },			/* no layout function means floating behavior */
-	{ NULL,		NULL },
+    { "><>",    NULL },            /* no layout function means floating behavior */
+    { NULL,        NULL },
 };
 
 /* static const Layout cyclablelayouts[] = { */
-/* 	layouts[0], layouts[8], layouts[4], layouts[5], */
-/* 	layouts[9], /1* needs to be the last layouts[] element *1/ */
+/*     layouts[0], layouts[8], layouts[4], layouts[5], */
+/*     layouts[9], /1* needs to be the last layouts[] element *1/ */
 /* }; */
 
 /* signals */
@@ -95,15 +95,15 @@ static const Layout layouts[] = {
 /* key definitions */
 #define MODKEY Mod1Mask
 #define TAGKEYS(KEY,TAG) \
-	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+    { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+    { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+    { MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+    { MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 #define STACKKEYS(MOD,ACTION) \
-	{ MOD, XK_j,     ACTION##stack, {.i = INC(+1) } }, \
-	{ MOD, XK_k,     ACTION##stack, {.i = INC(-1) } }, \
-	{ MOD, XK_h,     ACTION##stack, {.i = 0 } }, \
-	{ MOD, XK_l,     ACTION##stack, {.i = PREVSEL } },
+    { MOD, XK_j,     ACTION##stack, {.i = INC(+1) } }, \
+    { MOD, XK_k,     ACTION##stack, {.i = INC(-1) } }, \
+    { MOD, XK_h,     ACTION##stack, {.i = 0 } }, \
+    { MOD, XK_l,     ACTION##stack, {.i = PREVSEL } },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -120,146 +120,146 @@ static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 /* dynamic functions to perform different actions on floating windows vs tiled windows */
 void
 movex(const Arg *arg) {
-	if (IS_FLOATING) {
-		movexfloating(arg);
-	} else if (arg->i < 0) {
-		pushstack(&((Arg) { .i = 0 }));
-	} else {
-		pushstack(&((Arg) { .i = PREVSEL }));
-	}
+    if (IS_FLOATING) {
+        movexfloating(arg);
+    } else if (arg->i < 0) {
+        pushstack(&((Arg) { .i = 0 }));
+    } else {
+        pushstack(&((Arg) { .i = PREVSEL }));
+    }
 }
 
 void
 movey(const Arg *arg) {
-	if (IS_FLOATING) {
-		arg = &(Arg) { .i = -arg->i };
-		moveyfloating(arg);
-	} else if (arg->i < 0) {
-		pushstack(&((Arg) { .i = INC(+1) }));
-	} else {
-		pushstack(&((Arg) { .i = INC(-1) }));
-	}
+    if (IS_FLOATING) {
+        arg = &(Arg) { .i = -arg->i };
+        moveyfloating(arg);
+    } else if (arg->i < 0) {
+        pushstack(&((Arg) { .i = INC(+1) }));
+    } else {
+        pushstack(&((Arg) { .i = INC(-1) }));
+    }
 }
 
 void
 resizex(const Arg *arg) {
-	if (IS_FLOATING) {
-		incwidth(arg);
-	} else if (arg->i > 0) {
-		setmfact(&((Arg) { .f = +0.05 }));
-	} else {
-		setmfact(&((Arg) { .f = -0.05 }));
-	}
+    if (IS_FLOATING) {
+        incwidth(arg);
+    } else if (arg->i > 0) {
+        setmfact(&((Arg) { .f = +0.05 }));
+    } else {
+        setmfact(&((Arg) { .f = -0.05 }));
+    }
 }
 
 void
 resizey(const Arg *arg) {
-	if (IS_FLOATING) {
-		incheight(arg);
-	}
+    if (IS_FLOATING) {
+        incheight(arg);
+    }
 }
 
 #define DIRECTIONKEY(KEY, AXIS, ARG) \
-	{ MODKEY|ShiftMask,		KEY,	move##AXIS,		ARG }, \
-	{ MODKEY|ControlMask,	KEY,	resize##AXIS,		ARG },
+    { MODKEY|ShiftMask,        KEY,    move##AXIS,        ARG }, \
+    { MODKEY|ControlMask,    KEY,    resize##AXIS,        ARG },
 
 /* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {
-	/* modifier             key			function	    argument */
-	STACKKEYS(MODKEY,						focus)
-	/* STACKKEYS(MODKEY|ShiftMask,				push) */
-	DIRECTIONKEY(XK_h, x, {.i = -20})
-	DIRECTIONKEY(XK_j, y, {.i = -20})
-	DIRECTIONKEY(XK_k, y, {.i = 20})
-	DIRECTIONKEY(XK_l, x, {.i = 20})
-	/* { MODKEY,               XK_d,	    spawn,          {.v = dmenucmd } }, */
-	/* { MODKEY,				XK_Return,  spawn,          {.v = termcmd } }, */
-	{ MODKEY,               XK_Tab,		view,           {0} },
-	{ MODKEY|ShiftMask,		XK_q,	    killclient,     {0} },
-	{ MODKEY,				XK_q,	    spawn,			SHCMD("notify-send \"Did you mean to create an 'a'? If so try win+q\"") },
-	{ MODKEY,				XK_f,	    togglefullscr,  {0} },
-	{ MODKEY,               XK_F1,	    togglebar,      {0} },
-	{ MODKEY,               XK_t,	    setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,               XK_c,	    setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,               XK_m,	    setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|ShiftMask,     XK_t,	    setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,				XK_z,	    setlayout,      {.v = &layouts[4]} },
-	{ MODKEY|ShiftMask,     XK_z,	    setlayout,      {.v = &layouts[5]} },
-	{ MODKEY,               XK_a,	    setlayout,      {.v = &layouts[6]} },
-	{ MODKEY|ShiftMask,     XK_a,	    setlayout,      {.v = &layouts[7]} },
-	{ MODKEY|ShiftMask,     XK_f,	    setlayout,      {.v = &layouts[8]} },
-	{ MODKEY|ShiftMask,     XK_space,   togglefloating, {0} },
-	{ MODKEY,               XK_Escape,	focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,     XK_Escape,  tagmon,         {.i = +1 } },
-	{ MODKEY,               XK_comma,   cyclelayout,    {.i = -1 } },
-	{ MODKEY,               XK_period,  cyclelayout,    {.i = +1 } },
-	TAGKEYS(                XK_1,						0)
-	TAGKEYS(                XK_2,			    		1)
-	TAGKEYS(                XK_3,			    		2)
-	TAGKEYS(                XK_4,			    		3)
-	TAGKEYS(                XK_5,			    		4)
-	TAGKEYS(                XK_6,			    		5)
-	TAGKEYS(                XK_7,			    		6)
-	TAGKEYS(                XK_8,			    		7)
-	TAGKEYS(                XK_9,			    		8)
-	{ ControlMask|MODKEY,	XK_BackSpace,	quit,       {0} },
-	{ ShiftMask|MODKEY,	    XK_BackSpace,	quit,       {1} },
-	{ MODKEY,               XK_F5,	    xrdb,           {.v = NULL } },
-	{ MODKEY|ControlMask,   XK_c,	    center,			{0} },
+    /* modifier             key            function        argument */
+    STACKKEYS(MODKEY,                        focus)
+    /* STACKKEYS(MODKEY|ShiftMask,                push) */
+    DIRECTIONKEY(XK_h, x, {.i = -20})
+    DIRECTIONKEY(XK_j, y, {.i = -20})
+    DIRECTIONKEY(XK_k, y, {.i = 20})
+    DIRECTIONKEY(XK_l, x, {.i = 20})
+    /* { MODKEY,               XK_d,        spawn,          {.v = dmenucmd } }, */
+    /* { MODKEY,                XK_Return,  spawn,          {.v = termcmd } }, */
+    { MODKEY,               XK_Tab,     view,            {0} },
+    { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
+    { MODKEY,               XK_q,       spawn,           SHCMD("notify-send \"Did you mean to create an 'a'? If so try win+q\"") },
+    { MODKEY,               XK_f,       togglefullscr,   {0} },
+    { MODKEY,               XK_F1,      togglebar,       {0} },
+    { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
+    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[1]} },
+    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
+    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[3]} },
+    { MODKEY,               XK_z,       setlayout,       {.v = &layouts[4]} },
+    { MODKEY|ShiftMask,     XK_z,       setlayout,       {.v = &layouts[5]} },
+    { MODKEY,               XK_a,       setlayout,       {.v = &layouts[6]} },
+    { MODKEY|ShiftMask,     XK_a,       setlayout,       {.v = &layouts[7]} },
+    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[8]} },
+    { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
+    { MODKEY,               XK_Escape,  focusmon,        {.i = +1 } },
+    { MODKEY|ShiftMask,     XK_Escape,  tagmon,          {.i = +1 } },
+    { MODKEY,               XK_comma,   cyclelayout,     {.i = -1 } },
+    { MODKEY,               XK_period,  cyclelayout,     {.i = +1 } },
+    TAGKEYS(                XK_1,                        0)
+    TAGKEYS(                XK_2,                        1)
+    TAGKEYS(                XK_3,                        2)
+    TAGKEYS(                XK_4,                        3)
+    TAGKEYS(                XK_5,                        4)
+    TAGKEYS(                XK_6,                        5)
+    TAGKEYS(                XK_7,                        6)
+    TAGKEYS(                XK_8,                        7)
+    TAGKEYS(                XK_9,                        8)
+    { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
+    { ShiftMask|MODKEY,     XK_BackSpace, quit,          {1} },
+    { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
+    { MODKEY|ControlMask,   XK_c,       center,           {0} },
 };
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
-	/* click                event mask      button          function        argument */
-	{ ClkTagBar,            0,              Button1,        view,           {0} },
-	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
-	/* tagtoleft, tagtoright */
-	{ ClkTagBar,            0,              Button4,        shiftview,		{.i = -1} },
-	{ ClkTagBar,            0,              Button5,        shiftview,		{.i = +1} },
-	/* { ClkTagBar,            0,              Button8,        view,		{.i = -1} }, */
-	/* { ClkTagBar,            0,              Button9,        view,		{.i = +1} }, */
-	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
-	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-	{ ClkLtSymbol,          0,              Button1,		setlayout,		{.v = &layouts[0]} },
-	{ ClkLtSymbol,			0,				Button2,        setlayout,		{.v = &layouts[8]} },
-	{ ClkLtSymbol,          0,              Button3,		setlayout,		{.v = &layouts[1]} },
-	{ ClkLtSymbol,          0,              Button4,		cyclelayout,    {.i = +1 } },
-	{ ClkLtSymbol,          0,              Button5,		cyclelayout,    {.i = -1 } },
-	{ ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[2]} },
-	{ ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
-	{ ClkWinTitle,          0,              Button2,        togglefloating,	{0} },
-	{ ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
-	{ ClkWinTitle,          0,              Button3,        spawn,			SHCMD("xmenu.sh") },
-	{ ClkWinTitle,          MODKEY,         Button3,        spawn,          SHCMD("menu.sh system") },
-	{ ClkWinTitle,          0,              Button4,        focusstack,		{.i = INC(-1) } },
-	{ ClkWinTitle,          ShiftMask,      Button4,        pushstack,		{.i = INC(-1) } },
-	{ ClkWinTitle,          0,              Button5,        focusstack,		{.i = INC(+1) } },
-	{ ClkWinTitle,          ShiftMask,      Button5,        pushstack,		{.i = INC(+1) } },
-	{ ClkWinTitle,          0,              Button8,        spawn,			SHCMD("rofi-windows.sh") },
-	{ ClkWinTitle,          MODKEY,         Button8,        spawn,          SHCMD("$TERMINAL") },
-	{ ClkWinTitle,          0,              Button9,        spawn,			{.v = dmenucmd } },
-	{ ClkWinTitle,          MODKEY,         Button9,        spawn,          SHCMD("firefox") },
-	{ ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
-	{ ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
-	{ ClkStatusText,        0,              Button4,        spawn,          {.v = statuscmd } },
-	{ ClkStatusText,        0,              Button5,        spawn,          {.v = statuscmd } },
-	{ ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
-	{ ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
-	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
-	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-	/* { ClkClientWin,         Mod1Mask,       Button3,        spawn,			SHCMD("xmenu.sh") }, */
-	{ ClkClientWin,         MODKEY,			Button4,		pushstack,		{.i = INC(-1) } },
-	{ ClkClientWin,         MODKEY, 		Button5,      	pushstack,		{.i = INC(+1) } },
-	{ ClkClientWin,         MODKEY, 		Button8,      	spawn,			SHCMD("rofi-windows.sh") },
-	{ ClkClientWin,         MODKEY, 		Button9,      	spawn,			{.v = dmenucmd} },
-	{ ClkRootWin,			0,				Button2,        setlayout,		{.v = &layouts[8]} },
-	{ ClkRootWin,			0,				Button3,        spawn,			SHCMD("xmenu.sh") },
-	{ ClkRootWin,			0,				Button8,        spawn,          SHCMD("$TERMINAL") },
-	{ ClkRootWin,			MODKEY, 		Button8,      	spawn,			SHCMD("rofi-windows.sh") },
-	{ ClkRootWin,          	0,				Button9,        spawn,          SHCMD("firefox") },
-	{ ClkRootWin,			MODKEY, 		Button9,      	spawn,			{.v = dmenucmd} },
+    /* click                event mask      button          function        argument */
+    { ClkTagBar,            0,              Button1,        view,           {0} },
+    { ClkTagBar,            0,              Button3,        toggleview,     {0} },
+    /* tagtoleft, tagtoright */
+    { ClkTagBar,            0,              Button4,        shiftview,        {.i = -1} },
+    { ClkTagBar,            0,              Button5,        shiftview,        {.i = +1} },
+    /* { ClkTagBar,            0,              Button8,        view,        {.i = -1} }, */
+    /* { ClkTagBar,            0,              Button9,        view,        {.i = +1} }, */
+    { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+    { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+    { ClkLtSymbol,          0,              Button1,        setlayout,      {.v = &layouts[0]} },
+    { ClkLtSymbol,          0,              Button2,        setlayout,      {.v = &layouts[8]} },
+    { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[1]} },
+    { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
+    { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
+    { ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[2]} },
+    { ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
+    { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
+    { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
+    { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("xmenu.sh") },
+    { ClkWinTitle,          MODKEY,         Button3,        spawn,          SHCMD("menu.sh system") },
+    { ClkWinTitle,          0,              Button4,        focusstack,     {.i = INC(-1) } },
+    { ClkWinTitle,          ShiftMask,      Button4,        pushstack,      {.i = INC(-1) } },
+    { ClkWinTitle,          0,              Button5,        focusstack,     {.i = INC(+1) } },
+    { ClkWinTitle,          ShiftMask,      Button5,        pushstack,      {.i = INC(+1) } },
+    { ClkWinTitle,          0,              Button8,        spawn,          SHCMD("rofi-windows.sh") },
+    { ClkWinTitle,          MODKEY,         Button8,        spawn,          SHCMD("$TERMINAL") },
+    { ClkWinTitle,          0,              Button9,        spawn,          {.v = dmenucmd } },
+    { ClkWinTitle,          MODKEY,         Button9,        spawn,          SHCMD("firefox") },
+    { ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
+    { ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
+    { ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
+    { ClkStatusText,        0,              Button4,        spawn,          {.v = statuscmd } },
+    { ClkStatusText,        0,              Button5,        spawn,          {.v = statuscmd } },
+    { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
+    { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
+    { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+    /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("xmenu.sh") }, */
+    { ClkClientWin,         MODKEY,         Button4,        pushstack,      {.i = INC(-1) } },
+    { ClkClientWin,         MODKEY,         Button5,        pushstack,      {.i = INC(+1) } },
+    { ClkClientWin,         MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
+    { ClkClientWin,         MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
+    { ClkRootWin,            0,             Button2,        setlayout,      {.v = &layouts[8]} },
+    { ClkRootWin,            0,             Button3,        spawn,          SHCMD("xmenu.sh") },
+    { ClkRootWin,            0,             Button8,        spawn,          SHCMD("$TERMINAL") },
+    { ClkRootWin,            MODKEY,        Button8,        spawn,          SHCMD("rofi-windows.sh") },
+    { ClkRootWin,            0,             Button9,        spawn,          SHCMD("firefox") },
+    { ClkRootWin,            MODKEY,        Button9,        spawn,          {.v = dmenucmd} },
 };
 
