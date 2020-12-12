@@ -52,7 +52,7 @@ static const Rule rules[] = {
     { "UXterm",  NULL,     NULL,           0,         0,          1,           1,        -1 },
     { NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
     { "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
-    { NULL,      NULL,     "[debug]"       0,         1,          0,           1,        -1 }, /* personal debugging */
+    { NULL,      NULL,     "[debug]",      0,         1,          0,           1,        -1 }, /* personal debugging */
     { NULL,      NULL,     "win0",         1 << 4,    1,          0,           0,        -1 }, /* intellij startup */
     { "jetbrains-idea", NULL, NULL,        1 << 4,    0,          0,           0,        -1 },
     { "discord", NULL,     NULL,           1 << 7,    0,          0,           0,        -1 },
