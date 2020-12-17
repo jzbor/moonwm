@@ -42,21 +42,25 @@ static const Rule rules[] = {
      *    WM_NAME(STRING) = title
      */
     /* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
-    { "Gimp",    NULL,     NULL,           0,         0,          0,           0,        -1 },
-    { "firefox", NULL,     NULL,           0,          0,          0,           1,        -1 },
-    { "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
-    { "St",      NULL,     NULL,           0,         0,          1,           0,        -1 },
+    { "firefox", NULL,     NULL,           0,         0,          0,           1,        -1 },
     { "polybar", NULL,     NULL,           0,         0,          0,           1,        -1 },
-    { "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
+    /* Terminals */
     { "Alacritty", NULL,   NULL,           0,         0,          1,           1,        -1 },
     { "UXterm",  NULL,     NULL,           0,         0,          1,           1,        -1 },
-    { NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
-    { "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
-    { NULL,      NULL,     "[debug]",      0,         1,          0,           1,        -1 }, /* personal debugging */
-    { NULL,      NULL,     "win0",         1 << 4,    1,          0,           0,        -1 }, /* intellij startup */
-    { "jetbrains-idea", NULL, NULL,        1 << 4,    0,          0,           0,        -1 },
-    { "discord", NULL,     NULL,           1 << 6,    0,          0,           0,        -1 },
+    /* Apps on specific tags */
+    { "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
     { "TeamSpeak 3", NULL,     NULL,       1 << 6,    0,          0,           0,        -1 },
+    { "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
+    { "discord", NULL,     NULL,           1 << 6,    0,          0,           0,        -1 },
+    { "jetbrains-idea", NULL, NULL,        1 << 4,    0,          0,           0,        -1 },
+    { NULL,      NULL,     "win0",         1 << 4,    1,          0,           0,        -1 }, /* intellij startup */
+    /* Floating */
+    { "Blueman-manager", NULL, NULL,       0,         1,          0,           0,        -1 },
+    { "Nm-connection-editor", NULL, NULL,  0,         1,          0,           0,        -1 },
+    { "Pavucontrol", NULL, NULL,           0,         1,          0,           0,        -1 },
+    { "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
+    { NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
+    { NULL,      NULL,     "[debug]",      0,         1,          0,           1,        -1 }, /* personal debugging */
 };
 
 /* layout(s) */
@@ -114,7 +118,7 @@ static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -combi-modi drun,windo
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
-static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh", "dwmdate.sh $BUTTON" };
+static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh $BUTTON", "dwmdate.sh $BUTTON" };
 static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 
 /* dynamic functions to perform different actions on floating windows vs tiled windows */
