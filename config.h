@@ -72,19 +72,19 @@ static const int decorhints  = 1;    /* 1 means respect decoration hints */
 
 static const Layout layouts[] = {
     /* symbol     arrange function */
-    { "[]=",    tile },            /* Default: Master on left, slaves on right */
+    { "[]=",    tile },            /* Default: Master on left, stack on right */
     { "=[]",    tileleft },        /* Tile, but with switched sides */
 
     { "><>",    NULL },            /* no layout function means floating behavior */
-    { "[]D",    deck },            /* Master on left, slaves in monocle-like mode on right */
+    { "[]D",    deck },            /* Master on left,laves in monocle-like mode on right */
 
     { "[M]",    monocle },         /* All windows on top of eachother */
-    { "TTT",    bstack },          /* Master on top, slaves on bottom */
+    { "TTT",    bstack },          /* Master on top, stack on bottom */
 
     /* { "[@]",    spiral },          /1* Fibonacci spiral *1/ */
     /* { "[\\]",    dwindle },        /1* Decreasing in size right and leftward *1/ */
 
-    /* { "|M|",    centeredmaster },            /1* Master in middle, slaves on sides *1/ */
+    /* { "|M|",    centeredmaster },            /1* Master in middle, stack on sides *1/ */
     /* { ">M>",    centeredfloatingmaster },    /1* Same but master floats *1/ */
 
     { NULL,        NULL },
@@ -192,8 +192,10 @@ static Key keys[] = {
     { MODKEY,               XK_m,       setlayout,       {.v = &layouts[4]} },
     { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
-    { MODKEY,               XK_Escape,  focusmon,        {.i = +1 } },
-    { MODKEY|ShiftMask,     XK_Escape,  tagmon,          {.i = +1 } },
+    { MODKEY,               XK_Prior,   focusmon,        {.i = -1 } },
+    { MODKEY|ShiftMask,     XK_Prior,   tagmon,          {.i = -1 } },
+    { MODKEY,               XK_Next,    focusmon,        {.i = +1 } },
+    { MODKEY|ShiftMask,     XK_Next,    tagmon,          {.i = +1 } },
     { MODKEY,               XK_comma,   cyclelayout,     {.i = -1 } },
     { MODKEY,               XK_period,  cyclelayout,     {.i = +1 } },
     TAGKEYS(                XK_1,                        0)
