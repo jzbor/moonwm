@@ -73,18 +73,20 @@ static const int decorhints  = 1;    /* 1 means respect decoration hints */
 static const Layout layouts[] = {
     /* symbol     arrange function */
     { "[]=",    tile },            /* Default: Master on left, slaves on right */
-    { "[]D",    deck },            /* Master on left, slaves in monocle-like mode on right */
-
-    { "[M]",    monocle },        /* All windows on top of eachother */
-    { "TTT",    bstack },        /* Master on top, slaves on bottom */
-
-    { "[@]",    spiral },        /* Fibonacci spiral */
-    { "[\\]",    dwindle },        /* Decreasing in size right and leftward */
-
-    { "|M|",    centeredmaster },        /* Master in middle, slaves on sides */
-    { ">M>",    centeredfloatingmaster },    /* Same but master floats */
+    { "=[]",    tileleft },        /* Tile, but with switched sides */
 
     { "><>",    NULL },            /* no layout function means floating behavior */
+    { "[]D",    deck },            /* Master on left, slaves in monocle-like mode on right */
+
+    { "[M]",    monocle },         /* All windows on top of eachother */
+    { "TTT",    bstack },          /* Master on top, slaves on bottom */
+
+    /* { "[@]",    spiral },          /1* Fibonacci spiral *1/ */
+    /* { "[\\]",    dwindle },        /1* Decreasing in size right and leftward *1/ */
+
+    /* { "|M|",    centeredmaster },            /1* Master in middle, slaves on sides *1/ */
+    /* { ">M>",    centeredfloatingmaster },    /1* Same but master floats *1/ */
+
     { NULL,        NULL },
 };
 
@@ -184,14 +186,11 @@ static Key keys[] = {
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
-    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[1]} },
-    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
-    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[3]} },
-    { MODKEY,               XK_z,       setlayout,       {.v = &layouts[4]} },
-    { MODKEY|ShiftMask,     XK_z,       setlayout,       {.v = &layouts[5]} },
-    { MODKEY,               XK_a,       setlayout,       {.v = &layouts[6]} },
-    { MODKEY|ShiftMask,     XK_a,       setlayout,       {.v = &layouts[7]} },
-    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[8]} },
+    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[1]} },
+    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[2]} },
+    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[3]} },
+    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[4]} },
+    { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_Escape,  focusmon,        {.i = +1 } },
     { MODKEY|ShiftMask,     XK_Escape,  tagmon,          {.i = +1 } },
