@@ -10,6 +10,7 @@
 * deck
 * deck-tilegap
 * dwmc
+* ewmhtags
 * fixborders
 * focusonnetactive
 * pertag
