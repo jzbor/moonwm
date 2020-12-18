@@ -73,12 +73,12 @@ static const int decorhints  = 1;    /* 1 means respect decoration hints */
 static const Layout layouts[] = {
     /* symbol     arrange function */
     { "[]=",    tile },            /* Default: Master on left, stack on right */
-    { "=[]",    tileleft },        /* Tile, but with switched sides */
-
-    { "><>",    NULL },            /* no layout function means floating behavior */
     { "[]D",    deck },            /* Master on left,laves in monocle-like mode on right */
 
     { "[M]",    monocle },         /* All windows on top of eachother */
+    { "><>",    NULL },            /* no layout function means floating behavior */
+
+    { "=[]",    tileleft },        /* Tile, but with switched sides */
     { "TTT",    bstack },          /* Master on top, stack on bottom */
 
     /* { "[@]",    spiral },          /1* Fibonacci spiral *1/ */
@@ -118,7 +118,7 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -combi-modi drun,window,ssh -show combi", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
-static const char *layoutmenu_cmd = "layoutmenu.sh";
+static const char *layoutmenu_cmd = "dwm-layoutmenu";
 
 /* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
 static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh $BUTTON", "dwmdate.sh $BUTTON" };
@@ -145,10 +145,10 @@ static Key keys[] = {
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
-    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[1]} },
-    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[2]} },
-    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[3]} },
-    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[4]} },
+    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[1]} },
+    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
+    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[3]} },
+    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[4]} },
     { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_Prior,   focusmon,        {.i = -1 } },
@@ -186,11 +186,11 @@ static Button buttons[] = {
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
     { ClkLtSymbol,          0,              Button1,        setlayout,      {.v = &layouts[0]} },
-    { ClkLtSymbol,          0,              Button2,        setlayout,      {.v = &layouts[8]} },
-    { ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[1]} },
+    { ClkLtSymbol,          0,              Button2,        setlayout,      {.v = &layouts[2]} },
+    { ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
-    { ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[2]} },
+    { ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[3]} },
     { ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
@@ -219,7 +219,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button5,        pushstack,      {.i = INC(+1) } },
     { ClkClientWin,         MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
     { ClkClientWin,         MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
-    { ClkRootWin,            0,             Button2,        setlayout,      {.v = &layouts[8]} },
+    { ClkRootWin,            0,             Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,            0,             Button3,        spawn,          SHCMD("xmenu.sh") },
     { ClkRootWin,            0,             Button8,        spawn,          SHCMD("$TERMINAL") },
     { ClkRootWin,            MODKEY,        Button8,        spawn,          SHCMD("rofi-windows.sh") },
