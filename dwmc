@@ -4,14 +4,55 @@ signal() {
 	xsetroot -name "fsignal:$*"
 }
 
+print_help() {
+	echo "
+Usage: dwmc CALL [ARGUMENT]
+
+Here is a list of supported calls with their respective arguments:
+Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
+
+	cyclelayout (i)
+	focusmon (i)
+	focusstack (i)
+	incnmaster (i)
+	killclient
+	quit
+	rquit
+	setlayout
+	setlayoutex (i)
+	setmfact (f)
+	shiftview (i)
+	tagex (i)
+	tagmon (i)
+	togglebar
+	togglefloating
+	togglefullscr
+	toggletagex (i)
+	toggleviewex (i)
+	view
+	view (ui)
+	viewall
+	viewex (i)
+	zoom
+	"
+}
+
 case $# in
+0)
+	print_help
+	;;
 1)
 	case $1 in
-	togglefullscr | setlayout | view | viewall | togglebar | togglefloating | zoom | killclient | quit)
+	togglefullscr | setlayout | view | viewall \
+				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
 		signal $1
+		;;
+	-h | --help)
+		print_help
 		;;
 	*)
 		echo "Unknown command or missing one argument."
+		echo "Try 'dwmc --help' for more information."
 		exit 1
 		;;
 	esac
@@ -29,12 +70,14 @@ case $# in
 		;;
 	*)
 		echo "Unknown command or one too many arguments."
+		echo "Try 'dwmc --help' for more information."
 		exit 1
 		;;
 	esac
 	;;
 *)
 	echo "Too many arguments."
+	echo "Try 'dwmc --help' for more information."
 	exit 1
 	;;
 esac

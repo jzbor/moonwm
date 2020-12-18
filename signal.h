@@ -1,3 +1,7 @@
+void rquit(const Arg *arg) {
+    quit(&((Arg) { .i = 1 }));
+}
+
 void
 setlayoutex(const Arg *arg) {
 	setlayout(&((Arg) { .v = &layouts[arg->i] }));
@@ -38,11 +42,13 @@ tagall(const Arg *arg) {
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
 static Signal signals[] = {
 	/* signum           function */
+	{ "cyclelayout",    cyclelayout },
 	{ "focusmon",       focusmon },
 	{ "focusstack",     focusstack },
 	{ "incnmaster",     incnmaster },
 	{ "killclient",     killclient },
 	{ "quit",           quit },
+	{ "rquit",          rquit },
 	{ "setlayout",      setlayout },
 	{ "setlayoutex",    setlayoutex },
 	{ "setmfact",       setmfact },
