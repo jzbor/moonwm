@@ -123,48 +123,6 @@ static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh $BUTTON", "dwmdate.sh $BUTTON" };
 static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 
-/* dynamic functions to perform different actions on floating windows vs tiled windows */
-void
-movex(const Arg *arg) {
-    if (IS_FLOATING) {
-        movexfloating(arg);
-    } else if (arg->i < 0) {
-        pushstack(&((Arg) { .i = 0 }));
-    } else {
-        pushstack(&((Arg) { .i = PREVSEL }));
-    }
-}
-
-void
-movey(const Arg *arg) {
-    if (IS_FLOATING) {
-        arg = &(Arg) { .i = -arg->i };
-        moveyfloating(arg);
-    } else if (arg->i < 0) {
-        pushstack(&((Arg) { .i = INC(+1) }));
-    } else {
-        pushstack(&((Arg) { .i = INC(-1) }));
-    }
-}
-
-void
-resizex(const Arg *arg) {
-    if (IS_FLOATING) {
-        incwidth(arg);
-    } else if (arg->i > 0) {
-        setmfact(&((Arg) { .f = +0.05 }));
-    } else {
-        setmfact(&((Arg) { .f = -0.05 }));
-    }
-}
-
-void
-resizey(const Arg *arg) {
-    if (IS_FLOATING) {
-        incheight(arg);
-    }
-}
-
 #define DIRECTIONKEY(KEY, AXIS, ARG) \
     { MODKEY|ShiftMask,        KEY,    move##AXIS,        ARG }, \
     { MODKEY|ControlMask,    KEY,    resize##AXIS,        ARG },

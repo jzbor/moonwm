@@ -16,7 +16,11 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	focusstack (i)
 	incnmaster (i)
 	killclient
+	movex (i)
+	movey (i)
 	quit
+	resizex (i)
+	resizey (i)
 	rquit
 	setlayout
 	setlayoutex (i)
@@ -62,7 +66,8 @@ case $# in
 	view)
 		signal $1 ui $2
 		;;
-	shiftview | viewex | toggleviewex | tagex | toggletagex | setlayoutex | focusstack | incnmaster | focusmon | tagmon)
+	shiftview | viewex | toggleviewex | tagex | toggletagex | setlayoutex \
+				| focusstack | incnmaster | focusmon | tagmon | movex | movey | resizex | resizey)
 		signal $1 i $2
 		;;
 	setmfact)

@@ -56,7 +56,7 @@
 #define INC(X)                  ((X) + 2000)
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-#define IS_FLOATING             (!selmon->lt[selmon->sellt]->arrange || selmon->sel->isfloating)
+#define ISFLOATING              (!selmon->lt[selmon->sellt]->arrange || selmon->sel->isfloating)
 #define ISINC(X)                ((X) > 1000 && (X) < 3000)
 #define ISVISIBLEONTAG(C, T)    ((C->tags & T))
 #define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
@@ -273,6 +273,8 @@ static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
+static void movex(const Arg *arg);
+static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
 static void moveyfloating(const Arg *arg);
 static Client *nexttagged(Client *c);
@@ -289,6 +291,8 @@ static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
 static void resizefloating(Client *c, int nx, int ny, int nw, int nh);
 static void resizemouse(const Arg *arg);
 static void resizerequest(XEvent *e);
+static void resizex(const Arg *arg);
+static void resizey(const Arg *arg);
 static void restack(Monitor *m);
 static void run(void);
 static void runautostart(void);
@@ -1739,6 +1743,29 @@ movemouse(const Arg *arg)
 }
 
 void
+movex(const Arg *arg) {
+    if (ISFLOATING) {
+        movexfloating(arg);
+    } else if (arg->i < 0) {
+        pushstack(&((Arg) { .i = 0 }));
+    } else {
+        pushstack(&((Arg) { .i = PREVSEL }));
+    }
+}
+
+void
+movey(const Arg *arg) {
+    if (ISFLOATING) {
+        arg = &(Arg) { .i = -arg->i };
+        moveyfloating(arg);
+    } else if (arg->i < 0) {
+        pushstack(&((Arg) { .i = INC(+1) }));
+    } else {
+        pushstack(&((Arg) { .i = INC(-1) }));
+    }
+}
+
+void
 movexfloating(const Arg *arg)
 {
     if(!selmon->sel) {
@@ -2032,6 +2059,24 @@ resizerequest(XEvent *e)
 		resizebarwin(selmon);
 		updatesystray();
 	}
+}
+
+void
+resizex(const Arg *arg) {
+    if (ISFLOATING) {
+        incwidth(arg);
+    } else if (arg->i > 0) {
+        setmfact(&((Arg) { .f = +0.05 }));
+    } else {
+        setmfact(&((Arg) { .f = -0.05 }));
+    }
+}
+
+void
+resizey(const Arg *arg) {
+    if (ISFLOATING) {
+        incheight(arg);
+    }
 }
 
 void
