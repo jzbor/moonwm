@@ -137,8 +137,8 @@ static Key keys[] = {
     DIRECTIONKEY(XK_j, y, {.i = -20})
     DIRECTIONKEY(XK_k, y, {.i = 20})
     DIRECTIONKEY(XK_l, x, {.i = 20})
-    /* { MODKEY,               XK_d,        spawn,          {.v = dmenucmd } }, */
-    /* { MODKEY,                XK_Return,  spawn,          {.v = termcmd } }, */
+    { MODKEY,               XK_d,        spawn,          {.v = dmenucmd } },
+    { MODKEY,               XK_Return,  spawn,          {.v = termcmd } },
     { MODKEY,               XK_Tab,     view,            {0} },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     { MODKEY,               XK_q,       spawn,           SHCMD("notify-send \"Did you mean to create an 'a'? If so try win+q\"") },
@@ -166,6 +166,8 @@ static Key keys[] = {
     TAGKEYS(                XK_7,                        6)
     TAGKEYS(                XK_8,                        7)
     TAGKEYS(                XK_9,                        8)
+	{ MODKEY,               XK_0,       view,            {.ui = ~0 } },
+	{ MODKEY|ShiftMask,     XK_0,       tag,             {.ui = ~0 } },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
     { ShiftMask|MODKEY,     XK_BackSpace, quit,          {.i = 1} },
     { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
@@ -197,13 +199,9 @@ static Button buttons[] = {
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("xmenu.sh") },
     { ClkWinTitle,          MODKEY,         Button3,        spawn,          SHCMD("menu.sh system") },
     { ClkWinTitle,          0,              Button4,        focusstack,     {.i = INC(-1) } },
-    { ClkWinTitle,          ShiftMask,      Button4,        pushstack,      {.i = INC(-1) } },
     { ClkWinTitle,          0,              Button5,        focusstack,     {.i = INC(+1) } },
-    { ClkWinTitle,          ShiftMask,      Button5,        pushstack,      {.i = INC(+1) } },
-    { ClkWinTitle,          0,              Button8,        spawn,          SHCMD("rofi-windows.sh") },
-    { ClkWinTitle,          MODKEY,         Button8,        spawn,          SHCMD("$TERMINAL") },
-    { ClkWinTitle,          0,              Button9,        spawn,          {.v = dmenucmd } },
-    { ClkWinTitle,          MODKEY,         Button9,        spawn,          SHCMD("firefox") },
+    { ClkWinTitle,          0,              Button8,        pushstack,      {.i = INC(+1) } },
+    { ClkWinTitle,          0,              Button9,        pushstack,      {.i = INC(-1) } },
     { ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
     { ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
     { ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
@@ -215,15 +213,15 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("xmenu.sh") }, */
-    { ClkClientWin,         MODKEY,         Button4,        pushstack,      {.i = INC(-1) } },
-    { ClkClientWin,         MODKEY,         Button5,        pushstack,      {.i = INC(+1) } },
-    { ClkClientWin,         MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
-    { ClkClientWin,         MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
-    { ClkRootWin,            0,             Button2,        setlayout,      {.v = &layouts[3]} },
-    { ClkRootWin,            0,             Button3,        spawn,          SHCMD("xmenu.sh") },
-    { ClkRootWin,            0,             Button8,        spawn,          SHCMD("$TERMINAL") },
-    { ClkRootWin,            MODKEY,        Button8,        spawn,          SHCMD("rofi-windows.sh") },
-    { ClkRootWin,            0,             Button9,        spawn,          SHCMD("firefox") },
-    { ClkRootWin,            MODKEY,        Button9,        spawn,          {.v = dmenucmd} },
+    { ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = INC(-1) } },
+    { ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = INC(+1) } },
+    { ClkClientWin,         MODKEY,         Button8,        pushstack,      {.i = INC(+1) } },
+    { ClkClientWin,         MODKEY,         Button9,        pushstack,      {.i = INC(-1) } },
+    { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
+    { ClkRootWin,           0,              Button3,        spawn,          SHCMD("xmenu.sh") },
+    { ClkRootWin,           0,              Button8,        spawn,          SHCMD("$TERMINAL") },
+    { ClkRootWin,           MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
+    { ClkRootWin,           0,              Button9,        spawn,          SHCMD("firefox") },
+    { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
 };
 
