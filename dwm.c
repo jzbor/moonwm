@@ -841,7 +841,7 @@ clientmessage(XEvent *e)
 		if (i < LENGTH(tags)) {
 			const Arg a = {.ui = 1 << i};
 			selmon = c->mon;
-			view(&a);
+			toggleview(&a);
 			focus(c);
 			restack(selmon);
 		}
