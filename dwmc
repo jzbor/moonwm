@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+
+signal() {
+	xsetroot -name "fsignal:$*"
+}
+
+print_help() {
+	echo "
+Usage: dwmc CALL [ARGUMENT]
+
+Here is a list of supported calls with their respective arguments:
+Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
+
+	cyclelayout (i)
+	focusmon (i)
+	focusstack (i)
+	incnmaster (i)
+	killclient
+	movex (i)
+	movey (i)
+	quit
+	resizex (i)
+	resizey (i)
+	rquit
+	setlayout
+	setlayoutex (i)
+	setmfact (f)
+	shiftview (i)
+	tagex (i)
+	tagmon (i)
+	togglebar
+	togglefloating
+	togglefullscr
+	toggletagex (i)
+	toggleviewex (i)
+	view
+	view (ui)
+	viewall
+	viewex (i)
+	zoom
+	"
+}
+
+case $# in
+0)
+	print_help
+	;;
+1)
+	case $1 in
+	togglefullscr | setlayout | view | viewall \
+				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
+		signal $1
+		;;
+	-h | --help)
+		print_help
+		;;
+	*)
+		echo "Unknown command or missing one argument."
+		echo "Try 'dwmc --help' for more information."
+		exit 1
+		;;
+	esac
+	;;
+2)
+	case $1 in
+	view)
+		signal $1 ui $2
+		;;
+	shiftview | viewex | toggleviewex | tagex | toggletagex | setlayoutex \
+				| focusstack | incnmaster | focusmon | tagmon | movex | movey | resizex | resizey)
+		signal $1 i $2
+		;;
+	setmfact)
+		signal $1 f $2
+		;;
+	*)
+		echo "Unknown command or one too many arguments."
+		echo "Try 'dwmc --help' for more information."
+		exit 1
+		;;
+	esac
+	;;
+*)
+	echo "Too many arguments."
+	echo "Try 'dwmc --help' for more information."
+	exit 1
+	;;
+esac
