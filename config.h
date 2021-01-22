@@ -212,8 +212,7 @@ static Button buttons[] = {
     { ClkStatusText,        0,              Button5,        spawn,          {.v = statuscmd } },
     { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
     { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
-    { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
-	{ ClkClientWin,         MODKEY|ControlMask, Button1,    placemouse,     {0} },
+    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("xmenu.sh") }, */

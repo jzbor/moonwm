@@ -277,6 +277,7 @@ static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
+static void moveorplace(const Arg *arg);
 static void movex(const Arg *arg);
 static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
@@ -1764,6 +1765,14 @@ movemouse(const Arg *arg)
 		selmon = m;
 		focus(NULL);
 	}
+}
+
+void
+moveorplace(const Arg *arg) {
+    if (selmon->sel->isfloating)
+        movemouse(arg);
+    else
+        placemouse(arg);
 }
 
 void
