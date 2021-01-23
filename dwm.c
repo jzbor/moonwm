@@ -1975,9 +1975,9 @@ placemouse(const Arg *arg)
 		attach(c);
 		attachstack(c);
 		selmon = m;
-		focus(c);
 	}
 
+    focus(c);
 	c->beingmoved = 0;
 
 	if (nx != -9999)
