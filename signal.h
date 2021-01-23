@@ -56,7 +56,7 @@ static Signal signals[] = {
 	{ "setlayout",      setlayout },
 	{ "setlayoutex",    setlayoutex },
 	{ "setmfact",       setmfact },
-	{ "shiftviewclients", shiftviewclients },
+	{ "shiftview",      shiftview },
 	{ "tag",            tag },
 	{ "tagall",         tagall },
 	{ "tagex",          tagex },
