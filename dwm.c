@@ -317,7 +317,7 @@ static void setnumdesktops(void);
 static void setup(void);
 static void setviewport(void);
 static void seturgent(Client *c, int urg);
-static void shiftviewclients(const Arg *arg);
+static void shiftview(const Arg *arg);
 static void showhide(Client *c);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
@@ -2654,7 +2654,7 @@ seturgent(Client *c, int urg)
 }
 
 void
-shiftviewclients(const Arg *arg)
+shiftview(const Arg *arg)
 {
 	Arg shifted;
 	Client *c;
