@@ -1769,7 +1769,7 @@ movemouse(const Arg *arg)
 
 void
 moveorplace(const Arg *arg) {
-    if (selmon->sel->isfloating)
+    if (ISFLOATING)
         movemouse(arg);
     else
         placemouse(arg);
