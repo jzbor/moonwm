@@ -49,6 +49,7 @@ static const Rule rules[] = {
     { "UXterm",  NULL,     NULL,           0,         0,          1,           1,        -1 },
     /* Apps on specific tags */
     { "Spotify", NULL,     NULL,           1 << 7,    0,          0,          -1,        -1 },
+    { "Steam",  NULL,      NULL,           1 << 5,    0,          0,           0,        -1 },
     { "TeamSpeak 3", NULL,     NULL,       1 << 6,    0,          0,           0,        -1 },
     { "Thunderbird", NULL, NULL,           1 << 8,    0,          0,          -1,        -1 },
     { "discord", NULL,     NULL,           1 << 6,    0,          0,           0,        -1 },
@@ -61,6 +62,8 @@ static const Rule rules[] = {
     { "XClock",  NULL,     NULL,           0,         1,          0,           1,        -1 },
     { NULL,      NULL,     "Event Tester", 0,         1,          0,           1,        -1 }, /* xev */
     { NULL,      NULL,     "[debug]",      0,         1,          0,           1,        -1 }, /* personal debugging */
+    /* Non-Floating */
+    { "Gimp",    NULL,     NULL,           0,         0,          0,           0,        -1 },
 };
 
 /* layout(s) */
@@ -181,8 +184,8 @@ static Button buttons[] = {
     { ClkTagBar,            0,              Button1,        view,           {0} },
     { ClkTagBar,            0,              Button3,        toggleview,     {0} },
     /* tagtoleft, tagtoright */
-    { ClkTagBar,            0,              Button4,        shiftview,        {.i = -1} },
-    { ClkTagBar,            0,              Button5,        shiftview,        {.i = +1} },
+    { ClkTagBar,            0,              Button4,        shiftview, {.i = -1} },
+    { ClkTagBar,            0,              Button5,        shiftview, {.i = +1} },
     /* { ClkTagBar,            0,              Button8,        view,        {.i = -1} }, */
     /* { ClkTagBar,            0,              Button9,        view,        {.i = +1} }, */
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
@@ -209,7 +212,7 @@ static Button buttons[] = {
     { ClkStatusText,        0,              Button5,        spawn,          {.v = statuscmd } },
     { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
     { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
-    { ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("xmenu.sh") }, */
