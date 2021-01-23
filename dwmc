@@ -26,6 +26,7 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	setlayoutex (i)
 	setmfact (f)
 	shiftview (i)
+	shiftviewclients (i)
 	tagex (i)
 	tagmon (i)
 	togglebar
