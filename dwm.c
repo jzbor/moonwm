@@ -113,7 +113,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum { SchemeNorm, SchemeHigh }; /* color schemes */
 enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
        NetWMActionClose, NetWMActionMinimize, NetWMAction, NetWMMoveResize,
        NetWMMaximizedVert, NetWMMaximizedHorz,
@@ -813,7 +813,7 @@ clientmessage(XEvent *e)
 			XSetClassHint(dpy, c->win, &ch);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
 			/* use parents background color */
-			swa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+			swa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
 			sendevent(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			/* FIXME not sure if I have to send these events, too */
@@ -1098,7 +1098,7 @@ drawbar(Monitor *m)
 	if (m == selmon || 1) { /* status is only drawn on selected monitor */
 		drw_setscheme(drw, scheme[SchemeNorm]);
 		tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px right padding */
-		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0, ColStatusFg, ColStatusBg);
 	}
 
 	resizebarwin(m);
@@ -1110,30 +1110,37 @@ drawbar(Monitor *m)
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		/* drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeHigh : SchemeNorm]); */
 		if (occ & 1 << i)
-			drw_rect(drw, x + boxs, boxs, boxw, boxw,
-				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-				urg & 1 << i);
+            drw_setscheme(drw, scheme[SchemeHigh]);
+        else
+            drw_setscheme(drw, scheme[SchemeNorm]);
+
+		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], m->tagset[m->seltags] & 1 << i, ColTagFg, ColTagBg);
+		if (m == selmon && selmon->sel && selmon->sel->tags & 1 << i && m->tagset[m->seltags] & 1 << i) {
+			drw_rect(drw, x + 8, bh - 4, w - 16, 1, 1, ColTagBg);
+        } else if (m == selmon && selmon->sel && selmon->sel->tags & 1 << i) {
+			drw_rect(drw, x + 8, bh - 4, w - 16, 1, 1, ColTagFg);
+        }
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
-	drw_setscheme(drw, scheme[SchemeNorm]);
-	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
+	drw_setscheme(drw, scheme[SchemeHigh]);
+    drw_rect(drw, x, 0, w, bh,  1, ColTagBg);
+	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0, ColTagFg, ColTagBg);
 
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
 			/* make sure name will not overlap on tags even when it is very long */
 			int mid = (m->ww - (int)TEXTW(m->sel->name)) / 2 - x;
 			mid = mid >= lrpad / 2 ? mid : lrpad / 2;
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0);
+			drw_setscheme(drw, scheme[m == selmon ? SchemeHigh : SchemeNorm]);
+			drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0, ColTitleFg, ColTitleBg);
 			if (m->sel->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
+				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, ColTitleBg);
 		} else {
-			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_rect(drw, x, 0, w, bh, 1, 1);
+			drw_setscheme(drw, scheme[m == selmon ? SchemeHigh : SchemeNorm]);
+			drw_rect(drw, x, 0, w, bh, 1, ColTitleBg);
 		}
 	}
 	drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
@@ -1195,7 +1202,7 @@ focus(Client *c)
 		detachstack(c);
 		attachstack(c);
 		grabbuttons(c, 1);
-		XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
+		XSetWindowBorder(dpy, c->win, scheme[SchemeHigh][ColBorder].pixel);
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1558,12 +1565,18 @@ loadxrdb()
       xrdb = XrmGetStringDatabase(resm);
 
       if (xrdb != NULL) {
-        XRDB_LOAD_COLOR("dwm.normbordercolor", normbordercolor);
-        XRDB_LOAD_COLOR("dwm.normbgcolor", normbgcolor);
-        XRDB_LOAD_COLOR("dwm.normfgcolor", normfgcolor);
-        XRDB_LOAD_COLOR("dwm.selbordercolor", selbordercolor);
-        XRDB_LOAD_COLOR("dwm.selbgcolor", selbgcolor);
-        XRDB_LOAD_COLOR("dwm.selfgcolor", selfgcolor);
+        XRDB_LOAD_COLOR("dwm.vacantTagFg", normtagfg);
+        XRDB_LOAD_COLOR("dwm.vacantTagBg", normtagbg);
+        XRDB_LOAD_COLOR("dwm.unfocusedTitleFg", normtitlefg);
+        XRDB_LOAD_COLOR("dwm.unfocusedTitleBg", normtitlebg);
+        XRDB_LOAD_COLOR("dwm.statusFg", statusfg);
+        XRDB_LOAD_COLOR("dwm.statusBg", statusbg);
+        XRDB_LOAD_COLOR("dwm.unfocusedBorder", normborderfg);
+        XRDB_LOAD_COLOR("dwm.occupiedTagFg", hightagfg);
+        XRDB_LOAD_COLOR("dwm.occupiedTagBg", hightagbg);
+        XRDB_LOAD_COLOR("dwm.focusedTitleFg", hightitlefg);
+        XRDB_LOAD_COLOR("dwm.focusedTitleBg", hightitlebg);
+        XRDB_LOAD_COLOR("dwm.focusedBorder", highborderfg);
       }
     }
   }
@@ -2601,7 +2614,7 @@ setup(void)
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 3);
+		scheme[i] = drw_scm_create(drw, colors[i], 7);
 	/* init system tray */
 	updatesystray();
 	/* init bars */
@@ -3286,10 +3299,10 @@ updatesystray(void)
 		/* init systray */
 		if (!(systray = (Systray *)calloc(1, sizeof(Systray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
-		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeSel][ColBg].pixel);
+		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeHigh][ColStatusBg].pixel);
 		wa.event_mask        = ButtonPressMask | ExposureMask;
 		wa.override_redirect = True;
-		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+		wa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
 		XChangeProperty(dpy, systray->win, netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
 				PropModeReplace, (unsigned char *)&netatom[NetSystemTrayOrientationHorz], 1);
@@ -3309,7 +3322,7 @@ updatesystray(void)
 	}
 	for (w = 0, i = systray->icons; i; i = i->next) {
 		/* make sure the background color stays the same */
-		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
+		wa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 		XChangeWindowAttributes(dpy, i->win, CWBackPixel, &wa);
 		XMapRaised(dpy, i->win);
 		w += systrayspacing;
@@ -3328,7 +3341,7 @@ updatesystray(void)
 	XMapWindow(dpy, systray->win);
 	XMapSubwindows(dpy, systray->win);
 	/* redraw background */
-	XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColBg].pixel);
+	XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColStatusBg].pixel);
 	XFillRectangle(dpy, systray->win, drw->gc, 0, 0, w, bh);
 	XSync(dpy, False);
 }
@@ -3623,7 +3636,7 @@ xrdb(const Arg *arg)
   loadxrdb();
   int i;
   for (i = 0; i < LENGTH(colors); i++)
-                scheme[i] = drw_scm_create(drw, colors[i], 3);
+                scheme[i] = drw_scm_create(drw, colors[i], 7);
   focus(NULL);
   arrange(NULL);
 }

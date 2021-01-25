@@ -20,16 +20,24 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
-static char normbgcolor[]           = "#222222";
-static char normbordercolor[]       = "#444444";
-static char normfgcolor[]           = "#bbbbbb";
-static char selfgcolor[]            = "#eeeeee";
-static char selbordercolor[]        = "#005577";
-static char selbgcolor[]            = "#005577";
-static char *colors[][3] = {
+static char normtagfg[]             = "#0000ff";
+static char normtagbg[]             = "#00ff00";
+static char normtitlefg[]           = "#00ffff";
+static char normtitlebg[]           = "#ff0000";
+static char statusfg[]              = "#ff00ff";
+static char statusbg[]              = "#ffff00";
+static char normborderfg[]          = "#ffff00";
+
+static char hightagfg[]             = "#000088";
+static char hightagbg[]             = "#008800";
+static char hightitlefg[]           = "#008888";
+static char hightitlebg[]           = "#880000";
+static char highborderfg[]          = "#880088";
+
+static char *colors[][7] = {
        /*               fg           bg           border   */
-       [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
-       [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
+       [SchemeNorm] = { normtagfg, normtagbg, normtitlefg, normtitlebg, statusfg, statusbg, normborderfg},
+       [SchemeHigh] = { hightagfg, hightagbg, hightitlefg, hightitlebg, statusfg, statusbg, highborderfg},
 };
 
 /* tagging */
