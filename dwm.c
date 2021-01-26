@@ -848,8 +848,9 @@ clientmessage(XEvent *e)
 		if (i < LENGTH(tags)) {
 			const Arg a = {.ui = 1 << i};
 			selmon = c->mon;
-			view(&a);
-			focus(c);
+            if (!(c->mon->tagset[c->mon->seltags] & 1 << i))
+                view(&a);
+            focus(c);
 			restack(selmon);
 		}
 	} else if (cme->message_type == wmatom[WMChangeState]) {
@@ -1110,7 +1111,6 @@ drawbar(Monitor *m)
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
-		/* drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeHigh : SchemeNorm]); */
 		if (occ & 1 << i)
             drw_setscheme(drw, scheme[SchemeHigh]);
         else
