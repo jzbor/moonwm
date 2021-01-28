@@ -11,11 +11,12 @@ static void togglegaps(const Arg *arg);
 
 /* Layouts */
 static void bstack(Monitor *m);
-static void centeredmaster(Monitor *m);
 static void centeredfloatingmaster(Monitor *m);
+static void centeredmaster(Monitor *m);
 static void deck(Monitor *m);
 static void dwindle(Monitor *m);
 static void fibonacci(Monitor *m, int s);
+static void monocle(Monitor *m);
 static void spiral(Monitor *m);
 static void tile(Monitor *);
 static void tileleft(Monitor *);
@@ -26,6 +27,7 @@ static void setgaps(int oh, int ov, int ih, int iv);
 
 /* Settings */
 static int enablegaps = 1;
+
 
 static void
 setgaps(int oh, int ov, int ih, int iv)
@@ -514,6 +516,21 @@ static void
 dwindle(Monitor *m)
 {
 	fibonacci(m, 1);
+}
+
+void
+monocle(Monitor *m)
+{
+	unsigned int n = 0;
+	Client *c;
+
+	for (c = m->clients; c; c = c->next)
+		if (ISVISIBLE(c) && !c->isfloating)
+			n++;
+	if (n > 0) /* override layout symbol */
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+		resize(c, m->wx, m->wy, m->ww, m->wh, 0, 0);
 }
 
 static void
