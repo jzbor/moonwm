@@ -38,6 +38,7 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	view (ui)
 	viewall
 	viewex (i)
+	xrdb
 	zoom
 	"
 }
@@ -48,7 +49,7 @@ case $# in
 	;;
 1)
 	case $1 in
-	togglefullscr | setlayout | view | viewall \
+	togglefullscr | setlayout | view | viewall | xrdb \
 				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
 		signal $1
 		;;

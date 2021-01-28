@@ -72,5 +72,6 @@ static Signal signals[] = {
 	{ "view",           view },
 	{ "viewall",        viewall },
 	{ "viewex",         viewex },
+	{ "xrdb",           xrdb },
 	{ "zoom",           zoom },
 };
