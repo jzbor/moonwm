@@ -2342,7 +2342,7 @@ riodraw(const Arg *arg) {
 			focus(NULL);
 		}
 
-		if (!c->isfloating)
+		if (!(ISFLOATING))
 			togglefloating(NULL);
 		resizeclient(c, x, y, width - (c->bw * 2), height - (c->bw * 2), c->bw);
 		arrange(selmon);
