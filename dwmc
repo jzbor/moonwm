@@ -21,6 +21,7 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	quit
 	resizex (i)
 	resizey (i)
+    riodraw
 	rquit
 	setlayout
 	setlayoutex (i)
@@ -49,7 +50,7 @@ case $# in
 	;;
 1)
 	case $1 in
-	togglefullscr | setlayout | view | viewall | xrdb \
+	togglefullscr | setlayout | view | viewall | xrdb | riodraw \
 				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
 		signal $1
 		;;

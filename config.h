@@ -18,6 +18,7 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
+static const char slopstyle[]       = "-t 0 -l -c 0.92,0.85,0.69,0.3"; /* do NOT define -f (format) here */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char normtagfg[]             = "#0000ff";
@@ -203,7 +204,7 @@ static Button buttons[] = {
     { ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
-    { ClkWinTitle,          0,              Button1,        setlayout,      {.v = &layouts[3]} },
+    { ClkWinTitle,          0,              Button1,        riodraw,        {0} },
     { ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },

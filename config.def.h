@@ -19,6 +19,7 @@ static unsigned int borderpx  = 1;        /* border pixel of windows */
 static unsigned int snap      = 32;       /* snap pixel */
 static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
+static const char slopstyle[]       = "-t 0 -l -c 0.92,0.85,0.69,0.3"; /* do NOT define -f (format) here */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char normbgcolor[]           = "#222222";
@@ -147,7 +148,12 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
+<<<<<<< HEAD
 	{ MODKEY|ShiftMask,             XK_BackSpace, quit,        {0} },
+=======
+	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ MODKEY,                       XK_s,      riodraw,        {0} },
+>>>>>>> patch-riodraw
 };
 
 /* button definitions */
