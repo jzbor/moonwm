@@ -23,22 +23,21 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	resizey (i)
     riodraw
 	rquit
-	setlayout
-	setlayoutex (i)
+	setlayout (i)
 	setmfact (f)
 	shiftview (i)
 	shiftviewclients (i)
-	tagex (i)
+	tag (i)
+	tagall
 	tagmon (i)
 	togglebar
 	togglefloating
 	togglefullscr
-	toggletagex (i)
-	toggleviewex (i)
-	view
+	toggletag (i)
+	toggleview (i)
 	view (ui)
 	viewall
-	viewex (i)
+	view (i)
 	xrdb
 	zoom
 	"
@@ -50,7 +49,7 @@ case $# in
 	;;
 1)
 	case $1 in
-	togglefullscr | setlayout | view | viewall | xrdb | riodraw \
+	togglefullscr | view | viewall | xrdb | riodraw \
 				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
 		signal $1
 		;;
@@ -69,7 +68,7 @@ case $# in
 	view)
 		signal $1 ui $2
 		;;
-	shiftview | shiftviewclients | viewex | toggleviewex | tagex | toggletagex | setlayoutex \
+	shiftview | shiftviewclients | view | toggleview | tag | toggletag | setlayout \
 				| focusstack | incnmaster | focusmon | tagmon | movex | movey | resizex | resizey)
 		signal $1 i $2
 		;;

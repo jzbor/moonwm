@@ -4,7 +4,11 @@ void rquit(const Arg *arg) {
 
 void
 setlayoutex(const Arg *arg) {
-	setlayout(&((Arg) { .v = &layouts[arg->i] }));
+    for(int i = 0; layouts[i].symbol && i <= arg->i; i++)
+        if (i == arg->i) {
+            setlayout(&((Arg) { .v = &layouts[arg->i] }));
+            break;
+        }
 }
 
 void
@@ -54,25 +58,20 @@ static Signal signals[] = {
 	{ "resizey",        resizey },
 	{ "riodraw",        riodraw },
 	{ "rquit",          rquit },
-	{ "setlayout",      setlayout },
-	{ "setlayoutex",    setlayoutex },
+	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },
 	{ "shiftview",      shiftview },
 	{ "shiftviewclients", shiftviewclients },
-	{ "tag",            tag },
+	{ "tag",            tagex },
 	{ "tagall",         tagall },
-	{ "tagex",          tagex },
 	{ "tagmon",         tagmon },
 	{ "togglebar",      togglebar },
 	{ "togglefloating", togglefloating },
 	{ "togglefullscr",  togglefullscr },
-	{ "toggletag",      tag },
-	{ "toggletagex",    toggletagex },
-	{ "toggleview",     view },
-	{ "toggleviewex",   toggleviewex },
-	{ "view",           view },
+	{ "toggletag",      toggletagex },
+	{ "toggleview",     toggleviewex },
 	{ "viewall",        viewall },
-	{ "viewex",         viewex },
+	{ "view",           viewex },
 	{ "xrdb",           xrdb },
 	{ "zoom",           zoom },
 };
