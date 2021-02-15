@@ -26,7 +26,7 @@ static const int riodraw_spawnasync = 1;        /* 0 means that the application 
 												 * 1 means that the application is being initialised in the background while the selection is made */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
-static char menulabel[]            = "DWM+";
+static char menulabel[]            = " DWM+";
 static char normtagfg[]             = "#0000ff";
 static char normtagbg[]             = "#00ff00";
 static char normtitlefg[]           = "#00ffff";
@@ -243,11 +243,10 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = INC(+1) } },
     { ClkClientWin,         MODKEY,         Button8,        pushstack,      {.i = INC(+1) } },
     { ClkClientWin,         MODKEY,         Button9,        pushstack,      {.i = INC(-1) } },
-    { ClkRootWin,           0,              Button1,        riospawn,       SHCMD("$TERMINAL") },
-    { ClkRootWin,           MODKEY,         Button1,        riospawn,       {.v = dmenucmd} },
+    { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("xmenu.sh") },
-    { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
+    { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("mpv") },
     { ClkRootWin,           MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("firefox") },
     { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
