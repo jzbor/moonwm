@@ -124,7 +124,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
        NetCurrentDesktop, NetLast, }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState, WMLast }; /* default atoms */
-enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+enum { ClkMenu, ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
 typedef union {
@@ -655,8 +655,12 @@ buttonpress(XEvent *e)
 		selmon = m;
 		focus(NULL);
 	}
-	if (ev->window == selmon->barwin) {
-		i = x = 0;
+
+    x = TEXTW(menulabel);
+    if (ev->x < x)
+        click = ClkMenu;
+	else if (ev->window == selmon->barwin) {
+		i = 0;
 		do
 			x += TEXTW(tags[i]);
 		while (ev->x >= x && ++i < LENGTH(tags));
@@ -1113,7 +1117,13 @@ drawbar(Monitor *m)
 		if (c->isurgent)
 			urg |= c->tags;
 	}
+
 	x = 0;
+	w = TEXTW(menulabel);
+	drw_setscheme(drw, scheme[SchemeHigh]);
+	drw_text(drw, x, 0, w, bh, lrpad/2, menulabel, 1, ColTitleFg, ColTitleBg);
+	x = w;
+
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
 		if (occ & 1 << i)
@@ -1481,7 +1491,7 @@ fake_signal(void)
 	char fsignal[256];
 	char indicator[9] = "fsignal:";
 	char str_sig[50];
-	char param[16];
+	char param[256];
 	int i, len_str_sig, n, paramn;
 	size_t len_fsignal, len_indicator = strlen(indicator);
 	Arg arg;
@@ -1502,6 +1512,8 @@ fake_signal(void)
 				sscanf(fsignal + len_indicator + n, "%u", &(arg.ui));
 			else if (strncmp(param, "f", n - len_str_sig) == 0)
 				sscanf(fsignal + len_indicator + n, "%f", &(arg.f));
+			else if (strncmp(param, "s", n - len_str_sig) == 0)
+                arg.v = (const char*[]){ "/bin/sh", "-c", param, NULL };
 			else return 1;
 
 			// Check if a signal was found, and if so handle it

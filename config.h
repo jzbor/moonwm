@@ -26,6 +26,7 @@ static const int riodraw_spawnasync = 1;        /* 0 means that the application 
 												 * 1 means that the application is being initialised in the background while the selection is made */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
+static char menulabel[]            = "DWM+";
 static char normtagfg[]             = "#0000ff";
 static char normtagbg[]             = "#00ff00";
 static char normtitlefg[]           = "#00ffff";
@@ -195,11 +196,16 @@ static Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
     /* click                event mask      button          function        argument */
+    { ClkMenu,              0,              Button1,        spawn,          SHCMD("dwm-menu 1") },
+    { ClkMenu,              0,              Button2,        spawn,          SHCMD("dwm-menu 2") },
+    { ClkMenu,              0,              Button3,        spawn,          SHCMD("dwm-menu 3") },
+    { ClkMenu,              0,              Button4,        shiftview,      {.i = -1} },
+    { ClkMenu,              0,              Button5,        shiftview,      {.i = +1} },
     { ClkTagBar,            0,              Button1,        view,           {0} },
     { ClkTagBar,            0,              Button3,        toggleview,     {0} },
     /* tagtoleft, tagtoright */
-    { ClkTagBar,            0,              Button4,        shiftview, {.i = -1} },
-    { ClkTagBar,            0,              Button5,        shiftview, {.i = +1} },
+    { ClkTagBar,            0,              Button4,        shiftview,      {.i = -1} },
+    { ClkTagBar,            0,              Button5,        shiftview,      {.i = +1} },
     /* { ClkTagBar,            0,              Button8,        view,        {.i = -1} }, */
     /* { ClkTagBar,            0,              Button9,        view,        {.i = +1} }, */
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
@@ -210,7 +216,6 @@ static Button buttons[] = {
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
     { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
-    { ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("xmenu.sh") },
