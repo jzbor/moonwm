@@ -34,17 +34,21 @@ static char normtitlebg[]           = "#ff0000";
 static char statusfg[]              = "#ff00ff";
 static char statusbg[]              = "#ffff00";
 static char normborderfg[]          = "#ffff00";
+static char menufg[]                = "#ffffff";
+static char menubg[]                = "#000000";
 
-static char hightagfg[]             = "#000088";
-static char hightagbg[]             = "#008800";
-static char hightitlefg[]           = "#008888";
-static char hightitlebg[]           = "#880000";
-static char highborderfg[]          = "#880088";
+static char hightagfg[]             = "#000077";
+static char hightagbg[]             = "#007700";
+static char hightitlefg[]           = "#007777";
+static char hightitlebg[]           = "#770000";
+static char highborderfg[]          = "#770077";
 
-static char *colors[][7] = {
+static char *colors[][9] = {
        /*               fg           bg           border   */
-       [SchemeNorm] = { normtagfg, normtagbg, normtitlefg, normtitlebg, statusfg, statusbg, normborderfg},
-       [SchemeHigh] = { hightagfg, hightagbg, hightitlefg, hightitlebg, statusfg, statusbg, highborderfg},
+       [SchemeNorm] = { normtagfg, normtagbg, normtitlefg, normtitlebg, statusfg,
+           statusbg, normborderfg, menufg, menubg},
+       [SchemeHigh] = { hightagfg, hightagbg, hightitlefg, hightitlebg, statusfg,
+           statusbg, highborderfg, menufg, menubg},
 };
 
 /* tagging */
