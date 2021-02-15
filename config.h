@@ -134,7 +134,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {  "/bin/sh", "-c", "rofi -combi-modi drun,window,ssh -show combi", NULL };
+static const char *dmenucmd[] = {  "/bin/sh", "-c", "dwm-dmenucmd", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static const char *layoutmenu_cmd = "dwm-layoutmenu";
 
@@ -156,7 +156,7 @@ static Key keys[] = {
     DIRECTIONKEY(XK_k, y, {.i = 20})
     DIRECTIONKEY(XK_l, x, {.i = 20})
     { MODKEY,               XK_d,        spawn,          {.v = dmenucmd } },
-    { MODKEY,               XK_Return,  spawn,          {.v = termcmd } },
+    { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_Tab,     view,            {0} },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     { MODKEY,               XK_q,       spawn,           SHCMD("notify-send \"Did you mean to create an 'a'? If so try win+q\"") },
