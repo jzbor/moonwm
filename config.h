@@ -24,6 +24,12 @@ static const int riodraw_borders    = 0;        /* 0 or 1, indicates whether the
 static const int riodraw_matchpid   = 0;        /* 0 or 1, indicates whether to match the PID of the client that was spawned with riospawn */
 static const int riodraw_spawnasync = 1;        /* 0 means that the application is only spawned after a successful selection while
 												 * 1 means that the application is being initialised in the background while the selection is made */
+static const int placemousemode     = 0;
+	/* placemouse options, choose which feels more natural:
+	 *    0 - tiled position is relative to mouse cursor
+	 *    1 - tiled postiion is relative to window center
+	 *    2 - mouse pointer warps to window center
+	 */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char menulabel[]            = " DWM+";

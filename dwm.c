@@ -1891,7 +1891,7 @@ nexttiled(Client *c)
 void
 placemouse(const Arg *arg)
 {
-	int x, y, ocx, ocy, nx = -9999, ny = -9999, freemove = 0;
+	int x, y, px, py, ocx, ocy, nx = -9999, ny = -9999, freemove = 0;
 	Client *c, *r = NULL, *at, *prevr;
 	Monitor *m;
 	XEvent ev;
@@ -1909,8 +1909,6 @@ placemouse(const Arg *arg)
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
 		return;
-	if (!getrootptr(&x, &y))
-		return;
 
 	c->isfloating = 0;
 	c->beingmoved = 1;
@@ -1918,6 +1916,12 @@ placemouse(const Arg *arg)
 	XGetWindowAttributes(dpy, c->win, &wa);
 	ocx = wa.x;
 	ocy = wa.y;
+
+	if (placemousemode == 2) // warp cursor to client center
+		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, WIDTH(c) / 2, HEIGHT(c) / 2);
+
+	if (!getrootptr(&x, &y))
+		return;
 
 	do {
 		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
@@ -1944,25 +1948,33 @@ placemouse(const Arg *arg)
 			if ((m = recttomon(ev.xmotion.x, ev.xmotion.y, 1, 1)) && m != selmon)
 				selmon = m;
 
-            int midx = nx + wa.width / 2;
-            int midy = ny + wa.height / 2;
-            r = recttoclient(midx, midy, 1, 1);
+			if (placemousemode == 1) { // tiled position is relative to the client window center point
+				px = nx + wa.width / 2;
+				py = ny + wa.height / 2;
+			} else { // tiled position is relative to the mouse cursor
+				px = ev.xmotion.x;
+				py = ev.xmotion.y;
+			}
 
-            if (!r || r == c)
-                break;
+			r = recttoclient(px, py, 1, 1);
 
-            attachmode = 0; // below
-            if (((float)(r->y + r->h - midy) / r->h) > ((float)(r->x + r->w - midx) / r->w)) {
-                if (abs(r->y - midy) < r->h / 2)
-                    attachmode = 1; // above
-            } else if (abs(r->x - midx) < r->w / 2)
-                    attachmode = 1; // above
+			if (!r || r == c)
+				break;
+
+			attachmode = 0; // below
+			if (((float)(r->y + r->h - py) / r->h) > ((float)(r->x + r->w - px) / r->w)) {
+				if (abs(r->y - py) < r->h / 2)
+					attachmode = 1; // above
+			} else if (abs(r->x - px) < r->w / 2)
+					attachmode = 1; // above
 
 			if ((r && r != prevr) || (attachmode != prevattachmode)) {
 				detachstack(c);
 				detach(c);
-				if (c->mon != r->mon)
+				if (c->mon != r->mon) {
 					arrangemon(c->mon);
+					c->tags = r->mon->tagset[r->mon->seltags];
+				}
 
 				c->mon = r->mon;
 				r->mon->sel = r;
@@ -2000,7 +2012,7 @@ placemouse(const Arg *arg)
 		selmon = m;
 	}
 
-    focus(c);
+	focus(c);
 	c->beingmoved = 0;
 
 	if (nx != -9999)
