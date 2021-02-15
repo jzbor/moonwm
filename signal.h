@@ -56,7 +56,7 @@ static Signal signals[] = {
 	{ "quit",           quit },
 	{ "resizex",        resizex },
 	{ "resizey",        resizey },
-	{ "riodraw",        riodraw },
+	{ "rioresize",      rioresize },
 	{ "rquit",          rquit },
 	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },

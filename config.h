@@ -18,7 +18,12 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char slopstyle[]       = "-t 0 -l -c 0.92,0.85,0.69,0.3"; /* do NOT define -f (format) here */
+static const char slopspawnstyle[]  = "-t 0 -l -c 0.92,0.85,0.69,0.3 -b 2"; /* do NOT define -f (format) here */
+static const char slopresizestyle[] = "-t 0 -l -c 0.92,0.85,0.69,0.3 -b 2"; /* do NOT define -f (format) here */
+static const int riodraw_borders    = 0;        /* 0 or 1, indicates whether the area drawn using slop includes the window borders */
+static const int riodraw_matchpid   = 0;        /* 0 or 1, indicates whether to match the PID of the client that was spawned with riospawn */
+static const int riodraw_spawnasync = 1;        /* 0 means that the application is only spawned after a successful selection while
+												 * 1 means that the application is being initialised in the background while the selection is made */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char normtagfg[]             = "#0000ff";
@@ -204,7 +209,7 @@ static Button buttons[] = {
     { ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
-    { ClkWinTitle,          0,              Button1,        riodraw,        {0} },
+    { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
     { ClkWinTitle,          MODKEY,         Button1,        spawn,          {.v = dmenucmd } },
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
@@ -229,11 +234,13 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = INC(+1) } },
     { ClkClientWin,         MODKEY,         Button8,        pushstack,      {.i = INC(+1) } },
     { ClkClientWin,         MODKEY,         Button9,        pushstack,      {.i = INC(-1) } },
+    { ClkRootWin,           0,              Button1,        riospawn,       SHCMD("$TERMINAL") },
+    { ClkRootWin,           MODKEY,         Button1,        riospawn,       {.v = dmenucmd} },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("xmenu.sh") },
-    { ClkRootWin,           0,              Button8,        spawn,          SHCMD("$TERMINAL") },
+    { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
-    { ClkRootWin,           0,              Button9,        spawn,          SHCMD("firefox") },
+    { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("firefox") },
     { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
 };
 

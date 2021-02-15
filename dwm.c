@@ -258,6 +258,7 @@ static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
+static pid_t getparentprocess(pid_t p);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
 static unsigned int getsystraywidth();
@@ -267,6 +268,7 @@ static void grabkeys(void);
 static void incnmaster(const Arg *arg);
 static void incheight(const Arg *arg);
 static void incwidth(const Arg *arg);
+static int isdescprocess(pid_t p, pid_t c);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void layoutmenu(const Arg *arg);
@@ -300,7 +302,11 @@ static void resizerequest(XEvent *e);
 static void resizex(const Arg *arg);
 static void resizey(const Arg *arg);
 static void restack(Monitor *m);
-static void riodraw(const Arg *arg);
+static int riodraw(Client *c, const char slopstyle[]);
+static void rioposition(Client *c, int x, int y, int w, int h);
+static void rioresize(const Arg *arg);
+static void riospawn(const Arg *arg);
+static void riospawnsync(const Arg *arg);
 static void run(void);
 static void runautostart(void);
 static void scan(void);
@@ -322,10 +328,13 @@ static void shiftviewclients(const Arg *arg);
 static void showhide(Client *c);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
+static pid_t spawncmd(const Arg *arg);
 static int stackpos(const Arg *arg);
+static Client *swallowingclient(Window w);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
+static Client *termforwin(const Client *c);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscr(const Arg *arg);
@@ -351,6 +360,7 @@ static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static void view(const Arg *arg);
 static void warp(const Client *c);
+static pid_t winpid(Window w);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static Client *wintosystrayicon(Window w);
@@ -360,11 +370,6 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void xrdb(const Arg *arg);
 static void zoom(const Arg *arg);
 
-static pid_t getparentprocess(pid_t p);
-static int isdescprocess(pid_t p, pid_t c);
-static Client *swallowingclient(Window w);
-static Client *termforwin(const Client *c);
-static pid_t winpid(Window w);
 
 /* variables */
 static const char autostartblocksh[] = "autostart_blocking.sh";
@@ -383,6 +388,8 @@ static int bh, blw = 0;      /* bar geometry */
 static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
+static int riodimensions[4] = { -1, -1, -1, -1 };
+static pid_t riopid = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
 	[ButtonPress] = buttonpress,
 	[ClientMessage] = clientmessage,
@@ -1650,6 +1657,11 @@ manage(Window w, XWindowAttributes *wa)
 	if (c->mon == selmon)
 		unfocus(selmon->sel, 0);
 	c->mon->sel = c;
+
+	if (riopid && (!riodraw_matchpid || isdescprocess(riopid, c->pid))
+			&& riodimensions[3] != -1)
+		rioposition(c, riodimensions[0], riodimensions[1], riodimensions[2], riodimensions[3]);
+
 	arrange(c->mon);
 	XMapWindow(dpy, c->win);
 	if (term)
@@ -2276,82 +2288,111 @@ restack(Monitor *m)
 }
 
 // drag out an area using slop and resize the selected window to it.
-void
-riodraw(const Arg *arg) {
-	char str[100];
+int
+riodraw(Client *c, const char slopstyle[])
+{
 	int i;
+	char str[100];
 	char strout[100];
-	int dimensions[4];
-	int width, height, x, y;
 	char tmpstring[30] = {0};
 	char slopcmd[100] = "slop -f x%xx%yx%wx%hx ";
 	int firstchar = 0;
 	int counter = 0;
-	Monitor *m;
-	Client *c;
 
-	if (!selmon->sel)
-		return;
 	strcat(slopcmd, slopstyle);
 	FILE *fp = popen(slopcmd, "r");
 
-	while (fgets(str, 100, fp) != NULL) {
+	while (fgets(str, 100, fp) != NULL)
 		strcat(strout, str);
-	}
 
 	pclose(fp);
 
-	if (strlen(strout) < 6) {
-		return;
-	}
-
+	if (strlen(strout) < 6)
+		return 0;
 
 	for (i = 0; i < strlen(strout); i++){
 		if(!firstchar) {
-			if (strout[i] == 'x') {
-			firstchar = 1;
-			}
+			if (strout[i] == 'x')
+				firstchar = 1;
 			continue;
 		}
 
-		if (strout[i] != 'x') {
+		if (strout[i] != 'x')
 			tmpstring[strlen(tmpstring)] = strout[i];
-		} else {
-			dimensions[counter] = atoi(tmpstring);
+		else {
+			riodimensions[counter] = atoi(tmpstring);
 			counter++;
 			memset(tmpstring,0,strlen(tmpstring));
 		}
 	}
 
-	x = dimensions[0];
-	y = dimensions[1];
-	width = dimensions[2];
-	height = dimensions[3];
 
-	if (!selmon->sel)
-		return;
-
-	c = selmon->sel;
-
-	if (width > 50 && height > 50 && x > -40 && y > -40 && width < selmon->mw + 40 && height < selmon->mh + 40 &&
-	(abs(c->w - width) > 20 || abs(c->h - height) > 20 || abs(c->x - x) > 20 || abs(c->y - y) > 20)) {
-		if ((m = recttomon(x, y, width, height)) != selmon) {
-			sendmon(c, m);
-			unfocus(selmon->sel, 0);
-			selmon = m;
-			focus(NULL);
-		}
-
-		if (!(ISFLOATING))
-			togglefloating(NULL);
-		resizeclient(c, x, y, width - (c->bw * 2), height - (c->bw * 2), c->bw);
-		arrange(selmon);
-	} else {
-		fprintf(stderr, "error %s", strout);
+	if (riodimensions[0] <= -40 || riodimensions[1] <= -40 || riodimensions[2] <= 50 || riodimensions[3] <= 50) {
+		riodimensions[3] = -1;
+		return 0;
 	}
-	memset(tmpstring,0,strlen(tmpstring));
+
+	if (c) {
+		rioposition(c, riodimensions[0], riodimensions[1], riodimensions[2], riodimensions[3]);
+		return 0;
+	}
+
+	return 1;
 }
 
+void
+rioposition(Client *c, int x, int y, int w, int h)
+{
+	Monitor *m;
+	if ((m = recttomon(x, y, w, h)) && m != c->mon) {
+		detach(c);
+		detachstack(c);
+		c->mon = m;
+		c->tags = m->tagset[m->seltags];
+		attach(c);
+		attachstack(c);
+		selmon = m;
+		focus(c);
+	}
+
+	c->isfloating = 1;
+	if (riodraw_borders)
+		resizeclient(c, x, y, w - (c->bw * 2), h - (c->bw * 2), c->bw);
+	else
+		resizeclient(c, x - c->bw, y - c->bw, w, h, c->bw);
+	drawbar(c->mon);
+	arrange(c->mon);
+
+	riodimensions[3] = -1;
+	riopid = 0;
+}
+
+/* drag out an area using slop and resize the selected window to it */
+void
+rioresize(const Arg *arg)
+{
+	Client *c = (arg && arg->v ? (Client*)arg->v : selmon->sel);
+	if (c)
+		riodraw(c, slopresizestyle);
+}
+
+/* spawn a new window and drag out an area using slop to postiion it */
+void
+riospawn(const Arg *arg)
+{
+	if (riodraw_spawnasync && arg->v != dmenucmd) {
+		riopid = spawncmd(arg);
+		riodraw(NULL, slopspawnstyle);
+	} else
+		riospawnsync(arg);
+}
+
+void
+riospawnsync(const Arg *arg)
+{
+	if (riodraw(NULL, slopspawnstyle))
+		riopid = spawncmd(arg);
+}
 
 void
 run(void)
@@ -2797,13 +2838,20 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
+	spawncmd(arg);
+}
+
+pid_t
+spawncmd(const Arg *arg)
+{
+	pid_t pid;
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
 	else if (arg->v == statuscmd) {
 		statuscmd[2] = statuscmds[statuscmdn];
 		setenv("BUTTON", lastbutton, 1);
 	}
-	if (fork() == 0) {
+	if ((pid = fork()) == 0) {
 		if (dpy)
 			close(ConnectionNumber(dpy));
 		setsid();
@@ -2812,6 +2860,7 @@ spawn(const Arg *arg)
 		perror(" failed");
 		exit(EXIT_SUCCESS);
 	}
+	return pid;
 }
 
 int
