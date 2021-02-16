@@ -57,7 +57,6 @@ static Signal signals[] = {
 	{ "resizex",        resizex },
 	{ "resizey",        resizey },
 	{ "rioresize",      rioresize },
-	{ "riopawn",        riospawn },
 	{ "rquit",          rquit },
 	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },

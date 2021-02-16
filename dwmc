@@ -21,8 +21,7 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	quit
 	resizex (i)
 	resizey (i)
-    rioresize
-    riospawn (s)
+	rioresize
 	rquit
 	setlayout (i)
 	setmfact (f)
@@ -76,9 +75,6 @@ case $# in
 	setmfact)
 		signal $1 f $2
 		;;
-    riospawn)
-        signal $1 s $2
-        ;;
 	*)
 		echo "Unknown command or one too many arguments."
 		echo "Try 'dwmc --help' for more information."

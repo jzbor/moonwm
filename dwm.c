@@ -656,15 +656,16 @@ buttonpress(XEvent *e)
 		focus(NULL);
 	}
 
-    x = TEXTW(menulabel);
-    if (ev->x < x)
-        click = ClkMenu;
-	else if (ev->window == selmon->barwin) {
+	if (ev->window == selmon->barwin) {
 		i = 0;
+		x = TEXTW(menulabel);
 		do
 			x += TEXTW(tags[i]);
 		while (ev->x >= x && ++i < LENGTH(tags));
-		if (i < LENGTH(tags)) {
+
+		if (ev->x <= TEXTW(menulabel))
+			click = ClkMenu;
+		else if (i < LENGTH(tags)) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
 		} else if (ev->x < x + blw)
@@ -1491,7 +1492,7 @@ fake_signal(void)
 	char fsignal[256];
 	char indicator[9] = "fsignal:";
 	char str_sig[50];
-	char param[256];
+	char param[16];
 	int i, len_str_sig, n, paramn;
 	size_t len_fsignal, len_indicator = strlen(indicator);
 	Arg arg;
@@ -1512,8 +1513,6 @@ fake_signal(void)
 				sscanf(fsignal + len_indicator + n, "%u", &(arg.ui));
 			else if (strncmp(param, "f", n - len_str_sig) == 0)
 				sscanf(fsignal + len_indicator + n, "%f", &(arg.f));
-			else if (strncmp(param, "s", n - len_str_sig) == 0)
-                arg.v = (const char*[]){ "/bin/sh", "-c", param, NULL };
 			else return 1;
 
 			// Check if a signal was found, and if so handle it
