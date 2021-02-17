@@ -11,6 +11,7 @@ Usage: dwmc CALL [ARGUMENT]
 Here is a list of supported calls with their respective arguments:
 Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 
+	center
 	cyclelayout (i)
 	focusmon (i)
 	focusstack (i)
@@ -49,7 +50,7 @@ case $# in
 	;;
 1)
 	case $1 in
-	togglefullscr | view | viewall | xrdb | rioresize \
+	togglefullscr | view | viewall | xrdb | rioresize | center\
 				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
 		signal $1
 		;;

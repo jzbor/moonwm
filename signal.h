@@ -46,6 +46,7 @@ tagall(const Arg *arg) {
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
 static Signal signals[] = {
 	/* signum           function */
+	{ "center",         center },
 	{ "cyclelayout",    cyclelayout },
 	{ "focusmon",       focusmon },
 	{ "focusstack",     focusstack },
