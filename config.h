@@ -253,6 +253,12 @@ static Button buttons[] = {
     /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("xmenu.sh") }, */
     { ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = INC(-1) } },
     { ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = INC(+1) } },
+    { ClkClientWin,         MODKEY|ShiftMask, Button4,      pushstack,      {.i = INC(-1) } },
+    { ClkClientWin,         MODKEY|ShiftMask, Button5,      pushstack,      {.i = INC(+1) } },
+    { ClkClientWin,         MODKEY|ControlMask, Button4,    resizex,        {.i = -20 } },
+    { ClkClientWin,         MODKEY|ControlMask, Button5,    resizex,        {.i = 20 } },
+    { ClkClientWin,         MODKEY|ControlMask, Button4,    resizey,        {.i = -20 } },
+    { ClkClientWin,         MODKEY|ControlMask, Button5,    resizey,        {.i = 20 } },
     { ClkClientWin,         MODKEY,         Button8,        pushstack,      {.i = INC(+1) } },
     { ClkClientWin,         MODKEY,         Button9,        pushstack,      {.i = INC(-1) } },
     { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
