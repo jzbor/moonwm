@@ -14,6 +14,7 @@
 * ewmhtags
 * ewmhtags
 * fixborders
+* focusdir
 * focusonnetactive
 * layoutmenu
 * pertag

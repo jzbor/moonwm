@@ -138,6 +138,15 @@ static const Layout layouts[] = {
     { MOD, XK_k,     ACTION##stack, {.i = INC(-1) } }, \
     { MOD, XK_h,     ACTION##stack, {.i = 0 } }, \
     { MOD, XK_l,     ACTION##stack, {.i = PREVSEL } },
+#define DIRECTIONKEY(KEY, AXIS, ARG) \
+    { MODKEY|ShiftMask,        KEY,    move##AXIS,        ARG }, \
+    { MODKEY|ControlMask,    KEY,    resize##AXIS,        ARG },
+#define FOCUSKEYS(LEFT, DOWN, UP, RIGHT) \
+    { MODKEY,    LEFT,      focusdir,        {.i = 0} }, \
+    { MODKEY,    RIGHT,     focusdir,        {.i = 1} }, \
+    { MODKEY,    UP,        focusdir,        {.i = 2} }, \
+    { MODKEY,    DOWN,      focusdir,        {.i = 3} },
+
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
@@ -152,14 +161,10 @@ static const char *layoutmenu_cmd = "dwm-layoutmenu";
 static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh $BUTTON", "dwmdate.sh $BUTTON" };
 static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
 
-#define DIRECTIONKEY(KEY, AXIS, ARG) \
-    { MODKEY|ShiftMask,        KEY,    move##AXIS,        ARG }, \
-    { MODKEY|ControlMask,    KEY,    resize##AXIS,        ARG },
-
 /* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {
     /* modifier             key            function        argument */
-    STACKKEYS(MODKEY,                        focus)
+    FOCUSKEYS(XK_h, XK_j, XK_k, XK_l)
     /* STACKKEYS(MODKEY|ShiftMask,                push) */
     DIRECTIONKEY(XK_h, x, {.i = -20})
     DIRECTIONKEY(XK_j, y, {.i = -20})
