@@ -375,6 +375,7 @@ static void zoom(const Arg *arg);
 /* variables */
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
+static const char providedautostart[] = "dwm-util start";
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static const char dwmdir[] = "dwm";
@@ -2509,6 +2510,9 @@ runautostart(void)
 	if ((home = getenv("HOME")) == NULL)
 		/* this is almost impossible */
 		return;
+
+    /* run dwm-util if available */
+    system(providedautostart);
 
 	/* if $XDG_DATA_HOME is set and not empty, use $XDG_DATA_HOME/dwm,
 	 * otherwise use ~/.local/share/dwm as autostart script directory

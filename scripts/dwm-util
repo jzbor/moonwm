@@ -1,0 +1,105 @@
+#!/bin/sh
+
+# env variables to set:
+# DWM_WALLPAPER DWM_KEYMAP TERMINAL (DWM_INTERNAL_SCREEN DWM_NOPICOM DWM_NODUNST)
+
+autostart () {
+    # Configure X
+    xrdb -merge ~/.Xresources
+    wmname LG3D
+    setxkbmap "$DWM_KEYMAP"
+    setup_displays
+
+    # Daemons that automatically check for running instances
+    run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
+        /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+    [ -z "$DWM_NODUNST" ] && run dunst dunst
+    run kdeconnect-indicator kdeconnect-indicator
+    run nextcloud "nextcloud --background"
+    run nm-applet nm-applet
+    run xfce4-power-manager xfce4-power-manager
+
+    # Other daemons
+    killall -9 sxhkd 2> /dev/null; run sxhkd "sxhkd"
+    # Applets & tray icons
+    (killall -9 /usr/lib/geoclue-2.0/demos/agent; /usr/lib/geoclue-2.0/demos/agent & sleep 5;
+    killall -9 redshift; redshift -x; redshift -l 49:11) &
+
+    # Start compositor
+    [ -z "$DWM_NOPICOM" ] && run picom "killall -9 picom && picom"
+
+    run touchegg "touchegg --daemon"
+    run touchegg touchegg
+
+    # Show status
+    [ -z "$DWM_NOSTATUS" ] && $0 status &
+}
+
+dwmstatus () {
+    kill -9 $(pgrep "$(basename $0) status" | grep -v $$) 2> /dev/null
+    while true; do
+        xsetroot -name "$(get_status)"
+        sleep 2 2> /dev/null
+    done
+}
+
+get_status () {
+    date
+}
+
+lock () {
+    i3lock -c 1d2021
+}
+
+run () {
+    # 1: executable to test for
+    # 2: condition to meet
+    # 3: command to execute
+    # 4: '1' to run synchronously
+    if ( [ -z "$1" ] || command -v $1 > /dev/null 2>&1 ); then
+        if [ "$3" = 1 ]; then
+            $2
+        else
+            $2 &
+        fi
+    fi
+}
+
+setup_displays () {
+    connected="$(xrandr | grep " connected " | cut -d " " -f 1)"
+    disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
+
+    for display in $connected; do
+        if [ "$display" = "$DWM_INTERNAL_SCREEN" ] \
+                && grep closed /proc/acpi/button/lid/LID/state > /dev/null ; then
+            echo "Disabling $display (closed lid)"
+            xrandr --output "$display" --off
+        elif [ -z "$last" ]; then
+            echo "Setting up first display: $display"
+            xrandr --output "$display" --auto --primary
+            last="$display"
+        else
+            echo "Setting up $display next to $display"
+            xrandr --output "$display" --auto --right-of "$last"
+            last="$display"
+        fi
+    done
+
+    # Preventing initialization of VIRTUAL1 on undock
+    for display in $disconnected; do
+        xrandr --output $display --off
+    done
+
+    xwallpaper --zoom "$DWM_WALLPAPER"
+}
+
+
+case $1 in
+    display) setup_displays;;
+    start) autostart;;
+    lock) lock;;
+    status) dwmstatus;;
+    # volume) volume;;
+    *) echo "Unknown operation"; exit 1;;
+esac
+

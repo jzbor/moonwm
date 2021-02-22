@@ -52,8 +52,10 @@ uninstall:
 
 install-scripts:
 	cp -f scripts/dwm-menu ${DESTDIR}${PREFIX}/bin
+	cp -f scripts/dwm-util ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/dwm-menu
+	rm -f ${DESTDIR}${PREFIX}/bin/dwm-util
 
 .PHONY: all options clean dist install uninstall
