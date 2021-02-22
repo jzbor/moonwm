@@ -6,6 +6,7 @@
 autostart () {
     # Configure X
     xrdb -merge ~/.Xresources
+    dwm xrdb
     wmname LG3D
     setxkbmap "$DWM_KEYMAP"
     setup_displays
@@ -45,6 +46,11 @@ dwmstatus () {
 
 get_status () {
     date
+}
+
+launch () {
+    xrdb -merge ~/.Xresources
+    exec dbus-launch dwm
 }
 
 lock () {
@@ -97,6 +103,7 @@ setup_displays () {
 case $1 in
     display) setup_displays;;
     start) autostart;;
+    launch) launch;;
     lock) lock;;
     status) dwmstatus;;
     # volume) volume;;

@@ -39,6 +39,7 @@ dist: clean
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f dwm dwmc dwm-layoutmenu ${DESTDIR}${PREFIX}/bin
+	cp -f dwm.desktop /usr/share/xsessions/
 	chmod 755 ${DESTDIR}${PREFIX}/bin/dwm
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
@@ -49,6 +50,7 @@ uninstall:
 		${DESTDIR}${MANPREFIX}/man1/dwm.1 \
 		${DESTDIR}${PREFIX}/bin/dwmc \
 		${DESTDIR}${PREFIX}/bin/dwm-layoutmenu
+		rm -f /usr/share/xsessions/dwm.desktop
 
 install-scripts:
 	cp -f scripts/dwm-menu ${DESTDIR}${PREFIX}/bin

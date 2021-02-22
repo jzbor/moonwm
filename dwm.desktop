@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=jzbor's dwm
+Comment=dynamic window manager
+Exec=/usr/local/bin/dwm-util launch
+TryExec=/usr/local/bin/dwm-util
+Type=Application
+DesktopNames=jzbor's dwm
+X-GDM-SessionRegisters=true
