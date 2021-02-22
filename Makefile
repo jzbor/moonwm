@@ -50,4 +50,10 @@ uninstall:
 		${DESTDIR}${PREFIX}/bin/dwmc \
 		${DESTDIR}${PREFIX}/bin/dwm-layoutmenu
 
+install-scripts:
+	cp -f scripts/dwm-menu ${DESTDIR}${PREFIX}/bin
+
+uninstall-scripts:
+	rm -f ${DESTDIR}${PREFIX}/bin/dwm-menu
+
 .PHONY: all options clean dist install uninstall

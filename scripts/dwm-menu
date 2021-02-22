@@ -1,0 +1,34 @@
+#!/bin/sh
+
+rightmenu="  Applications
+$(xdg-xmenu | sed -e 's/^/	/')
+
+  Shutdown			poweroff || sudo poweroff
+  Reboot			reboot || sudo reboot
+  Reload dwm		dwmc rquit
+  Log out			dwmc quit"
+
+appsmenu="  Terminal			$TERMINAL
+  Web				$BROWSER
+  Media			mpv
+  Files			$FILEBROWSER
+ﭮ  Discord			discord
+  Spotify			if pidof spotify; then dwmc toggleview 7; else spotify; fi
+  Mail				thunderbird"
+
+contextmenu="  Fullscreen		dwmc togglefullscr
+  Floating			dwmc togglefloating
+  Zoom				dwmc zoom
+  Close			dwmc killclient"
+
+
+case $1 in
+    # 1) rofi -show drun -config ~/.config/rofi/apps.rasi -fullscreen ;;
+    # 1) xdg-xmenu | xmenu -p 0x0 | sh ;;
+    1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
+    2) echo "$appsmenu" | xmenu -p 0x0| sh ;;
+    3) echo "$rightmenu" | xmenu -p 0x0| sh ;;
+    "context") echo "$contextmenu" | xmenu | sh ;;
+esac
+
+nice xdg-menu -u &
