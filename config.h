@@ -233,7 +233,7 @@ static Button buttons[] = {
     { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
-    { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("xmenu.sh") },
+    { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("dwm-menu context") },
     { ClkWinTitle,          MODKEY,         Button3,        spawn,          SHCMD("menu.sh system") },
     { ClkWinTitle,          0,              Button4,        focusstack,     {.i = INC(-1) } },
     { ClkWinTitle,          0,              Button5,        focusstack,     {.i = INC(+1) } },
@@ -250,7 +250,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-    /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("xmenu.sh") }, */
+    /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("dwm-menu context") }, */
     { ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = INC(-1) } },
     { ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = INC(+1) } },
     { ClkClientWin,         MODKEY|ShiftMask, Button4,      pushstack,      {.i = INC(-1) } },
@@ -263,7 +263,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button9,        pushstack,      {.i = INC(-1) } },
     { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
-    { ClkRootWin,           0,              Button3,        spawn,          SHCMD("xmenu.sh") },
+    { ClkRootWin,           0,              Button3,        spawn,          SHCMD("dwm-menu context") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("mpv") },
     { ClkRootWin,           MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("firefox") },
