@@ -12,13 +12,13 @@
 * decorhints
 * dwmc
 * ewmhtags
-* ewmhtags
 * fixborders
 * focusdir
 * focusonnetactive
 * layoutmenu
 * pertag
 * placemouse
+* riodraw
 * restart
 * savefloats
 * shiftview/shiftviewclients
