@@ -8,12 +8,18 @@ $(xdg-xmenu | sed -e 's/^/	/')
   Reload dwm		dwmc rquit
   Log out			dwmc quit"
 
-appsmenu="  Terminal			$TERMINAL
-  Web				$BROWSER
-  Media			mpv
-  Files			$FILEBROWSER
-ﭮ  Discord			discord
-  Spotify			if pidof spotify; then dwmc toggleview 7; else spotify; fi
+appsmenu="  Terminal			$TERMINAL"
+command -v $BROWSER > /dev/null 2>&1    && appsmenu="$appsmenu
+  Web				$BROWSER"
+command -v mpv > /dev/null 2>&1         && appsmenu="$appsmenu
+  Media			mpv"
+command -v $FILEBROWSER > /dev/null 2>&1 && appsmenu="$appsmenu
+  Files			$FILEBROWSER"
+command -v discord > /dev/null 2>&1     && appsmenu="$appsmenu
+ﭮ  Discord			discord"
+command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
+  Spotify			if pidof spotify; then dwmc toggleview 7; else spotify; fi"
+command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
   Mail				thunderbird"
 
 contextmenu="  Fullscreen		dwmc togglefullscr
@@ -31,4 +37,4 @@ case $1 in
     "context") echo "$contextmenu" | xmenu | sh ;;
 esac
 
-nice xdg-menu -u &
+nice xdg-xmenu -u &
