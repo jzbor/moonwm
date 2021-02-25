@@ -127,7 +127,7 @@ static const Layout layouts[] = {
 #include "signal.h"
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
     { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
     { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -170,15 +170,14 @@ static Key keys[] = {
     DIRECTIONKEY(XK_j, y, {.i = -20})
     DIRECTIONKEY(XK_k, y, {.i = 20})
     DIRECTIONKEY(XK_l, x, {.i = 20})
-    { MODKEY,               XK_d,        spawn,          {.v = dmenucmd } },
+    { MODKEY,               XK_space,   spawn,           {.v = dmenucmd } },
     { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_Tab,     view,            {0} },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
-    { MODKEY,               XK_q,       spawn,           SHCMD("notify-send \"Did you mean to create an 'a'? If so try win+q\"") },
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
-    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[1]} },
+    { MODKEY,               XK_d,       setlayout,       {.v = &layouts[1]} },
     { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
     { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[3]} },
     { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[4]} },
@@ -204,13 +203,27 @@ static Key keys[] = {
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
     { ShiftMask|MODKEY,     XK_BackSpace, quit,          {.i = 1} },
     { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
-    { MODKEY|ControlMask,   XK_c,       center,           {0} },
+    { MODKEY,               XK_c,       center,           {0} },
 };
 
 /* button definitions */
+#define WINBUTTON(MOD, MASK, BUTTON, FUNCTION, ARGUMENT) \
+    { ClkWinTitle,      MASK,       BUTTON,     FUNCTION,        ARGUMENT}, \
+    { ClkWinTitle,      MOD|MASK,   BUTTON,     FUNCTION,        ARGUMENT}, \
+    { ClkClientWin,     MOD|MASK,   BUTTON,     FUNCTION,        ARGUMENT},
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
     /* click                event mask      button          function        argument */
+    WINBUTTON(MODKEY,       0,              Button4,        focusstack,     {.i = INC(-1) })
+    WINBUTTON(MODKEY,       0,              Button5,        focusstack,     {.i = INC(+1) })
+    WINBUTTON(MODKEY,       ShiftMask,      Button4,        pushstack,      {.i = INC(-1) })
+    WINBUTTON(MODKEY,       ShiftMask,      Button5,        pushstack,      {.i = INC(+1) })
+    WINBUTTON(MODKEY,       ControlMask,    Button4,        resizex,        {.i = -20 })
+    WINBUTTON(MODKEY,       ControlMask,    Button4,        resizey,        {.i = -20 })
+    WINBUTTON(MODKEY,       ControlMask,    Button5,        resizex,        {.i = 20 })
+    WINBUTTON(MODKEY,       ControlMask,    Button5,        resizey,        {.i = 20 })
+    WINBUTTON(MODKEY,       0,              Button8,        pushstack,      {.i = INC(+1) })
+    WINBUTTON(MODKEY,       0,              Button9,        pushstack,      {.i = INC(-1) })
     { ClkMenu,              0,              Button1,        spawn,          SHCMD("dwm-menu 1") },
     { ClkMenu,              0,              Button2,        spawn,          SHCMD("dwm-menu 2") },
     { ClkMenu,              0,              Button3,        spawn,          SHCMD("dwm-menu 3") },
@@ -221,8 +234,8 @@ static Button buttons[] = {
     /* tagtoleft, tagtoright */
     { ClkTagBar,            0,              Button4,        shiftview,      {.i = -1} },
     { ClkTagBar,            0,              Button5,        shiftview,      {.i = +1} },
-    /* { ClkTagBar,            0,              Button8,        view,        {.i = -1} }, */
-    /* { ClkTagBar,            0,              Button9,        view,        {.i = +1} }, */
+    { ClkTagBar,            0,              Button8,        toggletag,      {0} },
+    { ClkTagBar,            0,              Button9,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
     { ClkLtSymbol,          0,              Button1,        setlayout,      {.v = &layouts[0]} },
@@ -234,11 +247,6 @@ static Button buttons[] = {
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("dwm-menu context") },
-    { ClkWinTitle,          MODKEY,         Button3,        spawn,          SHCMD("menu.sh system") },
-    { ClkWinTitle,          0,              Button4,        focusstack,     {.i = INC(-1) } },
-    { ClkWinTitle,          0,              Button5,        focusstack,     {.i = INC(+1) } },
-    { ClkWinTitle,          0,              Button8,        pushstack,      {.i = INC(+1) } },
-    { ClkWinTitle,          0,              Button9,        pushstack,      {.i = INC(-1) } },
     { ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
     { ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
     { ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
@@ -247,25 +255,13 @@ static Button buttons[] = {
     { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
     { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
     { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {0} },
+    { ClkWinTitle,          MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
-    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-    /* { ClkClientWin,         Mod1Mask,       Button3,        spawn,            SHCMD("dwm-menu context") }, */
-    { ClkClientWin,         MODKEY,         Button4,        focusstack,     {.i = INC(-1) } },
-    { ClkClientWin,         MODKEY,         Button5,        focusstack,     {.i = INC(+1) } },
-    { ClkClientWin,         MODKEY|ShiftMask, Button4,      pushstack,      {.i = INC(-1) } },
-    { ClkClientWin,         MODKEY|ShiftMask, Button5,      pushstack,      {.i = INC(+1) } },
-    { ClkClientWin,         MODKEY|ControlMask, Button4,    resizex,        {.i = -20 } },
-    { ClkClientWin,         MODKEY|ControlMask, Button5,    resizex,        {.i = 20 } },
-    { ClkClientWin,         MODKEY|ControlMask, Button4,    resizey,        {.i = -20 } },
-    { ClkClientWin,         MODKEY|ControlMask, Button5,    resizey,        {.i = 20 } },
-    { ClkClientWin,         MODKEY,         Button8,        pushstack,      {.i = INC(+1) } },
-    { ClkClientWin,         MODKEY,         Button9,        pushstack,      {.i = INC(-1) } },
     { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("dwm-menu context") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("mpv") },
-    { ClkRootWin,           MODKEY,         Button8,        spawn,          SHCMD("rofi-windows.sh") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("firefox") },
     { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
 };
