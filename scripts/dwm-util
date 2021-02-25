@@ -24,7 +24,7 @@ autostart () {
     killall -9 sxhkd 2> /dev/null; run sxhkd "sxhkd"
     # Applets & tray icons
     (killall -9 /usr/lib/geoclue-2.0/demos/agent; /usr/lib/geoclue-2.0/demos/agent & sleep 5;
-    killall -9 redshift; redshift -x; redshift -l 49:11) &
+    killall -9 redshift; redshift -x; redshift -l geoclue2) &
 
     # Start compositor
     [ -z "$DWM_NOPICOM" ] && run picom "killall -9 picom && picom"

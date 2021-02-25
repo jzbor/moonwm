@@ -153,7 +153,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {  "/bin/sh", "-c", "dwm-dmenucmd", NULL };
+static const char *dmenucmd[] = {  "/bin/sh", "-c", "dmenucmd", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static const char *layoutmenu_cmd = "dwm-layoutmenu";
 
@@ -203,7 +203,8 @@ static Key keys[] = {
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
     { ShiftMask|MODKEY,     XK_BackSpace, quit,          {.i = 1} },
     { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
-    { MODKEY,               XK_c,       center,           {0} },
+    { MODKEY,               XK_c,       center,          {0} },
+    { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
 };
 
 /* button definitions */
@@ -262,7 +263,7 @@ static Button buttons[] = {
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("dwm-menu context") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("mpv") },
-    { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("firefox") },
+    { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },
     { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
 };
 
