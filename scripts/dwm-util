@@ -50,7 +50,7 @@ get_status () {
 
 launch () {
     xrdb -merge ~/.Xresources
-    exec dbus-launch dwm
+    exec dbus-launch  --sh-syntax --exit-with-session dwm
 }
 
 lock () {
