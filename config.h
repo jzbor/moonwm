@@ -256,7 +256,7 @@ static Button buttons[] = {
     { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
     { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
     { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {0} },
-    { ClkWinTitle,          MODKEY,         Button2,        togglefloating, {0} },
+    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
