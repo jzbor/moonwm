@@ -120,6 +120,7 @@ Some applications have default  tags they open on:
 8:      Spotify
 9:      Thunderbird
 ```
+If you want alternative replacements added to the rules please tell me.
 
 
 ## Patches implemented:
