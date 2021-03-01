@@ -125,6 +125,7 @@ volume () {
         pamixer -i "$(echo "$1" | sed 's/-//')"
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     fi
+    [ -z "$DWM_NOSTATUS" ] && xsetroot -name "$(get_status)"
 }
 
 
