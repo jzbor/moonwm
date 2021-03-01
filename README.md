@@ -44,7 +44,6 @@ kdeconnect
 libnotify
 light
 network-manager-applet
-nextcloud
 otf-nerd-fonts-fira-code
 pamixer
 picom
@@ -59,6 +58,7 @@ xwallpaper
 ```
 
 `touchegg` also gets started if available, but it only really makes sense if you set it up properly.
+Same goes for `nextcloud`. If you have it installed it gets started.
 
 ## Customizing
 Custom values for colors and some other properties can be set via `xrdb(1)`.
