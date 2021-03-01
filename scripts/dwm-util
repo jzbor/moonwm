@@ -36,6 +36,15 @@ autostart () {
     [ -z "$DWM_NOSTATUS" ] && $0 status &
 }
 
+brightness () {
+    if [ "$1" -lt 0 ]; then
+        light -U "$(echo "$1" | sed 's/-//')"
+    elif [ "$1" -gt 0 ]; then
+        light -A "$(echo "$1" | sed 's/-//')"
+    fi
+    notify-send -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
+}
+
 dwmstatus () {
     kill -9 $(pgrep "$(basename $0) status" | grep -v $$) 2> /dev/null
     while true; do
@@ -120,6 +129,7 @@ volume () {
 
 
 case $1 in
+    brightness) brightness "$2";;
     display) setup_displays;;
     start) autostart;;
     launch) launch;;
