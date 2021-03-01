@@ -1124,7 +1124,7 @@ drawbar(Monitor *m)
 	x = 0;
 	w = TEXTW(menulabel);
 	drw_setscheme(drw, scheme[SchemeHigh]);
-	drw_text(drw, x, 0, w, bh, lrpad/2, menulabel, 1, ColMenuFg, ColMenuBg);
+	drw_text(drw, x, 0, w, bh, lrpad/2, menulabel, 0, ColMenuFg, ColMenuBg);
 	x = w;
 
 	for (i = 0; i < LENGTH(tags); i++) {
@@ -1655,8 +1655,8 @@ loadxrdb()
         XRDB_LOAD_COLOR("dwm.unfocusedTitleBg", normtitlebg);
         XRDB_LOAD_COLOR("dwm.statusFg", statusfg);
         XRDB_LOAD_COLOR("dwm.statusBg", statusbg);
-        XRDB_LOAD_COLOR("dwm.menuFg", menubg);
-        XRDB_LOAD_COLOR("dwm.menuBg", menufg);
+        XRDB_LOAD_COLOR("dwm.menuFg", menufg);
+        XRDB_LOAD_COLOR("dwm.menuBg", menubg);
         XRDB_LOAD_COLOR("dwm.unfocusedBorder", normborderfg);
         XRDB_LOAD_COLOR("dwm.occupiedTagFg", hightagfg);
         XRDB_LOAD_COLOR("dwm.occupiedTagBg", hightagbg);

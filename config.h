@@ -33,21 +33,21 @@ static const int placemousemode     = 0;
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char menulabel[]            = " DWM+";
-static char normtagfg[]             = "#0000ff";
-static char normtagbg[]             = "#00ff00";
-static char normtitlefg[]           = "#00ffff";
-static char normtitlebg[]           = "#ff0000";
-static char statusfg[]              = "#ff00ff";
-static char statusbg[]              = "#ffff00";
-static char normborderfg[]          = "#ffff00";
-static char menufg[]                = "#ffffff";
-static char menubg[]                = "#000000";
+static char normtagfg[]             = "#7c6f64";
+static char normtagbg[]             = "#1d2021";
+static char normtitlefg[]           = "#7c6f64";
+static char normtitlebg[]           = "#1d2021";
+static char statusfg[]              = "#ebdbb2";
+static char statusbg[]              = "#1d2021";
+static char normborderfg[]          = "#1d2021";
+static char menufg[]                = "#1d2021";
+static char menubg[]                = "#fb4934";
 
-static char hightagfg[]             = "#000077";
-static char hightagbg[]             = "#007700";
-static char hightitlefg[]           = "#007777";
-static char hightitlebg[]           = "#770000";
-static char highborderfg[]          = "#770077";
+static char hightagfg[]             = "#ebdbb2";
+static char hightagbg[]             = "#1d2021";
+static char hightitlefg[]           = "#ebdbb2";
+static char hightitlebg[]           = "#1d2021";
+static char highborderfg[]          = "#ebdbb2";
 
 static char *colors[][9] = {
        /*               fg           bg           border   */
