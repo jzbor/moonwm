@@ -36,6 +36,7 @@ xorg-xsetroot
 ```
 **These are the ones the `dwm-util` script uses, starts or other programs I deem essential for a working desktop interface:**
 ```
+cal
 ffmpeg
 geoclue
 i3lock
@@ -88,6 +89,27 @@ xmenu.border:	        #1d2021
 xmenu.selbackground:	#ebdbb2
 xmenu.selforeground:	#1d2021
 ```
+
+## Setting up your own status:
+To setup your own status command you should first set the according env variables in your `~/.profile`:
+```sh
+export DWM_NOSTATUS=1
+export DWMSTATUSHANDLER="/path/to/my/statushandler"
+```
+You can then add your status script to autostart (`~/.local/share/dwm/autostart.sh`).
+I should set the string you want as name of the X11 root window like this:
+```sh
+xsetroot -name "$(get_status)"
+```
+In this example `get_status` is a function that prints the current status to stdout.
+You can also define clickable blocks actions delimited by ascii chars that are smaller than space.
+For example:
+```
+date: 11:05 |\x01 volume: 55% |\x02 cpu-usage: 21% ||
+```
+It is totally up to you how you generate this string, but you can take a look at the reference implementation in `dwm-util`.
+Once you press one of the blocks the status handler script will be called with the according mouse button set as `$BUTTON` and the block number set as `$STATUSCMDN`.
+It is also up to you how you wish to handle them, but a reference exists in `dwm-util`
 
 
 ## Patches implemented:

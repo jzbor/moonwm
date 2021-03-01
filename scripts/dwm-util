@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # env variables to set:
-# DWM_WALLPAPER DWM_KEYMAP TERMINAL (DWM_INTERNAL_SCREEN DWM_NOPICOM DWM_NODUNST)
+# DWM_WALLPAPER DWM_KEYMAP TERMINAL (DWM_INTERNAL_SCREEN DWM_NOPICOM DWM_NODUNST DWM_STATUSHANDLER)
 
 autostart () {
     # Configure X
@@ -60,8 +60,27 @@ get_status () {
         printf ' 墳'
     fi
     printf " %s%% |" "$(pamixer --get-volume)"
-    printf " %s |" "$(date '+%R %D')"
+    printf "\x01 %s |" "$(date '+%R %D')"
     printf "|\n"
+}
+
+handle_status () {
+    if [ -n "$DWM_STATUSHANDLER" ]; then
+        $DWM_STATUSHANDLER
+        return
+    fi
+    case $STATUSCMDN in
+        0)
+            case $BUTTON in
+                1) volume mute;;
+                4) volume +5;;
+                5) volume -5;;
+            esac;;
+        1)
+            case $BUTTON in
+                1) notify-send -a "$(date)" "$(cal -n 2)";;
+            esac;;
+    esac
 }
 
 launch () {
@@ -132,10 +151,11 @@ volume () {
 case $1 in
     brightness) brightness "$2";;
     display) setup_displays;;
-    start) autostart;;
     launch) launch;;
     lock) lock;;
+    start) autostart;;
     status) dwmstatus;;
+    statushandler) handle_status;;
     volume) volume "$2";;
     *) echo "Unknown operation"; exit 1;;
 esac

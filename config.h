@@ -157,9 +157,9 @@ static const char *dmenucmd[] = {  "/bin/sh", "-c", "dmenucmd", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static const char *layoutmenu_cmd = "dwm-layoutmenu";
 
-/* commands spawned when clicking statusbar, the mouse button pressed is exported as BUTTON */
-static char *statuscmds[] = { "tray-options.sh $BUTTON", "dwmmusic.sh $BUTTON", "dwmvolume.sh $BUTTON", "dwmnetwork.sh $BUTTON", "dwmdate.sh $BUTTON" };
-static char *statuscmd[] = { "/bin/sh", "-c", NULL, NULL };
+/* this script or program gets called for bar button presses
+ * the button is exported as BUTTON the according module as STATUSCMDN (a number)*/
+static char *statushandler[] = { "/bin/sh", "-c", "dwm-util statushandler", NULL };
 
 /* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {
@@ -248,11 +248,11 @@ static Button buttons[] = {
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("dwm-menu context") },
-    { ClkStatusText,        0,              Button1,        spawn,          {.v = statuscmd } },
-    { ClkStatusText,        0,              Button2,        spawn,          {.v = statuscmd } },
-    { ClkStatusText,        0,              Button3,        spawn,          {.v = statuscmd } },
-    { ClkStatusText,        0,              Button4,        spawn,          {.v = statuscmd } },
-    { ClkStatusText,        0,              Button5,        spawn,          {.v = statuscmd } },
+    { ClkStatusText,        0,              Button1,        spawn,          {.v = statushandler } },
+    { ClkStatusText,        0,              Button2,        spawn,          {.v = statushandler } },
+    { ClkStatusText,        0,              Button3,        spawn,          {.v = statushandler } },
+    { ClkStatusText,        0,              Button4,        spawn,          {.v = statushandler } },
+    { ClkStatusText,        0,              Button5,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
     { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
     { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {0} },
