@@ -89,7 +89,7 @@ launch () {
 }
 
 lock () {
-    i3lock -c 1d2021
+    i3lock -c 1d2021 -i "$DWM_WALLPAPER"
 }
 
 run () {

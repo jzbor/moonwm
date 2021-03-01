@@ -25,6 +25,9 @@ rofi -combi-modi drun,window,ssh -show combi
 ```
 If you wish to run any of your own scripts: `~/.local/share/dwm/autostart.sh` and `~/.local/share/dwm/autostart_blocking.sh` are run on each startup if available and executable.
 
+**Note:** The built in lock wrapper can only use PNGs when using i3lock.
+To make it work with JPGs you should install the `i3lock-color` fork.
+
 ## Dependencies
 All packages are listed with their names in the Arch or Arch User Repositories
 

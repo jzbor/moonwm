@@ -5,6 +5,8 @@ $(xdg-xmenu | sed -e 's/^/	/')
 
   Shutdown			poweroff || sudo poweroff
   Reboot			reboot || sudo reboot
+  Suspend			dwm-util lock; loginctl suspend || systemctl suspend
+
   Reload dwm		dwmc rquit
   Log out			dwmc quit"
 
