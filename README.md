@@ -112,6 +112,16 @@ Once you press one of the blocks the status handler script will be called with t
 It is also up to you how you wish to handle them, but a reference exists in `dwm-util`
 
 
+## Default tags:
+Some applications have default  tags they open on:
+```
+5:      Jetbrains IDEA
+7:      Discord, Teamspeak
+8:      Spotify
+9:      Thunderbird
+```
+
+
 ## Patches implemented:
 * actualfullscreen
 * alpha (fixborders)
