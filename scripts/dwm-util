@@ -45,7 +45,14 @@ dwmstatus () {
 }
 
 get_status () {
-    date
+    if pamixer --get-mute > /dev/null; then
+        printf ' 婢'
+    else
+        printf ' 墳'
+    fi
+    printf " %s%% |" "$(pamixer --get-volume)"
+    printf " %s |" "$(date '+%R %D')"
+    printf "|\n"
 }
 
 launch () {
@@ -99,6 +106,18 @@ setup_displays () {
     xwallpaper --zoom "$DWM_WALLPAPER"
 }
 
+volume () {
+    if [ "$1" = "mute" ]; then
+        pamixer -t
+    elif [ "$1" -lt 0 ]; then
+        pamixer -d "$(echo "$1" | sed 's/-//')"
+        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
+    elif [ "$1" -gt 0 ]; then
+        pamixer -i "$(echo "$1" | sed 's/-//')"
+        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
+    fi
+}
+
 
 case $1 in
     display) setup_displays;;
@@ -106,7 +125,7 @@ case $1 in
     launch) launch;;
     lock) lock;;
     status) dwmstatus;;
-    # volume) volume;;
+    volume) volume "$2";;
     *) echo "Unknown operation"; exit 1;;
 esac
 
