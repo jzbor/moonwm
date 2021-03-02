@@ -42,7 +42,11 @@ brightness () {
     elif [ "$1" -gt 0 ]; then
         light -A "$(echo "$1" | sed 's/-//')"
     fi
-    notify-send -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
+    if command -v dunstify > /dev/null 2>&1; then
+        dunstify -r 225423 -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
+    else
+        notify-send -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
+    fi
 }
 
 dwmstatus () {
