@@ -5,6 +5,9 @@ dwm \- dynamic window manager
 .B dwm
 .RB [ \-v ]
 .SH DESCRIPTION
+.P
+.B THIS MANPAGE IS NOT COMPLETE. LOOK AT config.h FOR ALL SHORTCUTS
+.P
 dwm is a dynamic window manager for X. It manages windows in tiled, monocle
 and floating layouts. Either layout can be applied dynamically, optimising the
 environment for the application in use and the task performed.
@@ -57,115 +60,109 @@ label toggles between tiled and floating layout.
 .B Button3
 click on a tag label adds/removes all windows with that tag to/from the view.
 .TP
-.B Mod1\-Button1
+.B Super\-Button1
 click on a tag label applies that tag to the focused window.
 .TP
-.B Mod1\-Button3
+.B Super\-Button3
 click on a tag label adds/removes that tag to/from the focused window.
 .SS Keyboard commands
 .TP
-.B Mod1\-Shift\-Return
-Start
-.BR st(1).
+.B Super\-h
+Focus next window to the left.
 .TP
-.B Mod1\-p
-Spawn
-.BR dmenu(1)
-for launching other programs.
+.B Super\-j
+Focus next window downwards.
 .TP
-.B Mod1\-,
-Focus previous screen, if any.
+.B Super\-k
+Focus next window upwards.
 .TP
-.B Mod1\-.
-Focus next screen, if any.
+.B Super\-h
+Focus next window to the right.
 .TP
-.B Mod1\-Shift\-,
-Send focused window to previous screen, if any.
+.B Super\-Control\-[hjkl]
+Resize
 .TP
-.B Mod1\-Shift\-.
-Send focused window to next screen, if any.
+.B Super\-Shift\-[hjkl]
+Move
 .TP
-.B Mod1\-b
-Toggles bar on and off.
+.B Super\-t
+Sets stack layout.
 .TP
-.B Mod1\-t
-Sets tiled layout.
+.B Super\-c
+Sets deck layout.
 .TP
-.B Mod1\-f
+.B Super\-Shift\-f
 Sets floating layout.
 .TP
-.B Mod1\-m
+.B Super\-Shift\-t
+Sets stack left layout.
+.TP
+.B Super\-Control\-t
+Sets bottom stack layout.
+.TP
+.B Super\-m
 Sets monocle layout.
 .TP
-.B Mod1\-space
-Toggles between current and previous layout.
+.B Super\-f
+Toggles fullscreen on the current window.
 .TP
-.B Mod1\-Control\-,
-Cycles backwards in layout list.
+.B Super\-Return
+Start
+.BR $TERMINAL.
 .TP
-.B Mod1\-Control\-.
-Cycles forwards in layout list.
+.B Super\-d
+Spawn
+.BR dmemucmd
+for launching other programs (you have to have a symlink or script with that name).
 .TP
-.B Mod1\-j
-Focus next window.
+.B Super\-Prior,
+Focus previous screen, if any.
 .TP
-.B Mod1\-k
-Focus previous window.
+.B Super\-Next.
+Focus next screen, if any.
 .TP
-.B Mod1\-i
-Increase number of windows in master area.
+.B Super\-Shift\-Prior,
+Send focused window to previous screen, if any.
 .TP
-.B Mod1\-d
-Decrease number of windows in master area.
+.B Super\-Shift\-Next.
+Send focused window to next screen, if any.
 .TP
-.B Mod1\-l
-Increase master area size.
+.B Super\-F1
+Toggles bar on and off.
 .TP
-.B Mod1\-h
-Decrease master area size.
 .TP
-.B Mod1\-Return
-Zooms/cycles focused window to/from master area (tiled layouts only).
+.B Super\-space
+Open
+.BR skippy-xd(1)
+as application overview.
 .TP
-.B Mod1\-Shift\-c
+.B Super\-Shift\-q
 Close focused window.
 .TP
-.B Mod1\-Shift\-space
+.B Super\-Shift\-space
 Toggle focused window between tiled and floating state.
 .TP
-.B Mod1\-Tab
+.B Super\-Tab
 Toggles to the previously selected tags.
 .TP
-.B Mod1\-Shift\-[1..n]
+.B Super\-Shift\-[1..n]
 Apply nth tag to focused window.
 .TP
-.B Mod1\-Shift\-0
+.B Super\-Shift\-0
 Apply all tags to focused window.
 .TP
-.B Mod1\-Control\-Shift\-[1..n]
+.B Super\-Control\-Shift\-[1..n]
 Add/remove nth tag to/from focused window.
 .TP
-.B Mod1\-[1..n]
+.B Super\-[1..n]
 View all windows with nth tag.
 .TP
-.B Mod1\-0
+.B Super\-0
 View all windows with any tag.
 .TP
-.B Mod1\-Control\-[1..n]
+.B Super\-Control\-[1..n]
 Add/remove all windows with nth tag to/from the view.
 .TP
-.B Mod1\-Shift\-q
-Quit dwm.
-.SS Mouse commands
-.TP
-.B Mod1\-Button1
-Move focused window while dragging. Tiled windows will be toggled to the floating state.
-.TP
-.B Mod1\-Button2
-Toggles focused window between floating and tiled state.
-.TP
-.B Mod1\-Button3
-Resize focused window while dragging. Tiled windows will be toggled to the floating state.
 .SH FILES
 The files containing programs to be started along with dwm are searched for in
 the following directories:
