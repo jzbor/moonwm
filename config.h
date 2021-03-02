@@ -177,6 +177,8 @@ static Key keys[] = {
 	{ MODKEY,               XK_0,       view,            {.ui = ~0 } },
 	{ MODKEY|ShiftMask,     XK_0,       tag,             {.ui = ~0 } },
     { MODKEY,               XK_Tab,     view,            {0} },
+    { MODKEY,               XK_comma,   shiftviewclients, {.i = -1 } },
+    { MODKEY,               XK_period,  shiftviewclients, {.i = +1 } },
     { MODKEY,               XK_Prior,   focusmon,        {.i = -1 } },
     { MODKEY|ShiftMask,     XK_Prior,   tagmon,          {.i = -1 } },
     { MODKEY,               XK_Next,    focusmon,        {.i = +1 } },
