@@ -139,7 +139,7 @@ static const Layout layouts[] = {
     { MOD, XK_h,     ACTION##stack, {.i = 0 } }, \
     { MOD, XK_l,     ACTION##stack, {.i = PREVSEL } },
 #define DIRECTIONKEY(KEY, AXIS, ARG) \
-    { MODKEY|ShiftMask,        KEY,    move##AXIS,        ARG }, \
+    { MODKEY|ShiftMask,      KEY,    move##AXIS,          ARG }, \
     { MODKEY|ControlMask,    KEY,    resize##AXIS,        ARG },
 #define FOCUSKEYS(LEFT, DOWN, UP, RIGHT) \
     { MODKEY,    LEFT,      focusdir,        {.i = 0} }, \

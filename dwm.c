@@ -1872,10 +1872,8 @@ void
 movex(const Arg *arg) {
     if (ISFLOATING) {
         movexfloating(arg);
-    } else if (arg->i < 0) {
-        pushstack(&((Arg) { .i = 0 }));
     } else {
-        pushstack(&((Arg) { .i = PREVSEL }));
+        zoom(NULL);
     }
 }
 
