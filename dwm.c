@@ -1285,9 +1285,10 @@ focusdir(const Arg *arg)
 			break;
 		}
 
-		if ((((arg->i == 0 || arg->i == 2) && client_score <= score) || client_score < score) && client_dist != dist) {
+		if ((((arg->i == 0 || arg->i == 2) && client_score <= score) || client_score < score)
+                || (dist == client_dist && c == s->snext && !(s->x == c->x && s->y == c->y))){
 			score = client_score;
-			dist = client_dist;
+            dist = client_dist;
 			f = c;
 		}
 	}
