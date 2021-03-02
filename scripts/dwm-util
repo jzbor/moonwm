@@ -61,11 +61,14 @@ dwmstatus () {
 
 generate_lock_file () {
     resolution="$(get_primary_resolution)"
-    nice convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$DWM_WALLPAPER" "$LOCK_TMP_FILE"
+    if ! [ -f "$LOCK_TMP_FILE.tmp" ]; then
+        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$DWM_WALLPAPER" "$LOCK_TMP_FILE.tmp"
+        mv "$LOCK_TMP_FILE.tmp" "$LOCK_TMP_FILE"
+    fi
 }
 
 get_primary_resolution () {
-    xrandr | grep '\*' | sed 's/^\s*\([0-9]*x[0-9]*\).*/\1/g'
+    xrandr | grep '\*' | sed 's/^\s*\([0-9]*x[0-9]*\).*/\1/g' | head -n 1
 }
 
 get_status () {
