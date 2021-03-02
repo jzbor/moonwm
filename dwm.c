@@ -1245,14 +1245,14 @@ focusdir(const Arg *arg)
 	int dirweight = 20;
 	int isfloating = s->isfloating;
 
-	next = s->snext;
+	next = s->next;
 	if (!next)
-		next = s->mon->stack;
+		next = s->mon->clients;
 	for (c = next; c != s; c = next) {
 
-		next = c->snext;
+		next = c->next;
 		if (!next)
-			next = s->mon->stack;
+			next = s->mon->clients;
 
 		if (!ISVISIBLE(c) || c->isfloating != isfloating) // || HIDDEN(c)
 			continue;
