@@ -40,9 +40,11 @@ xorg-xsetroot
 **These are the ones the `dwm-util` script uses, starts or other programs I deem essential for a working desktop interface:**
 ```
 cal
+dmenu
 ffmpeg
 geoclue
 i3lock
+imagemagick
 kdeconnect
 libnotify
 light
@@ -62,6 +64,7 @@ xwallpaper
 
 `touchegg` also gets started if available, but it only really makes sense if you set it up properly.
 Same goes for `nextcloud`. If you have it installed it gets started.
+You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 
 ## Customizing
 Custom values for colors and some other properties can be set via `xrdb(1)`.

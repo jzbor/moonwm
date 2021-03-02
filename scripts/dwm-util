@@ -3,6 +3,8 @@
 # env variables to set:
 # DWM_WALLPAPER DWM_KEYMAP TERMINAL (DWM_INTERNAL_SCREEN DWM_NOPICOM DWM_NODUNST DWM_STATUSHANDLER)
 
+LOCK_TMP_FILE="/tmp/lockfile.png"
+
 autostart () {
     # Configure X
     xrdb -merge ~/.Xresources
@@ -57,6 +59,15 @@ dwmstatus () {
     done
 }
 
+generate_lock_file () {
+    resolution="$(get_primary_resolution)"
+    nice convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$DWM_WALLPAPER" "$LOCK_TMP_FILE"
+}
+
+get_primary_resolution () {
+    xrandr | grep '\*' | sed 's/^\s*\([0-9]*x[0-9]*\).*/\1/g'
+}
+
 get_status () {
     if pamixer --get-mute > /dev/null; then
         printf ' 婢'
@@ -97,11 +108,13 @@ layouts () {
     if [ -x "$layout" ]; then
         sh -c "$layout"
         xwallpaper --zoom "$DWM_WALLPAPER"
+        generate_lock_file &
     fi
 }
 
 lock () {
-    i3lock -c 1d2021 -i "$DWM_WALLPAPER"
+    [ -f "$LOCK_TMP_FILE" ] || generate_lock_file
+    i3lock -c 1d2021 -i "$LOCK_TMP_FILE"
 }
 
 run () {
@@ -144,6 +157,7 @@ setup_displays () {
     done
 
     xwallpaper --zoom "$DWM_WALLPAPER"
+    sleep 10; generate_lock_file &
 }
 
 volume () {
