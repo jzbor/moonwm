@@ -164,31 +164,7 @@ static char *statushandler[] = { "/bin/sh", "-c", "dwm-util statushandler", NULL
 /* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {
     /* modifier             key            function        argument */
-    FOCUSKEYS(XK_h, XK_j, XK_k, XK_l)
-    /* STACKKEYS(MODKEY|ShiftMask,                push) */
-    DIRECTIONKEY(XK_h, x, {.i = -20})
-    DIRECTIONKEY(XK_j, y, {.i = -20})
-    DIRECTIONKEY(XK_k, y, {.i = 20})
-    DIRECTIONKEY(XK_l, x, {.i = 20})
-    { MODKEY,               XK_space,   spawn,           {.v = dmenucmd } },
-    { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
-    { MODKEY,               XK_Tab,     view,            {0} },
-    { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
-    { MODKEY,               XK_f,       togglefullscr,   {0} },
-    { MODKEY,               XK_F1,      togglebar,       {0} },
-    { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
-    { MODKEY,               XK_d,       setlayout,       {.v = &layouts[1]} },
-    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
-    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[3]} },
-    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[4]} },
-    { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
-    { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
-    { MODKEY,               XK_Prior,   focusmon,        {.i = -1 } },
-    { MODKEY|ShiftMask,     XK_Prior,   tagmon,          {.i = -1 } },
-    { MODKEY,               XK_Next,    focusmon,        {.i = +1 } },
-    { MODKEY|ShiftMask,     XK_Next,    tagmon,          {.i = +1 } },
-    { MODKEY,               XK_comma,   cyclelayout,     {.i = -1 } },
-    { MODKEY,               XK_period,  cyclelayout,     {.i = +1 } },
+    /* TAG AND MONITOR MANAGEMENT */
     TAGKEYS(                XK_1,                        0)
     TAGKEYS(                XK_2,                        1)
     TAGKEYS(                XK_3,                        2)
@@ -200,13 +176,58 @@ static Key keys[] = {
     TAGKEYS(                XK_9,                        8)
 	{ MODKEY,               XK_0,       view,            {.ui = ~0 } },
 	{ MODKEY|ShiftMask,     XK_0,       tag,             {.ui = ~0 } },
-    { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
-    { ShiftMask|MODKEY,     XK_BackSpace, quit,          {.i = 1} },
-    { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
-    { MODKEY,               XK_c,       center,          {0} },
+    { MODKEY,               XK_Tab,     view,            {0} },
+    { MODKEY,               XK_Prior,   focusmon,        {.i = -1 } },
+    { MODKEY|ShiftMask,     XK_Prior,   tagmon,          {.i = -1 } },
+    { MODKEY,               XK_Next,    focusmon,        {.i = +1 } },
+    { MODKEY|ShiftMask,     XK_Next,    tagmon,          {.i = +1 } },
+    /* WINDOW MANAGEMENT */
+    FOCUSKEYS(XK_h, XK_j, XK_k, XK_l)
+    DIRECTIONKEY(XK_h, x, {.i = -20})
+    DIRECTIONKEY(XK_j, y, {.i = -20})
+    DIRECTIONKEY(XK_k, y, {.i = 20})
+    DIRECTIONKEY(XK_l, x, {.i = 20})
+    { MODKEY,               XK_a,       rioresize,       {0} },
+    { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") },
+    { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
+    /* LAYOUTS */
+    { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
+    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[1]} },
+    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
+    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[3]} },
+    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[4]} },
+    { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
+    { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
+    { MODKEY,               XK_f,       togglefullscr,   {0} },
+    { MODKEY,               XK_z,       center,          {0} },
+    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("dwm-util screen-layouts") },
+    /* APPS */
+    { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
     { MODKEY,               XK_b,       spawn,           SHCMD("$FILEBROWSER") },
-    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("dwm-util screen-layouts") },
+    /* MENUS AND NOTIFICATIONS */
+    { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
+    { ControlMask|Mod1Mask, XK_Delete,  spawn,           SHCMD("dwm-menu 3") },
+    { ControlMask|Mod4Mask, XK_Delete,  spawn,           SHCMD("dwm-menu 3") },
+    /* MEDIA AND BRIGHTNESS CONTROL */
+    { 0,    XF86XK_AudioLowerVolume,    spawn,           SHCMD("dwm-util volume -5") },
+    { 0,    XF86XK_AudioRaiseVolume,    spawn,           SHCMD("dwm-util volume +5") },
+    { 0,    XF86XK_AudioMute,           spawn,           SHCMD("dwm-util volume mute") },
+    { 0,    XF86XK_AudioPrev,           spawn,           SHCMD("playerctl previous") },
+    { 0,    XF86XK_AudioPlay,           spawn,           SHCMD("playerctl play-pause") },
+    { 0,    XF86XK_AudioPause,          spawn,           SHCMD("playerctl play-pause") },
+    { 0,    XF86XK_AudioPrev,           spawn,           SHCMD("playerctl next") },
+    { 0,    XF86XK_MonBrightnessDown,   spawn,           SHCMD("dwm-util brightness -5") },
+    { 0,    XF86XK_MonBrightnessUp,     spawn,           SHCMD("dwm-util brightness +5") },
+    /* OTHER */
+    { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
+    { MODKEY,               XK_r,       spawn,           SHCMD("dwm-util screensetup") },
+    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("dwm-util screenlayouts") },
+    { MODKEY,               XK_x,       spawn,           SHCMD("dwm-util lock") },
+    { MODKEY,               XK_F1,      togglebar,       {0} },
+    { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
+    { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
+
 };
 
 /* button definitions */
