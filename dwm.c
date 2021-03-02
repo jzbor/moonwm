@@ -1239,8 +1239,9 @@ focusdir(const Arg *arg)
 		return;
 
 	unsigned int score = -1;
+	int dist = 3000000;
 	unsigned int client_score;
-	int dist;
+	int client_dist;
 	int dirweight = 20;
 	int isfloating = s->isfloating;
 
@@ -1258,34 +1259,36 @@ focusdir(const Arg *arg)
 
 		switch (arg->i) {
 		case 0: // left
-			dist = s->x - c->x - c->w;
+			client_dist = s->x - c->x - c->w;
 			client_score =
-				dirweight * MIN(abs(dist), abs(dist + s->mon->ww)) +
+				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->ww)) +
 				abs(s->y - c->y);
 			break;
 		case 1: // right
-			dist = c->x - s->x - s->w;
+			client_dist = c->x - s->x - s->w;
 			client_score =
-				dirweight * MIN(abs(dist), abs(dist + s->mon->ww)) +
+				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->ww)) +
 				abs(c->y - s->y);
 			break;
 		case 2: // up
-			dist = s->y - c->y - c->h;
+			client_dist = s->y - c->y - c->h;
 			client_score =
-				dirweight * MIN(abs(dist), abs(dist + s->mon->wh)) +
+				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->wh)) +
 				abs(s->x - c->x);
 			break;
 		default:
 		case 3: // down
-			dist = c->y - s->y - s->h;
+			client_dist = c->y - s->y - s->h;
 			client_score =
-				dirweight * MIN(abs(dist), abs(dist + s->mon->wh)) +
+				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->wh)) +
 				abs(c->x - s->x);
 			break;
 		}
 
-		if (((arg->i == 0 || arg->i == 2) && client_score <= score) || client_score < score) {
+		if ((((arg->i == 0 || arg->i == 2) && client_score <= score) || client_score < score)
+                || (dist == client_dist && c == s->snext && !(s->x == c->x && s->y == c->y))){
 			score = client_score;
+            dist = client_dist;
 			f = c;
 		}
 	}
