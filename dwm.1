@@ -115,6 +115,24 @@ Spawn
 .BR dmemucmd
 for launching other programs (you have to have a symlink or script with that name).
 .TP
+.B Super\-Shift\-[1..n]
+Apply nth tag to focused window.
+.TP
+.B Super\-Shift\-0
+Apply all tags to focused window.
+.TP
+.B Super\-Control\-Shift\-[1..n]
+Add/remove nth tag to/from focused window.
+.TP
+.B Super\-[1..n]
+View all windows with nth tag.
+.TP
+.B Super\-0
+View all windows with any tag.
+.TP
+.B Super\-Control\-[1..n]
+Add/remove all windows with nth tag to/from the view.
+.TP
 .B Super\-Comma,
 Focus previous occupied tag.
 .TP
@@ -136,7 +154,6 @@ Send focused window to next screen, if any.
 .B Super\-F1
 Toggles bar on and off.
 .TP
-.TP
 .B Super\-space
 Open
 .BR skippy-xd(1)
@@ -150,24 +167,6 @@ Toggle focused window between tiled and floating state.
 .TP
 .B Super\-Tab
 Toggles to the previously selected tags.
-.TP
-.B Super\-Shift\-[1..n]
-Apply nth tag to focused window.
-.TP
-.B Super\-Shift\-0
-Apply all tags to focused window.
-.TP
-.B Super\-Control\-Shift\-[1..n]
-Add/remove nth tag to/from focused window.
-.TP
-.B Super\-[1..n]
-View all windows with nth tag.
-.TP
-.B Super\-0
-View all windows with any tag.
-.TP
-.B Super\-Control\-[1..n]
-Add/remove all windows with nth tag to/from the view.
 .TP
 .SH FILES
 The files containing programs to be started along with dwm are searched for in
@@ -185,8 +184,9 @@ loop.
 autostart_blocking.sh
 This file is started before any autostart.sh; dwm waits for its termination.
 .SH CUSTOMIZATION
-dwm is customized by creating a custom config.h and (re)compiling the source
-code. This keeps it fast, secure and simple.
+This dwm build can be customized by editing the config.h or by xrdb.
+For the later also see
+.BR README.md
 .SH SEE ALSO
 .BR dmenu (1),
 .BR st (1)
