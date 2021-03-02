@@ -88,6 +88,14 @@ launch () {
     exec dbus-launch  --sh-syntax --exit-with-session dwm
 }
 
+layouts () {
+    layout="$HOME/.screenlayout/$(ls -1u ~/.screenlayout/ | dmenu -p "Layouts: ")"
+    if [ -x "$layout" ]; then
+        sh -c "$layout"
+        xwallpaper --zoom "$DWM_WALLPAPER"
+    fi
+}
+
 lock () {
     i3lock -c 1d2021 -i "$DWM_WALLPAPER"
 }
@@ -152,6 +160,7 @@ case $1 in
     brightness) brightness "$2";;
     display) setup_displays;;
     launch) launch;;
+    screen-layouts) layouts;;
     lock) lock;;
     start) autostart;;
     status) dwmstatus;;

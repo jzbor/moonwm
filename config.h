@@ -205,6 +205,8 @@ static Key keys[] = {
     { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
     { MODKEY,               XK_c,       center,          {0} },
     { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
+    { MODKEY,               XK_b,       spawn,           SHCMD("$FILEBROWSER") },
+    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("dwm-util screen-layouts") },
 };
 
 /* button definitions */
