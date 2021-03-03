@@ -24,6 +24,10 @@ export TERMINAL="alacritty"
 export DWM_KEYMAP="us"
 export DWM_WALLPAPER="~/path/to/wallpaper.jpg"
 ```
+You should also be able to add `setxbkmap` options to your keyboard layout like this:
+```sh
+export DWM_KEYMAP="us,de -option -option grp:lalt_switch"
+```
 You can disable certain autostarts of the `dwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh

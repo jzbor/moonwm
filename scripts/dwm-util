@@ -8,7 +8,7 @@ LOCK_TMP_FILE="/tmp/lockfile.png"
 autostart () {
     # Configure X
     wmname LG3D
-    setxkbmap "$DWM_KEYMAP"
+    setxkbmap $DWM_KEYMAP
 
     # Other daemons
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
