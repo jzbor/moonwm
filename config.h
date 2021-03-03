@@ -32,7 +32,7 @@ static const int placemousemode     = 0;
 	 */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
-static char menulabel[]            = " DWM+";
+static char menulabel[]            = "::::::";
 static char normtagfg[]             = "#7c6f64";
 static char normtagbg[]             = "#1d2021";
 static char normtitlefg[]           = "#7c6f64";
