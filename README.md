@@ -1,3 +1,17 @@
+<!-- START doctoc.sh generated TOC please keep comment here to allow auto update -->
+<!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
+**Table of Contents**
+
+- [Setup](#setup)
+- [Setting up different screen layouts](#setting-up-different-screen-layouts)
+- [Dependencies](#dependencies)
+- [Customizing](#customizing)
+- [Setting up your own status](#setting-up-your-own-status)
+- [Default tags](#default-tags)
+- [Patches implemented](#patches-implemented)
+- [Available layouts](#available-layouts)
+
+<!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 # My build of dwm
 
 ## Setup
@@ -27,12 +41,14 @@ If you wish to run any of your own scripts: `~/.local/share/dwm/autostart.sh` an
 
 **Note:** To make xmenu fit you should add in the xresources for xmenu as shown below in "Customizing" (`foreground`, `background`, `xmenu.*`).
 
+
 ## Setting up different screen layouts
 `dwm-util` arranges monitors next to each other with their native resolution by default.
 However this may not be suitable for all situations.
 To create custom layouts use the graphical tool `arandr`.
 It lets you save a layout in `~/.screenlayouts` from where you can load your layouts either with `arandr` or with dmenu/rofi by pressing `Mod+Shift+r`.
 To trigger the default `dwm-util` layout (for example when you connect a new display) you can use the keyboard shortcut `Mod+r`.
+
 
 ## Dependencies
 All packages are listed with their names in the Arch or Arch User Repositories.
@@ -72,6 +88,7 @@ xwallpaper
 Same goes for `nextcloud`. If you have it installed it gets started.
 You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 
+
 ## Customizing
 Custom values for colors and some other properties can be set via `xrdb(1)`.
 To edit the design simply add/change these values in your `~/.Xresources`:
@@ -102,7 +119,8 @@ xmenu.selbackground:    #ebdbb2
 xmenu.selforeground:    #1d2021
 ```
 
-## Setting up your own status:
+
+## Setting up your own status
 To setup your own status command you should first set the according env variables in your `~/.profile`:
 ```sh
 export DWM_NOSTATUS=1
@@ -124,7 +142,7 @@ Once you press one of the blocks the status handler script will be called with t
 It is also up to you how you wish to handle them, but a reference exists in `dwm-util`
 
 
-## Default tags:
+## Default tags
 Some applications have default  tags they open on:
 ```
 5:      Jetbrains IDEA
@@ -135,7 +153,7 @@ Some applications have default  tags they open on:
 If you want alternative replacements added to the rules please tell me.
 
 
-## Patches implemented:
+## Patches implemented
 * actualfullscreen
 * alpha (fixborders)
 * attachaside
@@ -166,7 +184,8 @@ If you want alternative replacements added to the rules please tell me.
 * warp
 * xrdb
 
-## Available layouts:
+
+## Available layouts
 * bstack
 * centeredfloatingmaster
 * centeredmaster
@@ -177,4 +196,3 @@ If you want alternative replacements added to the rules please tell me.
 * tile
 * tileleft
 
-### Fuck nazis. Fuck white supremacists. Fuck [them](https://mobile.twitter.com/kuschku/status/1156488420413362177).
