@@ -2451,9 +2451,9 @@ rioposition(Client *c, int x, int y, int w, int h)
 
 	c->isfloating = 1;
 	if (riodraw_borders)
-		resizeclient(c, x, y, w - (c->bw * 2), h - (c->bw * 2), c->bw);
+		resize(c, x, y, w - (borderpx * 2), h - (borderpx * 2), borderpx, 0);
 	else
-		resizeclient(c, x - c->bw, y - c->bw, w, h, c->bw);
+		resize(c, x - borderpx, y - borderpx, w, h, borderpx, 0);
 	drawbar(c->mon);
 	arrange(c->mon);
 
