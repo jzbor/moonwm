@@ -28,6 +28,13 @@ If you wish to run any of your own scripts: `~/.local/share/dwm/autostart.sh` an
 **Note:** The built in lock wrapper can only use PNGs when using i3lock.
 To make it work with JPGs you should install the `i3lock-color` fork.
 
+## Setting up different screen layouts
+`dwm-util` arranges monitors next to each other with their native resolution by default.
+However this may not be suitable for all situations.
+To create custom layouts use the graphical tool `arandr`.
+It lets you save a layout in `~/.screenlayouts` from where you can load your layouts either with `arandr` or with dmenu/rofi by pressing `Mod+Shift+r`.
+To trigger the default `dwm-util` layout (for example when you connect a new display) you can use the keyboard shortcut `Mod+r`.
+
 ## Dependencies
 All packages are listed with their names in the Arch or Arch User Repositories
 
