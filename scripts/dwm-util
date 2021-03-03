@@ -7,35 +7,42 @@ LOCK_TMP_FILE="/tmp/lockfile.png"
 
 autostart () {
     # Configure X
-    xrdb -merge ~/.Xresources
-    dwm xrdb
     wmname LG3D
     setxkbmap "$DWM_KEYMAP"
-    setup_displays
+
+    # Other daemons
+    killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
+
+    autostart_async &
+}
+
+autostart_async () {
+    # Show status
+    [ -z "$DWM_NOSTATUS" ] && $0 status &
 
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
     [ -z "$DWM_NODUNST" ] && run dunst dunst
     run kdeconnect-indicator kdeconnect-indicator
-    run nextcloud "nextcloud --background"
     run nm-applet nm-applet
     run xfce4-power-manager xfce4-power-manager
 
-    # Other daemons
-    killall -9 sxhkd 2> /dev/null; run sxhkd "sxhkd"
     # Applets & tray icons
     (killall -9 /usr/lib/geoclue-2.0/demos/agent; /usr/lib/geoclue-2.0/demos/agent & sleep 5;
     killall -9 redshift; redshift -x; redshift -l geoclue2) &
 
-    # Start compositor
-    [ -z "$DWM_NOPICOM" ] && run picom "killall -9 picom && picom"
-
     run touchegg "touchegg --daemon"
     run touchegg touchegg
 
-    # Show status
-    [ -z "$DWM_NOSTATUS" ] && $0 status &
+    # Start compositor
+    [ -z "$DWM_NOPICOM" ] && run picom "killall -9 picom && picom"
+
+    # Auto setup displays
+    setup_displays
+
+    # Run nextcloud last so polkit is up
+    run nextcloud "nextcloud --background"
 }
 
 brightness () {
@@ -61,9 +68,8 @@ dwmstatus () {
 
 generate_lock_file () {
     resolution="$(get_primary_resolution)"
-    if ! [ -f "$LOCK_TMP_FILE.tmp" ]; then
-        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$DWM_WALLPAPER" "$LOCK_TMP_FILE.tmp"
-        mv "$LOCK_TMP_FILE.tmp" "$LOCK_TMP_FILE"
+    if ! [ "$(file "$LOCK_TMP_FILE" | cut -f11 -d',' | sed 's/\s//g')" = "$resolution" ]; then
+        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$DWM_WALLPAPER" "$LOCK_TMP_FILE"
     fi
 }
 
@@ -122,9 +128,8 @@ lock () {
 
 run () {
     # 1: executable to test for
-    # 2: condition to meet
-    # 3: command to execute
-    # 4: '1' to run synchronously
+    # 2: command to execute
+    # 3: '1' to run synchronously
     if ( [ -z "$1" ] || command -v $1 > /dev/null 2>&1 ); then
         if [ "$3" = 1 ]; then
             $2
@@ -160,7 +165,7 @@ setup_displays () {
     done
 
     xwallpaper --zoom "$DWM_WALLPAPER"
-    sleep 10; generate_lock_file &
+    (sleep 20; generate_lock_file) &
 }
 
 volume () {
