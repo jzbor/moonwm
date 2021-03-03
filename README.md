@@ -17,7 +17,7 @@ export DWM_NODUNST=1        # disables dunst
 export DWM_NOPICOM=1        # disables picom
 export DWM_NOSTATUS=1       # disables status
 ```
-To set your **application launcher** (like dmenu or rofi) simply put a script called `dmenucmd` in your $PATH.
+To set your **application launcher** (like dmenu or rofi) simply put a script called `dmenucmd` in your $PATH (e.g. `~/.local/bin`).
 For example:
 ```
 #!/bin/sh
@@ -25,8 +25,7 @@ rofi -combi-modi drun,window,ssh -show combi
 ```
 If you wish to run any of your own scripts: `~/.local/share/dwm/autostart.sh` and `~/.local/share/dwm/autostart_blocking.sh` are run on each startup if available and executable.
 
-**Note:** The built in lock wrapper can only use PNGs when using i3lock.
-To make it work with JPGs you should install the `i3lock-color` fork.
+**Note:** To make xmenu fit you should add in the xresources for xmenu as shown below in "Customizing" (`foreground`, `background`, `xmenu.*`).
 
 ## Setting up different screen layouts
 `dwm-util` arranges monitors next to each other with their native resolution by default.
@@ -36,7 +35,7 @@ It lets you save a layout in `~/.screenlayouts` from where you can load your lay
 To trigger the default `dwm-util` layout (for example when you connect a new display) you can use the keyboard shortcut `Mod+r`.
 
 ## Dependencies
-All packages are listed with their names in the Arch or Arch User Repositories
+All packages are listed with their names in the Arch or Arch User Repositories.
 
 **These are the ones required by the dwm build:**
 ```
@@ -77,30 +76,30 @@ You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 Custom values for colors and some other properties can be set via `xrdb(1)`.
 To edit the design simply add/change these values in your `~/.Xresources`:
 ```xrdb
-dwm.focusedBorder:	    #ebdbb2
-dwm.focusedTitleBg:	    #1d2021
-dwm.focusedTitleFg:	    #ebdbb2
-dwm.menuBg:	            #fb4934
-dwm.menuFg:	            #1d2021
-dwm.occupiedTagBg:	    #1d2021
-dwm.occupiedTagFg:	    #ebdbb2
-dwm.statusBg:	        #1d2021
-dwm.statusFg:	        #ebdbb2
-dwm.unfocusedBorder:	#1d2021
-dwm.unfocusedTitleBg:	#1d2021
-dwm.unfocusedTitleFg:	#7c6f64
-dwm.vacantTagBg:	    #1d2021
-dwm.vacantTagFg:	    #7c6f64
+dwm.focusedBorder:      #ebdbb2
+dwm.focusedTitleBg:     #1d2021
+dwm.focusedTitleFg:     #ebdbb2
+dwm.menuBg:             #fb4934
+dwm.menuFg:             #1d2021
+dwm.occupiedTagBg:      #1d2021
+dwm.occupiedTagFg:      #ebdbb2
+dwm.statusBg:           #1d2021
+dwm.statusFg:           #ebdbb2
+dwm.unfocusedBorder:    #1d2021
+dwm.unfocusedTitleBg:   #1d2021
+dwm.unfocusedTitleFg:   #7c6f64
+dwm.vacantTagBg:        #1d2021
+dwm.vacantTagFg:        #7c6f64
 ```
 
 You should also edit the according xmenu and general entries to get everything to fit together:
 ```xrdb
-*background:	        #1d2021
-*foreground:	        #ebdbb2
+*background:            #1d2021
+*foreground:            #ebdbb2
 
-xmenu.border:	        #1d2021
-xmenu.selbackground:	#ebdbb2
-xmenu.selforeground:	#1d2021
+xmenu.border:           #1d2021
+xmenu.selbackground:    #ebdbb2
+xmenu.selforeground:    #1d2021
 ```
 
 ## Setting up your own status:
