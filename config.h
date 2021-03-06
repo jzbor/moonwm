@@ -206,7 +206,7 @@ static Key keys[] = {
     /* APPS */
     { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
-    { MODKEY,               XK_b,       spawn,           SHCMD("$FILEBROWSER") },
+    { MODKEY,               XK_b,       spawn,           SHCMD("$FILEMANAGER") },
     /* MENUS AND NOTIFICATIONS */
     { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
     { ControlMask|Mod1Mask, XK_Delete,  spawn,           SHCMD("moonwm-menu 3") },
@@ -221,14 +221,17 @@ static Key keys[] = {
     { 0,    XF86XK_AudioPrev,           spawn,           SHCMD("playerctl next") },
     { 0,    XF86XK_MonBrightnessDown,   spawn,           SHCMD("moonwm-util brightness -5") },
     { 0,    XF86XK_MonBrightnessUp,     spawn,           SHCMD("moonwm-util brightness +5") },
+    /* SCREENSHOTS */
+    { MODKEY,               XK_Print,   spawn,           SHCMD("moonwm-util screenshot") },
+    { MODKEY|ShiftMask,     XK_Print,   spawn,           SHCMD("moonwm-util screenshot screen") },
+    { MODKEY|ControlMask,   XK_Print,   spawn,           SHCMD("moonwm-util screenshot focused") },
     /* OTHER */
-    { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
     { MODKEY,               XK_r,       spawn,           SHCMD("moonwm-util screensetup") },
     { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("moonwm-util screenlayouts") },
     { MODKEY,               XK_x,       spawn,           SHCMD("moonwm-util lock") },
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
-    { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
+    { MODKEY,               XK_F5,      xrdb,            {0} },
 
 };
 

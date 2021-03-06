@@ -139,6 +139,40 @@ run () {
     fi
 }
 
+screenshot () {
+    dest="$XDG_PICTURES_DIR"
+    [ -d "$dest" ] || dest="~/Pictures"
+    [ -d "$dest" ] || dest="~/"
+    dest="$dest/Screenshots/"
+    [ -d "$dest" ] || mkdir -p $dest
+
+    filename="$(date +'Screenshot_%Y-%m-%d_%H-%M-%S.png')"
+    success="-1"
+
+    case $1 in
+        "")
+            scrot -s -f "$filename" -e "mv -f \$f $dest"
+            success="$?"
+            ;;
+        screen)
+            scrot "$filename" -e "mv -f \$f $dest"
+            success="$?"
+            ;;
+        focused)
+            scrot -u "$filename" -e "mv -f \$f $dest"
+            success="$?"
+            ;;
+    esac
+
+    ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga 2> /dev/null &
+    if command -v dunstify > /dev/null 2>&1; then
+        dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" \
+            --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
+    else
+        notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot"
+    fi
+}
+
 setup_displays () {
     connected="$(xrandr | grep " connected " | cut -d " " -f 1)"
     disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
@@ -187,6 +221,7 @@ case $1 in
     screensetup) setup_displays;;
     launch) launch;;
     screenlayouts) layouts;;
+    screenshot) screenshot "$2";;
     lock) lock;;
     start) autostart;;
     status) moonwmstatus;;
