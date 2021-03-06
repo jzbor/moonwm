@@ -1,14 +1,14 @@
-.TH DWM 1 dwm\-VERSION
+.TH MoonWM 1 moonwm\-VERSION
 .SH NAME
-dwm \- dynamic window manager
+MoonWM \- My own outstandingly named Window Manager
 .SH SYNOPSIS
-.B dwm
+.B moonwm
 .RB [ \-v ]
 .SH DESCRIPTION
 .P
 .B THIS MANPAGE IS NOT COMPLETE. LOOK AT config.h FOR ALL SHORTCUTS
 .P
-dwm is a dynamic window manager for X. It manages windows in tiled, monocle
+MoonWM is a dynamic window manager for X. It manages windows in tiled, monocle
 and floating layouts. Either layout can be applied dynamically, optimising the
 environment for the application in use and the task performed.
 .P
@@ -32,13 +32,13 @@ color. The tags of the focused window are indicated with a filled square in the
 top left corner.  The tags which are applied to one or more windows are
 indicated with an empty square in the top left corner.
 .P
-dwm draws a small border around windows to indicate the focus state.
+MoonWM draws a small border around windows to indicate the focus state.
 .P
-On start, dwm can start additional programs that may be specified in two special
+On start, MoonWM can start additional programs that may be specified in two special
 shell scripts (see the FILES section below), autostart_blocking.sh and
-autostart.sh.  The former is executed first and dwm will wait for its
+autostart.sh.  The former is executed first and MoonWM will wait for its
 termination before starting.  The latter is executed in the background before
-dwm enters its handler loop.
+MoonWM enters its handler loop.
 .P
 Either of these files may be omitted.
 .SH OPTIONS
@@ -169,22 +169,22 @@ Toggle focused window between tiled and floating state.
 Toggles to the previously selected tags.
 .TP
 .SH FILES
-The files containing programs to be started along with dwm are searched for in
+The files containing programs to be started along with MoonWM are searched for in
 the following directories:
-.IP "1. $XDG_DATA_HOME/dwm"
-.IP "2. $HOME/.local/share/dwm"
-.IP "3. $HOME/.dwm"
+.IP "1. $XDG_DATA_HOME/moonwm"
+.IP "2. $HOME/.local/share/moonwm"
+.IP "3. $HOME/.moonwm"
 .P
 The first existing directory is scanned for any of the autostart files below.
 .TP 15
 autostart.sh
-This file is started as a shell background process before dwm enters its handler
+This file is started as a shell background process before MoonWM enters its handler
 loop.
 .TP 15
 autostart_blocking.sh
-This file is started before any autostart.sh; dwm waits for its termination.
+This file is started before any autostart.sh; MoonWM waits for its termination.
 .SH CUSTOMIZATION
-This dwm build can be customized by editing the config.h or by xrdb.
+This MoonWM build can be customized by editing the config.h or by xrdb.
 For the later also see
 .BR README.md
 .SH SEE ALSO

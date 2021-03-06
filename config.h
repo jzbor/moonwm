@@ -155,11 +155,11 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {  "/bin/sh", "-c", "dmenucmd", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
-static const char *layoutmenu_cmd = "dwm-layoutmenu";
+static const char *layoutmenu_cmd = "moonwm-layoutmenu";
 
 /* this script or program gets called for bar button presses
  * the button is exported as BUTTON the according module as STATUSCMDN (a number)*/
-static char *statushandler[] = { "/bin/sh", "-c", "dwm-util statushandler", NULL };
+static char *statushandler[] = { "/bin/sh", "-c", "moonwm-util statushandler", NULL };
 
 /* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {
@@ -202,30 +202,30 @@ static Key keys[] = {
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_z,       center,          {0} },
-    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("dwm-util screen-layouts") },
+    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("moonwm-util screen-layouts") },
     /* APPS */
     { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
     { MODKEY,               XK_b,       spawn,           SHCMD("$FILEBROWSER") },
     /* MENUS AND NOTIFICATIONS */
     { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
-    { ControlMask|Mod1Mask, XK_Delete,  spawn,           SHCMD("dwm-menu 3") },
-    { ControlMask|Mod4Mask, XK_Delete,  spawn,           SHCMD("dwm-menu 3") },
+    { ControlMask|Mod1Mask, XK_Delete,  spawn,           SHCMD("moonwm-menu 3") },
+    { ControlMask|Mod4Mask, XK_Delete,  spawn,           SHCMD("moonwm-menu 3") },
     /* MEDIA AND BRIGHTNESS CONTROL */
-    { 0,    XF86XK_AudioLowerVolume,    spawn,           SHCMD("dwm-util volume -5") },
-    { 0,    XF86XK_AudioRaiseVolume,    spawn,           SHCMD("dwm-util volume +5") },
-    { 0,    XF86XK_AudioMute,           spawn,           SHCMD("dwm-util volume mute") },
+    { 0,    XF86XK_AudioLowerVolume,    spawn,           SHCMD("moonwm-util volume -5") },
+    { 0,    XF86XK_AudioRaiseVolume,    spawn,           SHCMD("moonwm-util volume +5") },
+    { 0,    XF86XK_AudioMute,           spawn,           SHCMD("moonwm-util volume mute") },
     { 0,    XF86XK_AudioPrev,           spawn,           SHCMD("playerctl previous") },
     { 0,    XF86XK_AudioPlay,           spawn,           SHCMD("playerctl play-pause") },
     { 0,    XF86XK_AudioPause,          spawn,           SHCMD("playerctl play-pause") },
     { 0,    XF86XK_AudioPrev,           spawn,           SHCMD("playerctl next") },
-    { 0,    XF86XK_MonBrightnessDown,   spawn,           SHCMD("dwm-util brightness -5") },
-    { 0,    XF86XK_MonBrightnessUp,     spawn,           SHCMD("dwm-util brightness +5") },
+    { 0,    XF86XK_MonBrightnessDown,   spawn,           SHCMD("moonwm-util brightness -5") },
+    { 0,    XF86XK_MonBrightnessUp,     spawn,           SHCMD("moonwm-util brightness +5") },
     /* OTHER */
     { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
-    { MODKEY,               XK_r,       spawn,           SHCMD("dwm-util screensetup") },
-    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("dwm-util screenlayouts") },
-    { MODKEY,               XK_x,       spawn,           SHCMD("dwm-util lock") },
+    { MODKEY,               XK_r,       spawn,           SHCMD("moonwm-util screensetup") },
+    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("moonwm-util screenlayouts") },
+    { MODKEY,               XK_x,       spawn,           SHCMD("moonwm-util lock") },
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
     { MODKEY,               XK_F5,      xrdb,            {.v = NULL } },
@@ -250,9 +250,9 @@ static Button buttons[] = {
     WINBUTTON(MODKEY,       ControlMask,    Button5,        resizey,        {.i = 20 })
     WINBUTTON(MODKEY,       0,              Button8,        pushstack,      {.i = INC(+1) })
     WINBUTTON(MODKEY,       0,              Button9,        pushstack,      {.i = INC(-1) })
-    { ClkMenu,              0,              Button1,        spawn,          SHCMD("dwm-menu 1") },
-    { ClkMenu,              0,              Button2,        spawn,          SHCMD("dwm-menu 2") },
-    { ClkMenu,              0,              Button3,        spawn,          SHCMD("dwm-menu 3") },
+    { ClkMenu,              0,              Button1,        spawn,          SHCMD("moonwm-menu 1") },
+    { ClkMenu,              0,              Button2,        spawn,          SHCMD("moonwm-menu 2") },
+    { ClkMenu,              0,              Button3,        spawn,          SHCMD("moonwm-menu 3") },
     { ClkMenu,              0,              Button4,        shiftview,      {.i = -1} },
     { ClkMenu,              0,              Button5,        shiftview,      {.i = +1} },
     { ClkMenu,              0,              Button8,        spawn,          SHCMD("$TERMINAL") },
@@ -273,7 +273,7 @@ static Button buttons[] = {
     { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
     { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
     { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
-    { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("dwm-menu context") },
+    { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("moonwm-menu context") },
     { ClkStatusText,        0,              Button1,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button2,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button3,        spawn,          {.v = statushandler } },
@@ -287,7 +287,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
     { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
-    { ClkRootWin,           0,              Button3,        spawn,          SHCMD("dwm-menu context") },
+    { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu context") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("mpv") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },
     { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },

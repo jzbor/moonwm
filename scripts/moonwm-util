@@ -1,14 +1,14 @@
 #!/bin/sh
 
 # env variables to set:
-# DWM_WALLPAPER DWM_KEYMAP TERMINAL (DWM_INTERNAL_SCREEN DWM_NOPICOM DWM_NODUNST DWM_STATUSHANDLER)
+# MOONWM_WALLPAPER MOONWM_KEYMAP TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOPICOM MOONWM_NODUNST MOONWM_STATUSHANDLER)
 
 LOCK_TMP_FILE="/tmp/lockfile.png"
 
 autostart () {
     # Configure X
     wmname LG3D
-    setxkbmap $DWM_KEYMAP
+    setxkbmap $MOONWM_KEYMAP
 
     # Other daemons
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
@@ -18,12 +18,12 @@ autostart () {
 
 autostart_async () {
     # Show status
-    [ -z "$DWM_NOSTATUS" ] && $0 status &
+    [ -z "$MOONWM_NOSTATUS" ] && $0 status &
 
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-    [ -z "$DWM_NODUNST" ] && run dunst dunst
+    [ -z "$MOONWM_NODUNST" ] && run dunst dunst
     run kdeconnect-indicator kdeconnect-indicator
     run nm-applet nm-applet
     run xfce4-power-manager xfce4-power-manager
@@ -36,7 +36,7 @@ autostart_async () {
     run touchegg touchegg
 
     # Start compositor
-    [ -z "$DWM_NOPICOM" ] && run picom "killall -9 picom && picom"
+    [ -z "$MOONWM_NOPICOM" ] && run picom "killall -9 picom && picom"
 
     # Auto setup displays
     setup_displays
@@ -58,7 +58,7 @@ brightness () {
     fi
 }
 
-dwmstatus () {
+moonwmstatus () {
     kill -9 $(pgrep "$(basename $0) status" | grep -v $$) 2> /dev/null
     while true; do
         xsetroot -name "$(get_status)"
@@ -69,7 +69,7 @@ dwmstatus () {
 generate_lock_file () {
     resolution="$(get_primary_resolution)"
     if ! [ "$(file "$LOCK_TMP_FILE" | cut -f11 -d',' | sed 's/\s//g')" = "$resolution" ]; then
-        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$DWM_WALLPAPER" "$LOCK_TMP_FILE"
+        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$MOONWM_WALLPAPER" "$LOCK_TMP_FILE"
     fi
 }
 
@@ -89,8 +89,8 @@ get_status () {
 }
 
 handle_status () {
-    if [ -n "$DWM_STATUSHANDLER" ]; then
-        $DWM_STATUSHANDLER
+    if [ -n "$MOONWM_STATUSHANDLER" ]; then
+        $MOONWM_STATUSHANDLER
         return
     fi
     case $STATUSCMDN in
@@ -109,14 +109,14 @@ handle_status () {
 
 launch () {
     xrdb -merge ~/.Xresources
-    exec dbus-launch  --sh-syntax --exit-with-session dwm
+    exec dbus-launch  --sh-syntax --exit-with-session moonwm
 }
 
 layouts () {
     layout="$HOME/.screenlayout/$(ls -1u ~/.screenlayout/ | dmenu -p "Layouts: ")"
     if [ -x "$layout" ]; then
         sh -c "$layout"
-        xwallpaper --zoom "$DWM_WALLPAPER"
+        xwallpaper --zoom "$MOONWM_WALLPAPER"
         generate_lock_file &
     fi
 }
@@ -144,7 +144,7 @@ setup_displays () {
     disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
 
     for display in $connected; do
-        if [ "$display" = "$DWM_INTERNAL_SCREEN" ] \
+        if [ "$display" = "$MOONWM_INTERNAL_SCREEN" ] \
                 && grep closed /proc/acpi/button/lid/LID/state > /dev/null ; then
             echo "Disabling $display (closed lid)"
             xrandr --output "$display" --off
@@ -164,7 +164,7 @@ setup_displays () {
         xrandr --output $display --off
     done
 
-    xwallpaper --zoom "$DWM_WALLPAPER"
+    xwallpaper --zoom "$MOONWM_WALLPAPER"
     (sleep 20; generate_lock_file) &
 }
 
@@ -178,7 +178,7 @@ volume () {
         pamixer -i "$(echo "$1" | sed 's/-//')"
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     fi
-    [ -z "$DWM_NOSTATUS" ] && xsetroot -name "$(get_status)"
+    [ -z "$MOONWM_NOSTATUS" ] && xsetroot -name "$(get_status)"
 }
 
 
@@ -189,7 +189,7 @@ case $1 in
     screenlayouts) layouts;;
     lock) lock;;
     start) autostart;;
-    status) dwmstatus;;
+    status) moonwmstatus;;
     statushandler) handle_status;;
     volume) volume "$2";;
     *) echo "Unknown operation"; exit 1;;

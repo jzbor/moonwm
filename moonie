@@ -6,7 +6,7 @@ signal() {
 
 print_help() {
 	echo "
-Usage: dwmc CALL [ARGUMENT]
+Usage: moonie CALL [ARGUMENT]
 
 Here is a list of supported calls with their respective arguments:
 Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
@@ -59,7 +59,7 @@ case $# in
 		;;
 	*)
 		echo "Unknown command or missing one argument."
-		echo "Try 'dwmc --help' for more information."
+		echo "Try 'moonie --help' for more information."
 		exit 1
 		;;
 	esac
@@ -78,14 +78,14 @@ case $# in
 		;;
 	*)
 		echo "Unknown command or one too many arguments."
-		echo "Try 'dwmc --help' for more information."
+		echo "Try 'moonie --help' for more information."
 		exit 1
 		;;
 	esac
 	;;
 *)
 	echo "Too many arguments."
-	echo "Try 'dwmc --help' for more information."
+	echo "Try 'moonie --help' for more information."
 	exit 1
 	;;
 esac

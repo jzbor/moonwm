@@ -1,15 +1,15 @@
-# dwm - dynamic window manager
+# moonwm - my own outstandingly named window manager
 # See LICENSE file for copyright and license details.
 
 include config.mk
 
-SRC = drw.c dwm.c util.c
+SRC = drw.c moonwm.c util.c
 OBJ = ${SRC:.c=.o}
 
-all: options dwm
+all: options moonwm
 
 options:
-	@echo dwm build options:
+	@echo moonwm build options:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
@@ -22,42 +22,42 @@ ${OBJ}: config.h config.mk
 config.h:
 	cp config.def.h $@
 
-dwm: ${OBJ}
+moonwm: ${OBJ}
 	${CC} -g -o $@ ${OBJ} ${LDFLAGS}
 
 clean:
-	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz
+	rm -f moonwm ${OBJ} moonwm-${VERSION}.tar.gz
 
 dist: clean
-	mkdir -p dwm-${VERSION}
+	mkdir -p moonwm-${VERSION}
 	cp -R LICENSE Makefile README config.def.h config.mk\
-		dwm.1 drw.h util.h ${SRC} dwm.png transient.c dwm-${VERSION}
-	tar -cf dwm-${VERSION}.tar dwm-${VERSION}
-	gzip dwm-${VERSION}.tar
-	rm -rf dwm-${VERSION}
+		moonwm.1 drw.h util.h ${SRC} moonwm.png transient.c moonwm-${VERSION}
+	tar -cf moonwm-${VERSION}.tar moonwm-${VERSION}
+	gzip moonwm-${VERSION}.tar
+	rm -rf moonwm-${VERSION}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
-	cp -f dwm dwmc dwm-layoutmenu ${DESTDIR}${PREFIX}/bin
-	cp -f dwm.desktop /usr/share/xsessions/
-	chmod 755 ${DESTDIR}${PREFIX}/bin/dwm
+	cp -f moonwm moonie moonwm-layoutmenu ${DESTDIR}${PREFIX}/bin
+	cp -f moonwm.desktop /usr/share/xsessions/
+	chmod 755 ${DESTDIR}${PREFIX}/bin/moonwm
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
-	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
+	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/bin/dwm \
-		${DESTDIR}${MANPREFIX}/man1/dwm.1 \
-		${DESTDIR}${PREFIX}/bin/dwmc \
-		${DESTDIR}${PREFIX}/bin/dwm-layoutmenu
-		rm -f /usr/share/xsessions/dwm.desktop
+	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \
+		${DESTDIR}${MANPREFIX}/man1/moonwm.1 \
+		${DESTDIR}${PREFIX}/bin/moonie \
+		${DESTDIR}${PREFIX}/bin/moonwm-layoutmenu
+	rm -f /usr/share/xsessions/moonwm.desktop
 
 install-scripts:
-	cp -f scripts/dwm-menu ${DESTDIR}${PREFIX}/bin
-	cp -f scripts/dwm-util ${DESTDIR}${PREFIX}/bin
+	cp -f scripts/moonwm-menu ${DESTDIR}${PREFIX}/bin
+	cp -f scripts/moonwm-util ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
-	rm -f ${DESTDIR}${PREFIX}/bin/dwm-menu
-	rm -f ${DESTDIR}${PREFIX}/bin/dwm-util
+	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-menu
+	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-util
 
 .PHONY: all options clean dist install uninstall

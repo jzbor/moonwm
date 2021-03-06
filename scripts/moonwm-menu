@@ -5,10 +5,10 @@ $(xdg-xmenu | sed -e 's/^/	/')
 
   Shutdown			poweroff || sudo poweroff
   Reboot			reboot || sudo reboot
-  Suspend			dwm-util lock; loginctl suspend || systemctl suspend
+  Suspend			moonwm-util lock; loginctl suspend || systemctl suspend
 
-  Reload dwm		dwmc rquit
-  Log out			dwmc quit"
+  Reload MoonWM	moonie rquit
+  Log out			moonie quit"
 
 appsmenu="  Terminal			$TERMINAL"
 command -v $BROWSER > /dev/null 2>&1    && appsmenu="$appsmenu
@@ -20,14 +20,14 @@ command -v $FILEBROWSER > /dev/null 2>&1 && appsmenu="$appsmenu
 command -v discord > /dev/null 2>&1     && appsmenu="$appsmenu
 ﭮ  Discord			discord"
 command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
-  Spotify			if pidof spotify; then dwmc toggleview 7; else spotify; fi"
+  Spotify			if pidof spotify; then moonie toggleview 7; else spotify; fi"
 command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
   Mail				thunderbird"
 
-contextmenu="  Fullscreen		dwmc togglefullscr
-  Floating			dwmc togglefloating
-  Zoom				dwmc zoom
-  Close			dwmc killclient"
+contextmenu="  Fullscreen		moonie togglefullscr
+  Floating			moonie togglefloating
+  Zoom				moonie zoom
+  Close			moonie killclient"
 
 
 case $1 in
