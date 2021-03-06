@@ -30,7 +30,7 @@ clean:
 
 dist: clean
 	mkdir -p moonwm-${VERSION}
-	cp -R LICENSE Makefile README config.def.h config.mk\
+	cp -R LICENSE Makefile README.md config.def.h config.mk\
 		moonwm.1 drw.h util.h ${SRC} moonwm.png transient.c moonwm-${VERSION}
 	tar -cf moonwm-${VERSION}.tar moonwm-${VERSION}
 	gzip moonwm-${VERSION}.tar
