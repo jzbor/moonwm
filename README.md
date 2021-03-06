@@ -37,9 +37,9 @@ export MOONWM_NODUNST=1        # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
 export MOONWM_NOSTATUS=1       # disables status
 ```
-To set your **application launcher** (like dmenu or rofi) simply put a script called `dmenucmd` in your $PATH (e.g. `~/.local/bin`).
+To set your **application launcher** (like dmenu or rofi) simply put a script called `dmenucmd` in your $PATH (e.g. `~/.local/bin`) and make sure to make it executable.
 For example:
-```
+```sh
 #!/bin/sh
 rofi -combi-modi drun,window,ssh -show combi
 ```
@@ -157,6 +157,10 @@ Some applications have default  tags they open on:
 9:      Thunderbird
 ```
 If you want alternative replacements added to the rules please tell me.
+
+
+## Credits
+* to **Guzman Barquin** for the moon in the title image
 
 
 ## Patches implemented
