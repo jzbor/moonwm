@@ -1,3 +1,6 @@
+![](moonwm.png)
+# MoonWM
+
 <!-- START doctoc.sh generated TOC please keep comment here to allow auto update -->
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
@@ -12,7 +15,6 @@
 - [Available layouts](#available-layouts)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
-# MoonWM
 
 ## Setup
 You should set up the following environment variables in your `.profile`.
