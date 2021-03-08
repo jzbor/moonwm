@@ -43,14 +43,15 @@ install: all
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
-	sed "s/DESTDIRPREFIX/$(shell echo "${DESTDIR}${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > /usr/share/xsessions/moonwm.desktop
+	mkdir -p ${DESTDIR}/usr/share/xsessions/
+	sed "s/DESTDIRPREFIX/$(shell echo "${DESTDIR}${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}/usr/share/xsessions/moonwm.desktop
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \
 		${DESTDIR}${MANPREFIX}/man1/moonwm.1 \
 		${DESTDIR}${PREFIX}/bin/moonie \
 		${DESTDIR}${PREFIX}/bin/moonwm-layoutmenu
-	rm -f /usr/share/xsessions/moonwm.desktop
+	rm -f ${DESTDIR}/usr/share/xsessions/moonwm.desktop
 
 install-scripts:
 	cp -f scripts/moonwm-menu ${DESTDIR}${PREFIX}/bin

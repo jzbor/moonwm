@@ -67,7 +67,6 @@ xorg-xsetroot
 ```
 **These are the ones the `moonwm-util` script uses, starts or other programs I deem essential for a working desktop interface:**
 ```
-cal
 dmenu
 ffmpeg
 geoclue
