@@ -30,7 +30,7 @@ static const int placemousemode     = 1;
 	 *    1 - tiled postiion is relative to window center
 	 *    2 - mouse pointer warps to window center
 	 */
-static const char *fonts[]          = { "monospace:size=10" };
+static const char *fonts[]          = { "FiraCode Nerd Font:size=10", "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char menulabel[]            = "::::::";
 static char normtagfg[]             = "#7c6f64";
