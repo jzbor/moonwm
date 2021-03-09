@@ -44,7 +44,7 @@ install: all
 	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	mkdir -p ${DESTDIR}/usr/share/xsessions/
-	sed "s/DESTDIRPREFIX/$(shell echo "${DESTDIR}${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}/usr/share/xsessions/moonwm.desktop
+	sed "s/PREFIX/$(shell echo "${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}/usr/share/xsessions/moonwm.desktop
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \

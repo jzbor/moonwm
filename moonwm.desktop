@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=MoonWM
 Comment=My (jzbor's) own outstandingly named WM
-Exec=DESTDIRPREFIX/bin/moonwm-util launch
-TryExec=DESTDIRPREFIX/bin/moonwm-util
+Exec=PREFIX/bin/moonwm-util launch
+TryExec=PREFIX/bin/moonwm-util
 Type=Application
 DesktopNames=MoonWM
 X-GDM-SessionRegisters=true
