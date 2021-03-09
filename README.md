@@ -11,6 +11,7 @@
 - [Customizing](#customizing)
 - [Setting up your own status](#setting-up-your-own-status)
 - [Default tags](#default-tags)
+- [Credits](#credits)
 - [Patches implemented](#patches-implemented)
 - [Available layouts](#available-layouts)
 
@@ -81,6 +82,7 @@ pamixer
 picom
 polkit-gnome
 redshift
+skippy-xd
 wmname
 xfce4-power-manager
 xorg-setxkbmap
@@ -196,12 +198,12 @@ If you want alternative replacements added to the rules please tell me.
 
 ## Available layouts
 * bstack
-* centeredfloatingmaster
-* centeredmaster
+* centeredfloatingmaster (disabled)
+* centeredmaster (disabled)
 * deck
-* dwindle
-* fibonacci
-* spiral
+* dwindle (disabled)
+* fibonacci (disabled)
+* spiral (disabled)
 * tile
 * tileleft
 
