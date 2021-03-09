@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rightmenu="  Applications
-$(xdg-xmenu | sed -e 's/^/	/')
+$(moonwm-xdg-xmenu | sed -e 's/^/	/')
 
   Shutdown			poweroff || sudo poweroff
   Reboot			reboot || sudo reboot
@@ -32,11 +32,11 @@ contextmenu="  Fullscreen		moonie togglefullscr
 
 case $1 in
     # 1) rofi -show drun -config ~/.config/rofi/apps.rasi -fullscreen ;;
-    # 1) xdg-xmenu | xmenu -p 0x0 | sh ;;
+    # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     2) echo "$appsmenu" | xmenu -p 0x0:current | sh ;;
     3) echo "$rightmenu" | xmenu -p 0x0:current | sh ;;
     "context") echo "$contextmenu" | xmenu | sh ;;
 esac
 
-nice xdg-xmenu -u &
+nice moonwm-xdg-xmenu -u &
