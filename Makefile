@@ -54,6 +54,7 @@ uninstall:
 	rm -f ${DESTDIR}/usr/share/xsessions/moonwm.desktop
 
 install-scripts:
+	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f scripts/moonwm-menu ${DESTDIR}${PREFIX}/bin
 	cp -f scripts/moonwm-util ${DESTDIR}${PREFIX}/bin
 
@@ -61,4 +62,4 @@ uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-menu
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-util
 
-.PHONY: all options clean dist install uninstall
+.PHONY: all options clean dist install install-scripts uninstall uninstall-scripts
