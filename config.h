@@ -229,8 +229,10 @@ static Key keys[] = {
     { MODKEY,               XK_r,       spawn,           SHCMD("moonwm-util screensetup") },
     { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("moonwm-util screenlayouts") },
     { MODKEY,               XK_x,       spawn,           SHCMD("moonwm-util lock") },
-    { MODKEY,               XK_F1,      togglebar,       {0} },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
+    /* FUNCTION KEYS */
+    { MODKEY,               XK_F1,      togglebar,       {0} },
+    { MODKEY,               XK_F2,      togglegaps,      {0} },
     { MODKEY,               XK_F5,      xrdb,            {0} },
 
 };
