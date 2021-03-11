@@ -15,8 +15,8 @@ command -v $BROWSER > /dev/null 2>&1    && appsmenu="$appsmenu
   Web				$BROWSER"
 command -v mpv > /dev/null 2>&1         && appsmenu="$appsmenu
   Media			mpv"
-command -v $FILEBROWSER > /dev/null 2>&1 && appsmenu="$appsmenu
-  Files			$FILEBROWSER"
+command -v $FILEMANAGER > /dev/null 2>&1 && appsmenu="$appsmenu
+  Files			$FILEMANAGER"
 command -v discord > /dev/null 2>&1     && appsmenu="$appsmenu
 ﭮ  Discord			discord"
 command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu

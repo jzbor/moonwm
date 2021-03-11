@@ -22,7 +22,7 @@ You should set up the following environment variables in your `.profile`.
 Customize them to your personal needs (fill in you terminal etc.).
 ```sh
 export BROWSER="firefox"
-export FILEBROWSER="pcmanfm"
+export FILEMANAGER="pcmanfm"
 export TERMINAL="alacritty"
 export MOONWM_KEYMAP="us"
 export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
