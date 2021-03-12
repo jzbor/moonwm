@@ -20,6 +20,9 @@ autostart_async () {
     # Show status
     [ -z "$MOONWM_NOSTATUS" ] && $0 status &
 
+    # Load xmenu defaults
+    load_xmenu_defaults
+
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
@@ -56,6 +59,19 @@ brightness () {
     else
         notify-send -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
     fi
+}
+
+load_xmenu_defaults () {
+    xrdb_has xmenu.border \
+        || xrdb_set_color xmenu.border '#1d2021'
+    xrdb_has xmenu.foreground \
+        || xrdb_set_color xmenu.foreground '#ebdbb2'
+    xrdb_has xmenu.background \
+        || xrdb_set_color xmenu.background '#1d2021'
+    xrdb_has xmenu.selforeground \
+        || xrdb_set_color xmenu.selforeground '#1d2021'
+    xrdb_has xmenu.selbackground \
+        || xrdb_set_color xmenu.selbackground '#ebdbb2'
 }
 
 moonwmstatus () {
@@ -213,6 +229,18 @@ volume () {
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     fi
     [ -z "$MOONWM_NOSTATUS" ] && xsetroot -name "$(get_status)"
+}
+
+xrdb_get_color () {
+    xrdb -query -all | grep "^$1": | sed 's/.*#/#/g' | sort | head -n 1
+}
+
+xrdb_has () {
+    xrdb -query -all | grep "^$1": > /dev/null
+}
+
+xrdb_set_color () {
+    echo "$1: $2" | xrdb -merge
 }
 
 
