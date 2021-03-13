@@ -39,12 +39,6 @@ export MOONWM_NODUNST=1        # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
 export MOONWM_NOSTATUS=1       # disables status
 ```
-To set your **application launcher** (like dmenu or rofi) simply put a script called `dmenucmd` in your $PATH (e.g. `~/.local/bin`) and make sure to make it executable.
-For example:
-```sh
-#!/bin/sh
-rofi -combi-modi drun,window,ssh -show combi
-```
 If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
 **Note:** To make xmenu fit you should add in the xresources for xmenu as shown below in "Customizing" (`foreground`, `background`, `xmenu.*`).
