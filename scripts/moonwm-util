@@ -193,8 +193,12 @@ layouts () {
 }
 
 lock () {
-    [ -f "$LOCK_TMP_FILE" ] || generate_lock_file
-    i3lock -c 1d2021 -i "$LOCK_TMP_FILE"
+    if pidof lightdm > /dev/null; then
+        dm-tool lock
+    else
+        [ -f "$LOCK_TMP_FILE" ] || generate_lock_file
+        i3lock -c 1d2021 -i "$LOCK_TMP_FILE"
+    fi
 }
 
 run () {
