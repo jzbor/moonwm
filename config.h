@@ -153,7 +153,7 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {  "/bin/sh", "-c", "dmenucmd", NULL };
+static const char *dmenucmd[] = {  "/bin/sh", "-c", "$DMENUCMD", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static const char *layoutmenu_cmd = "moonwm-layoutmenu";
 

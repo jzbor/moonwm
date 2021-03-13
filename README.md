@@ -24,6 +24,7 @@ Customize them to your personal needs (fill in you terminal etc.).
 export BROWSER="firefox"
 export FILEMANAGER="pcmanfm"
 export TERMINAL="alacritty"
+export DMENUCMD="rofi -show drun"
 export MOONWM_KEYMAP="us"
 export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
 ```

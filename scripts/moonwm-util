@@ -61,6 +61,28 @@ brightness () {
     fi
 }
 
+get_default_browser () {
+    if command -v firefox > /dev/null 2>&1; then
+        echo firefox
+    elif command -v chromium > /dev/null 2>&1; then
+        echo chromium
+    elif command -v chrome > /dev/null 2>&1; then
+        echo chrome
+    else
+        return 1
+    fi
+}
+
+get_default_dmenucmd () {
+    if command -v rofi > /dev/null 2>&1; then
+        echo "rofi -show drun"
+    elif command -v dmenu > /dev/null 2>&1; then
+        echo dmenu
+    else
+        return 1
+    fi
+}
+
 get_default_terminal () {
     if command -v gnome-terminal > /dev/null 2>&1; then
         echo gnome-terminal
@@ -70,18 +92,6 @@ get_default_terminal () {
         echo alacritty
     elif command -v uxterm > /dev/null 2>&1; then
         echo uxterm
-    else
-        return 1
-    fi
-}
-
-get_default_browser () {
-    if command -v firefox > /dev/null 2>&1; then
-        echo firefox
-    elif command -v chromium > /dev/null 2>&1; then
-        echo chromium
-    elif command -v chrome > /dev/null 2>&1; then
-        echo chrome
     else
         return 1
     fi
@@ -97,7 +107,9 @@ load_env_defaults () {
             && get_default_browser; then
         export BROWSER="$(get_default_browser)"
     fi
-
+    if (! env | grep '^DMENUCMD=' > /dev/null); then
+        export DMENUCMD="$(get_default_dmenucmd)"
+    fi
 }
 
 load_xmenu_defaults () {
