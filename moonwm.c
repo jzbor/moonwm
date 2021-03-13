@@ -58,7 +58,7 @@
                                * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
 #define INTERSECTC(x,y,w,h,z)   (MAX(0, MIN((x)+(w),(z)->x+(z)->w) - MAX((x),(z)->x)) \
                                * MAX(0, MIN((y)+(h),(z)->y+(z)->h) - MAX((y),(z)->y)))
-#define ISFLOATING              (!selmon->lt[selmon->sellt]->arrange || selmon->sel->isfloating)
+#define ISFLOATING(C)           (!C->mon->lt[C->mon->sellt]->arrange || C->isfloating)
 #define ISINC(X)                ((X) > 1000 && (X) < 3000)
 #define ISVISIBLEONTAG(C, T)    ((C->tags & T))
 #define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
@@ -1243,7 +1243,7 @@ focusdir(const Arg *arg)
 	unsigned int client_score;
 	int client_dist;
 	int dirweight = 20;
-	int isfloating = s->isfloating;
+	int isfloating = ISFLOATING(s);
 
 	next = s->next;
 	if (!next)
@@ -1254,7 +1254,7 @@ focusdir(const Arg *arg)
 		if (!next)
 			next = s->mon->clients;
 
-		if (!ISVISIBLE(c) || c->isfloating != isfloating) // || HIDDEN(c)
+		if (!ISVISIBLE(c) || ISFLOATING(c) != isfloating) // || HIDDEN(c)
 			continue;
 
 		switch (arg->i) {
@@ -1862,7 +1862,7 @@ movemouse(const Arg *arg)
 
 void
 moveorplace(const Arg *arg) {
-    if (ISFLOATING)
+    if (ISFLOATING(selmon->sel))
         movemouse(arg);
     else
         placemouse(arg);
@@ -1870,7 +1870,7 @@ moveorplace(const Arg *arg) {
 
 void
 movex(const Arg *arg) {
-    if (ISFLOATING) {
+    if (ISFLOATING(selmon->sel)) {
         movexfloating(arg);
     } else {
         zoom(NULL);
@@ -1879,7 +1879,7 @@ movex(const Arg *arg) {
 
 void
 movey(const Arg *arg) {
-    if (ISFLOATING) {
+    if (ISFLOATING(selmon->sel)) {
         arg = &(Arg) { .i = -arg->i };
         moveyfloating(arg);
     } else if (arg->i < 0) {
@@ -2338,7 +2338,7 @@ resizerequest(XEvent *e)
 
 void
 resizex(const Arg *arg) {
-    if (ISFLOATING) {
+    if (ISFLOATING(selmon->sel)) {
         incwidth(arg);
     } else if (arg->i > 0) {
         setmfact(&((Arg) { .f = +0.05 }));
@@ -2349,7 +2349,7 @@ resizex(const Arg *arg) {
 
 void
 resizey(const Arg *arg) {
-    if (ISFLOATING) {
+    if (ISFLOATING(selmon->sel)) {
         incheight(arg);
     }
 }
