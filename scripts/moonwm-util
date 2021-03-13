@@ -62,6 +62,10 @@ brightness () {
     fi
 }
 
+dmenu_wrapper () {
+    dmenu_run -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10'
+}
+
 get_default_browser () {
     if command -v firefox > /dev/null 2>&1; then
         echo firefox
@@ -78,7 +82,7 @@ get_default_dmenucmd () {
     if command -v rofi > /dev/null 2>&1; then
         echo rofi -show drun
     elif command -v dmenu_run > /dev/null 2>&1; then
-        echo "echo \"dmenu_run -nb \'\#1d2021\' -nf \'\#ebdbb2\' -sb \'\#fb4934\' -sf \'\#1d2021\' -fn \'FiraCode Nerd Font:size=10\'\" | sh"
+        echo moonwm-util dmenu
     else
         return 1
     fi
@@ -309,6 +313,7 @@ xrdb_set_color () {
 
 case $1 in
     brightness) brightness "$2";;
+    dmenu) dmenu_wrapper;;
     screensetup) setup_displays;;
     launch) launch;;
     screenlayouts) layouts;;
