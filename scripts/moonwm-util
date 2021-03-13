@@ -114,6 +114,10 @@ load_env_defaults () {
 }
 
 load_xmenu_defaults () {
+    xrdb_has '\*background' \
+        || xrdb_set_color '*background' '#1d2021'
+    xrdb_has '\*foreground' \
+        || xrdb_set_color '*foreground' '#ebdbb2'
     xrdb_has xmenu.border \
         || xrdb_set_color xmenu.border '#1d2021'
     xrdb_has xmenu.foreground \
