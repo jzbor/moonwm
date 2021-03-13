@@ -61,6 +61,45 @@ brightness () {
     fi
 }
 
+get_default_terminal () {
+    if command -v gnome-terminal > /dev/null 2>&1; then
+        echo gnome-terminal
+    elif command -v xfce4-terminal > /dev/null 2>&1; then
+        echo xfce4-terminal
+    elif command -v alacritty > /dev/null 2>&1; then
+        echo alacritty
+    elif command -v uxterm > /dev/null 2>&1; then
+        echo uxterm
+    else
+        return 1
+    fi
+}
+
+get_default_browser () {
+    if command -v firefox > /dev/null 2>&1; then
+        echo firefox
+    elif command -v chromium > /dev/null 2>&1; then
+        echo chromium
+    elif command -v chrome > /dev/null 2>&1; then
+        echo chrome
+    else
+        return 1
+    fi
+}
+
+load_env_defaults () {
+    if (! env | grep '^TERMINAL=' > /dev/null) \
+            && get_default_terminal; then
+        export TERMINAL="$(get_default_terminal)"
+        export TERM="xterm-256color"
+    fi
+    if (! env | grep '^BROWSER=' > /dev/null) \
+            && get_default_browser; then
+        export BROWSER="$(get_default_browser)"
+    fi
+
+}
+
 load_xmenu_defaults () {
     xrdb_has xmenu.border \
         || xrdb_set_color xmenu.border '#1d2021'
@@ -124,8 +163,11 @@ handle_status () {
 }
 
 launch () {
+    # Load default values for env variables
+    load_env_defaults
+
     xrdb -merge ~/.Xresources
-    exec dbus-launch  --sh-syntax --exit-with-session moonwm
+    exec moonwm
 }
 
 layouts () {

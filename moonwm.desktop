@@ -5,4 +5,3 @@ Exec=PREFIX/bin/moonwm-util launch
 TryExec=PREFIX/bin/moonwm-util
 Type=Application
 DesktopNames=MoonWM
-X-GDM-SessionRegisters=true
