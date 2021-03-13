@@ -78,7 +78,7 @@ get_default_dmenucmd () {
     if command -v rofi > /dev/null 2>&1; then
         echo rofi -show drun
     elif command -v dmenu_run > /dev/null 2>&1; then
-        echo dmenu_run -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10'
+        echo dmenu_run -nb \'\#1d2021\' -nf \'\#ebdbb2\' -sb \'\#fb4934\' -sf \'\#1d2021\' -fn \'FiraCode Nerd Font:size=10\'
     else
         return 1
     fi
