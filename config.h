@@ -263,6 +263,7 @@ static Button buttons[] = {
     { ClkMenu,              0,              Button8,        spawn,          SHCMD("$TERMINAL") },
     { ClkMenu,              0,              Button9,        spawn,          SHCMD("$BROWSER") },
     { ClkTagBar,            0,              Button1,        view,           {0} },
+    { ClkTagBar,            0,              Button2,        shiftviewclients, {.i = +1} },
     { ClkTagBar,            0,              Button3,        toggleview,     {0} },
     { ClkTagBar,            0,              Button4,        shiftview,      {.i = -1} },
     { ClkTagBar,            0,              Button5,        shiftview,      {.i = +1} },
