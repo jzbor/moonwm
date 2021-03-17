@@ -247,12 +247,14 @@ screenshot () {
             ;;
     esac
 
-    ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga 2> /dev/null &
-    if command -v dunstify > /dev/null 2>&1; then
-        dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" \
-            --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
-    else
-        notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot"
+    if [ "$success" = 0 ]; then
+        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga 2> /dev/null &
+        if command -v dunstify > /dev/null 2>&1; then
+            dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" \
+                --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
+        else
+            notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot"
+        fi
     fi
 }
 
