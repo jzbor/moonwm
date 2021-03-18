@@ -36,14 +36,16 @@ autostart_async () {
     run touchegg "touchegg --daemon"
     run touchegg touchegg
 
-    # Start compositor
-    [ -z "$MOONWM_NOPICOM" ] && run picom "killall -9 picom && picom"
-
     # Auto setup displays
     setup_displays
 
     # Run nextcloud last so polkit is up
     run nextcloud "nextcloud --background"
+
+    # Start compositor
+    sleep 2
+    [ -z "$MOONWM_NOPICOM" ] && run picom "killall -9 picom && picom"
+
 }
 
 brightness () {
