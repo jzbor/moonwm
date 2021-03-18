@@ -1474,7 +1474,7 @@ incnmaster(const Arg *arg)
 void
 incheight(const Arg *arg)
 {
-    if(!selmon->sel) {
+    if(!selmon->sel || selmon->sel->isfullscreen) {
         return;
     }
 	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
@@ -1504,9 +1504,8 @@ incheight(const Arg *arg)
 void
 incwidth(const Arg *arg)
 {
-    if(!selmon->sel) {
+    if(!selmon->sel || selmon->sel->isfullscreen)
         return;
-    }
 	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
 		return;
 
@@ -1892,7 +1891,7 @@ movey(const Arg *arg) {
 void
 movexfloating(const Arg *arg)
 {
-    if(!selmon->sel) {
+    if(!selmon->sel || selmon->sel->isfullscreen) {
         return;
     }
 	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
@@ -1917,7 +1916,7 @@ movexfloating(const Arg *arg)
 void
 moveyfloating(const Arg *arg)
 {
-    if(!selmon->sel) {
+    if(!selmon->sel || selmon->sel->isfullscreen) {
         return;
     }
 	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
