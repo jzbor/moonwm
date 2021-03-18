@@ -37,7 +37,6 @@ This is useful if you for example have your own wrapper scripts or other replace
 ```sh
 export MOONWM_NODUNST=1        # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
-export MOONWM_NOSTATUS=1       # disables status
 ```
 If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
@@ -123,26 +122,28 @@ xmenu.selforeground:    #1d2021
 
 
 ## Setting up your own status
-To setup your own status command you should first set the according env variables in your `~/.profile`:
+The built-in `moonwm-status` script should be a good foundation for making your own statuscmd.
+It is easily extensible and you can simply add blocks with `add_block` in the `get_status` function.
+Make sure to escape '%' though, as it is interpreted by printf as escape sequence.
+
+To setup your own status command you should also set the according env variable in your `~/.profile`:
 ```sh
-export MOONWM_NOSTATUS=1
-export MOONWM_STATUSHANDLER="/path/to/my/statushandler"
+export MOONWM_STATUSCMD="/path/to/my/statuscmd"
 ```
-You can then add your status script to autostart (`~/.local/share/moonwm/autostart.sh`).
-I should set the string you want as name of the X11 root window like this:
-```sh
-xsetroot -name "$(get_status)"
-```
-In this example `get_status` is a function that prints the current status to stdout.
+This command gets asynchonously on MoonWMs startup with `loop` as the first parameter.
+It should then repeatedly set the status to the WM_NAME (for example with `xsetroot`).
+Make sure to add in a `sleep` so it doesn't unnecessarily wastes resources.
+
 You can also define clickable blocks actions delimited by ascii chars that are smaller than space.
 For example:
 ```
 date: 11:05 |\x01 volume: 55% |\x02 cpu-usage: 21% ||
 ```
-It is totally up to you how you generate this string, but you can take a look at the reference implementation in `moonwm-util`.
-Once you press one of the blocks the status handler script will be called with the according mouse button set as `$BUTTON` and the block number set as `$STATUSCMDN`.
-It is also up to you how you wish to handle them, but a reference exists in `moonwm-util`
+Once you press one of the blocks the statuscmd script will be called with `action` as its first parameter.
+The according mouse button will be set as `$BUTTON` and the block number as `$STATUSCMDN`.
 
+The standard MoonWM status interface also includes the `update` parameter, which tells the bar to immediatly refresh.
+`status` as first parameter prints out the current statusline to stdout.
 
 ## Default tags
 Some applications have default  tags they open on:
