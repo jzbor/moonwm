@@ -159,7 +159,9 @@ static const char *layoutmenu_cmd = "moonwm-layoutmenu";
 
 /* this script or program gets called for bar button presses
  * the button is exported as BUTTON the according module as STATUSCMDN (a number)*/
-static char *statushandler[] = { "/bin/sh", "-c", "moonwm-util statushandler", NULL };
+static char *statushandler[] = { "/bin/sh", "-c", "$MOONWM_STATUSCMD action", NULL };
+// this command gets executed on startup and should set you status to WM_NAME
+static char *statuscmd[] = { "/bin/sh", "-c", "$MOONWM_STATUSCMD loop", NULL };
 
 /* most keys are specified in <X11/keysymdef.h> */
 static Key keys[] = {

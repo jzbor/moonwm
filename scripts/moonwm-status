@@ -1,0 +1,86 @@
+#!/bin/sh
+
+statusline=""
+
+add_block () {
+	content="$1"
+	index="$2"
+	nmatch="$3"
+
+	if ! [ -z "$content" ] && ( [ -z "$nmatch" ] || ! [ "$content" = "$nmatch" ] ); then
+    	statusline="$statusline\x0$index $content |"
+	else
+    	statusline="$statusline\x0$index"
+	fi
+}
+
+help () {
+    echo "Options for $0:"
+    echo "    status: prints the current status to stdout"
+    echo "    loop:   set status to WM_NAME in a loop"
+    echo "    update: immediatly update status in WM_NAME"
+    echo "    action: execute action (STATUSCMD and BUTTON give block and mouse button)"
+}
+
+loop () {
+    while true; do
+        set_status
+        sleep 2 2> /dev/null
+    done
+}
+
+set_status () {
+    xsetroot -name "$(get_status)" || exit
+}
+
+### BLOCK FUNCTIONS
+
+volume () {
+    if pamixer --get-mute > /dev/null; then
+        icon='婢'
+    else
+        icon='墳'
+    fi
+    printf "%s %s%%%%" "$icon" "$(pamixer --get-volume)"
+
+}
+
+### CUSTOM STATUS AND ACTIONS
+
+get_status () {
+    statusline=""
+
+    add_block "$(volume)" 1
+    add_block " $(date +%R)" 2
+
+    printf "$statusline|\n"
+}
+
+action () {
+    case "$STATUSCMDN" in
+        0)
+            case $BUTTON in
+                1) moonwm-util volume mute;;
+                4) moonwm-util volume +5;;
+                5) moonwm-util volume -5;;
+            esac;;
+        1)
+            case $BUTTON in
+                1) notify-send -a "$(date)" "$(cal -n 2)";;
+            esac;;
+    esac
+}
+
+
+case $1 in
+    status)
+        get_status;;
+    update)
+        set_status;;
+    loop)
+        loop;;
+    action)
+        action;;
+    help)
+        help;;
+esac

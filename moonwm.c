@@ -2514,6 +2514,9 @@ runautostart(void)
     /* run moonwm-util if available */
     system(providedautostart);
 
+    /* run statuscmd if availablea */
+    spawn(&((Arg) { .v = statuscmd }));
+
 	/* if $XDG_DATA_HOME is set and not empty, use $XDG_DATA_HOME/moonwm,
 	 * otherwise use ~/.local/share/moonwm as autostart script directory
 	 */

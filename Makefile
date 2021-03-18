@@ -57,11 +57,13 @@ install-scripts:
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f scripts/moonwm-menu ${DESTDIR}${PREFIX}/bin
 	cp -f scripts/moonwm-util ${DESTDIR}${PREFIX}/bin
+	cp -f scripts/moonwm-status ${DESTDIR}${PREFIX}/bin
 	cp -f scripts/moonwm-xdg-xmenu ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-menu
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-util
+	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-status
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-xdg-xmenu
 
 .PHONY: all options clean dist install install-scripts uninstall uninstall-scripts
