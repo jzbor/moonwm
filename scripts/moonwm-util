@@ -8,7 +8,6 @@ LOCK_TMP_FILE="/tmp/lockfile.png"
 autostart () {
     # Configure X
     wmname LG3D
-    setxkbmap $MOONWM_KEYMAP
     xwallpaper --zoom "$MOONWM_WALLPAPER" 2> /dev/null &
 
     # Other daemons
@@ -251,6 +250,10 @@ setup_displays () {
     (sleep 20; generate_lock_file) &
 }
 
+setup_keyboard () {
+    setxkbmap $MOONWM_KEYMAP
+}
+
 volume () {
     if [ "$1" = "mute" ]; then
         pamixer -t
@@ -284,6 +287,7 @@ case $1 in
     launch) launch;;
     screenlayouts) layouts;;
     screenshot) screenshot "$2";;
+    setup-keyboard) setup_keyboard;;
     lock) lock;;
     start) autostart;;
     volume) volume "$2";;
