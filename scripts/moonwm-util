@@ -9,6 +9,7 @@ autostart () {
     # Configure X
     wmname LG3D
     xwallpaper --zoom "$MOONWM_WALLPAPER" 2> /dev/null &
+    setup_keyboard
 
     # Other daemons
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
