@@ -28,7 +28,7 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	setmfact (f)
 	shiftview (i)
 	shiftviewclients (i)
-	tag (i)
+	tag (ui)
 	tagall
 	tagmon (i)
 	togglebar
@@ -36,9 +36,8 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	togglefullscr
 	toggletag (i)
 	toggleview (i)
-	view (ui)
 	viewall
-	view (i)
+	view (ui)
 	xrdb
 	zoom
 	"
@@ -50,7 +49,7 @@ case $# in
 	;;
 1)
 	case $1 in
-	togglefullscr | view | viewall | xrdb | rioresize | center\
+	togglefullscr | viewall | tagall | xrdb | rioresize | center\
 				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
 		signal $1
 		;;
@@ -66,10 +65,10 @@ case $# in
 	;;
 2)
 	case $1 in
-	view)
+	view | tag)
 		signal $1 ui $2
 		;;
-	shiftview | shiftviewclients | view | toggleview | tag | toggletag | setlayout \
+	shiftview | shiftviewclients | toggleview | toggletag | setlayout \
 				| focusstack | incnmaster | focusmon | tagmon | movex | movey | resizex | resizey)
 		signal $1 i $2
 		;;

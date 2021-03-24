@@ -236,6 +236,7 @@ static Key keys[] = {
     { MODKEY,               XK_F2,      togglegaps,      {0} },
     { MODKEY,               XK_F5,      xrdb,            {0} },
     { MODKEY,               XK_F10,     spawn,           SHCMD("arandr") },
+    { MODKEY,               XK_F11,     spawn,           SHCMD("moonwm-helper") },
 };
 
 /* button definitions */

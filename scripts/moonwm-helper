@@ -1,0 +1,52 @@
+#!/bin/sh
+
+options="\
+### TAGS AND MONITORS ###
+     Switch to previous occupied tag        MOD + comma                :moonie shiftviewclients -1
+     Switch to next occupied tag            MOD + period               :moonie shiftviewclients +1
+     Focus previous monitor                 MOD + Prior                :moonie focusmon +1
+     Move window to previous monitor        MOD + Shift + Prior        :moonie focusmon +1
+     Focus next monitor                     MOD + Prior                :moonie focusmon -1
+     Move window to next monitor            MOD + Shift + Prior        :moonie focusmon -1
+
+### WINDOW MANAGEMENT ###
+     Resize window by drawing it            MOD + a                    :moonie rioresize
+     Window overview (skippy-xd)            MOD + space                :pidof skippy-xd || skippy-xd > /dev/null 2>&1
+     Close window                           MOD + Shift + q            :moonie killclient
+
+### LAYOUTS ###
+     Default tiling layout                  MOD + t                    :moonie setlayout 0
+     Deck layout                            MOD + c                    :moonie setlayout 1
+     Monocle layout                         MOD + m                    :moonie setlayout 2
+     Floating layout                        MOD + Shift + f            :moonie setlayout 3
+     Mirrored tiling layout                 MOD + Shift + t            :moonie setlayout 4
+     Bottom tiling layout                   MOD + Control + t          :moonie setlayout 5
+     Toggle floating for window             MOD + Shift + space        :moonie togglefloating
+     Center floating window                 MOD + z                    :moonie center
+     Load saved screen setup                MOD + Shift + r            :moonwm-util screen-layouts
+
+### APPS AND MENUS ###
+     Open terminal                          MOD + Return               :\$TERMINAL
+     Open browser                           MOD + w                    :\$BROWSER
+     Open file manager                      MOD + b                    :\$FILEMANAGER
+     Open launcher/dmenu                    MOD + d                    :\$DMENUCMD
+     Open menu                              Control + Alt + Delete     :moonwm-menu 3
+
+### OTHER ###
+     Screenshot (select area)               MOD + Print                :moonwm-util screenshot
+     Screenshot whole screen                MOD + Print                :moonwm-util screenshot screen
+     Screenshot focused window              MOD + Print                :moonwm-util screenshot focused
+     Auto-setup monitors                    MOD + r                    :moonwm-util screensetup
+     Load custom monitor setup (arandr)     MOD + Shift + r            :moonwm-util screenlayouts
+     Lock screen                            MOD + x                    :moonwm-util lock
+     Log out                                Control + MOD + BackSpace  :moonie quit
+
+### FUNCTION KEYS ###
+     Toggle top bar                         MOD + F1                   :moonie togglebar
+     Toggle gaps between windows            MOD + F2                   :moonie togglegaps
+     Reload styling from xrdb               MOD + F5                   :moonie xrdb
+     Setup and save monitor setups          MOD + F10                  :arandr
+     This menu                              MOD + F11                  :moonwm-helper
+"
+
+echo "$options" | moonwm-util dmenu -p Help: -l 200 | sed 's/.*://'| sh
