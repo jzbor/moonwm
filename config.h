@@ -204,7 +204,6 @@ static Key keys[] = {
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_z,       center,          {0} },
-    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("moonwm-util screen-layouts") },
     /* APPS */
     { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
@@ -236,7 +235,7 @@ static Key keys[] = {
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { MODKEY,               XK_F2,      togglegaps,      {0} },
     { MODKEY,               XK_F5,      xrdb,            {0} },
-
+    { MODKEY,               XK_F10,     spawn,           SHCMD("arandr") },
 };
 
 /* button definitions */
