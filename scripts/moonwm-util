@@ -24,7 +24,7 @@ autostart_async () {
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-    [ -z "$MOONWM_NODUNST" ] && run dunst dunst
+    [ -z "$MOONWM_NODUNST" ] && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
     run kdeconnect-indicator kdeconnect-indicator
     run nm-applet nm-applet
     run xfce4-power-manager xfce4-power-manager
@@ -92,6 +92,18 @@ get_default_dmenucmd () {
         echo rofi -show drun
     elif command -v dmenu_run > /dev/null 2>&1; then
         echo moonwm-util dmenu_run
+    else
+        return 1
+    fi
+}
+
+get_default_notification_daemon () {
+    if command -v dunst > /dev/null 2>&1; then
+        echo dunst
+    elif command -v /usr/lib/notification-daemon-1.0/notification-daemon > /dev/null 2>&1; then
+        echo /usr/lib/notification-daemon-1.0/notification-daemon
+    elif command -v /usr/lib/xfce4/notifyd/xfce4-notifyd > /dev/null; then
+        echo /usr/lib/xfce4/notifyd/xfce4-notifyd
     else
         return 1
     fi
