@@ -22,7 +22,7 @@ options="\
      Switch master                          MOD + Shift + { h, l }
      Move window up/down in stack list      MOD + Shift + { j, k }
      Change master factor (resize master)   MOD + Control + { h, l }
-  # On floating clinets/layouts:
+  # On floating clients/layouts:
      Move window left/down/up/right         MOD + Shift + { h, j, k, l }
      Resize window                          MOD + Control + { h, j, k, l }
   # On floating and tiling:
