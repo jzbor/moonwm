@@ -61,8 +61,18 @@ brightness () {
     fi
 }
 
+default_dmenu_run () {
+    dmenu_path | \
+    	$0 dmenu "$@" | \
+        sh
+}
+
 dmenu_wrapper () {
-    dmenu_run -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10'
+    if (! env | grep '^MOONWM_NOTHEMEDDMENU=' > /dev/null); then
+        exec dmenu -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10' "$@"
+    else
+       	exec dmenu "$@"
+   	fi
 }
 
 get_default_browser () {
@@ -81,7 +91,7 @@ get_default_dmenucmd () {
     if command -v rofi > /dev/null 2>&1; then
         echo rofi -show drun
     elif command -v dmenu_run > /dev/null 2>&1; then
-        echo moonwm-util dmenu
+        echo moonwm-util dmenu_run
     else
         return 1
     fi
@@ -156,7 +166,7 @@ launch () {
 }
 
 layouts () {
-    layout="$HOME/.screenlayout/$(ls -1u ~/.screenlayout/ | dmenu -p "Layouts: ")"
+    layout="$HOME/.screenlayout/$(ls -1u ~/.screenlayout/ | $0 dmenu -p "Layouts: ")"
     if [ -x "$layout" ]; then
         sh -c "$layout"
         xwallpaper --zoom "$MOONWM_WALLPAPER"
@@ -283,7 +293,8 @@ xrdb_set_color () {
 
 case $1 in
     brightness) brightness "$2";;
-    dmenu) dmenu_wrapper;;
+    dmenu) shift; dmenu_wrapper "$@";;
+    dmenu_run) shift; default_dmenu_run "$@";;
     screensetup) setup_displays;;
     launch) launch;;
     screenlayouts) layouts;;

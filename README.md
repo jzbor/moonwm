@@ -37,6 +37,7 @@ This is useful if you for example have your own wrapper scripts or other replace
 ```sh
 export MOONWM_NODUNST=1        # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
+export MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
 ```
 If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
