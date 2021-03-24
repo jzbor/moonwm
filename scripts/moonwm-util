@@ -37,8 +37,9 @@ autostart_async () {
     run touchegg touchegg
 
     # Auto setup displays
-    if [ -f "~/.screenlayout/autoload.sh" ]; then
+    if [ -x ~/.screenlayout/autoload.sh ]; then
         ~/.screenlayout/autoload.sh
+        xwallpaper --zoom "$MOONWM_WALLPAPER"
     else
         setup_displays
     fi
