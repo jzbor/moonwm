@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # env variables to set:
-# MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOPICOM MOONWM_NODUNST MOONWM_STATUSHANDLER)
+# MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOPICOM MOONWM_NONOTIFYD MOONWM_STATUSHANDLER)
 
 LOCK_TMP_FILE="/tmp/lockfile.png"
 
@@ -24,7 +24,7 @@ autostart_async () {
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-    [ -z "$MOONWM_NODUNST" ] && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
+    [ -z "$MOONWM_NONOTIFYD" ] && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
     run kdeconnect-indicator kdeconnect-indicator
     run nm-applet nm-applet
     run xfce4-power-manager xfce4-power-manager

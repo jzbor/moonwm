@@ -67,7 +67,7 @@ export MOONWM_KEYMAP="de -option -option altwin:swap_alt_win -option lv3:ralt_sw
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh
-export MOONWM_NODUNST=1        # disables dunst
+export MOONWM_NONOTIFYD=1        # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
 export MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
 ```
