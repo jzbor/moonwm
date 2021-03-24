@@ -52,8 +52,6 @@ options="\
      Screenshot (select area)               MOD + Print                        :moonwm-util screenshot
      Screenshot whole screen                MOD + Print                        :moonwm-util screenshot screen
      Screenshot focused window              MOD + Print                        :moonwm-util screenshot focused
-     Auto-setup monitors                    MOD + r                            :moonwm-util screensetup
-     Load custom monitor setup (arandr)     MOD + Shift + r                    :moonwm-util screenlayouts
      Lock screen                            MOD + x                            :moonwm-util lock
      Log out                                Control + MOD + BackSpace          :moonie quit
 
@@ -62,6 +60,7 @@ options="\
      Toggle gaps between windows            MOD + F2                           :moonie togglegaps
      Reload styling from xrdb               MOD + F5                           :moonie xrdb
      Setup and save monitor setups          MOD + F10                          :arandr
+     Load custom monitor setup (arandr)     MOD + Shift + F10                  :moonwm-util screenlayouts
      This menu                              MOD + F11                          :moonwm-helper
 "
 

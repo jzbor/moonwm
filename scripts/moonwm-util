@@ -37,7 +37,12 @@ autostart_async () {
     run touchegg touchegg
 
     # Auto setup displays
-    setup_displays
+    if [ -f "~/.screenlayout/autoload.sh" ]; then
+        ~/.screenlayout/autoload.sh
+    else
+        setup_displays
+    fi
+
 
     # Run nextcloud last so polkit is up
     run nextcloud "nextcloud --background"

@@ -31,11 +31,11 @@ You will get a interactive list with shortcuts and their corresponding actions.
 You can also directly select most of the entries to execute their action.**
 
 ### Setting up different screen layouts
-`moonwm-util` arranges monitors next to each other with their native resolution by default.
-However this may not be suitable for all situations.
-To create custom layouts use the graphical tool `arandr`.
-It lets you save a layout in `~/.screenlayouts` from where you can load your layouts either with `arandr` or with dmenu/rofi by pressing `Mod+Shift+r`.
-To trigger the default `moonwm-util` layout (for example when you connect a new display) you can use the keyboard shortcut `Mod+r`.
+To setup your monitors use the graphical tool `arandr` (`MOD+F10`).
+It lets you create and save a layout in `~/.screenlayouts` from where you can load your layouts either with `arandr` or with dmenu/rofi by pressing `Mod+Shift+F10`.
+On startup MoonWM loads the `autoload.sh` setup if it is available.
+If it isn't MoonWM automatically arranges the monitors next to each other with their native resolutions.
+This is done by `moonwm-util` and can be called with `moonwm-util screensetup`.
 
 
 ## Customizing

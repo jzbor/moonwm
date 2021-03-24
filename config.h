@@ -227,8 +227,6 @@ static Key keys[] = {
     { MODKEY|ShiftMask,     XK_Print,   spawn,           SHCMD("moonwm-util screenshot screen") },
     { MODKEY|ControlMask,   XK_Print,   spawn,           SHCMD("moonwm-util screenshot focused") },
     /* OTHER */
-    { MODKEY,               XK_r,       spawn,           SHCMD("moonwm-util screensetup") },
-    { MODKEY|ShiftMask,     XK_r,       spawn,           SHCMD("moonwm-util screenlayouts") },
     { MODKEY,               XK_x,       spawn,           SHCMD("moonwm-util lock") },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
     /* FUNCTION KEYS */
@@ -236,6 +234,7 @@ static Key keys[] = {
     { MODKEY,               XK_F2,      togglegaps,      {0} },
     { MODKEY,               XK_F5,      xrdb,            {0} },
     { MODKEY,               XK_F10,     spawn,           SHCMD("arandr") },
+    { MODKEY|ShiftMask,     XK_F10,     spawn,           SHCMD("moonwm-util screenlayouts") },
     { MODKEY,               XK_F11,     spawn,           SHCMD("moonwm-helper") },
 };
 
