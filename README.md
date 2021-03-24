@@ -32,6 +32,11 @@ You should also be able to add `setxbkmap` options to your keyboard layout like 
 ```sh
 export MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
 ```
+This way you can also use Alt as modifier key - by just swapping Alt and Win.
+If you are using a layout with third level remember to swap back right Alt to lvl-shift.
+```sh
+export MOONWM_KEYMAP="de -option -option altwin:swap_alt_win -option lv3:ralt_switch"
+```
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh
