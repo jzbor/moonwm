@@ -14,6 +14,8 @@ autostart () {
     # Other daemons
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
 
+    rm "${XDG_CACHE_HOME:-$HOME/.cache}/moonwm-xdg-xmenu/*.part"
+
     autostart_async &
 }
 
@@ -213,7 +215,7 @@ run () {
     # 1: executable to test for
     # 2: command to execute
     # 3: '1' to run synchronously
-    if ( [ -z "$1" ] || command -v $1 > /dev/null 2>&1 ); then
+    if ( [ -z "$1" ] || command -v "$1" > /dev/null 2>&1 ); then
         if [ "$3" = 1 ]; then
             $2
         else
@@ -224,10 +226,10 @@ run () {
 
 screenshot () {
     dest="$XDG_PICTURES_DIR"
-    [ -d "$dest" ] || dest="~/Pictures"
-    [ -d "$dest" ] || dest="~/"
+    [ -d "$dest" ] || dest="$HOME/Pictures"
+    [ -d "$dest" ] || dest="$HOME/"
     dest="$dest/Screenshots/"
-    [ -d "$dest" ] || mkdir -p $dest
+    [ -d "$dest" ] || mkdir -p "$dest"
 
     filename="$(date +'Screenshot_%Y-%m-%d_%H-%M-%S.png')"
     success="-1"
@@ -280,7 +282,7 @@ setup_displays () {
 
     # Preventing initialization of VIRTUAL1 on undock
     for display in $disconnected; do
-        xrandr --output $display --off
+        xrandr --output "$display" --off
     done
 
     xwallpaper --zoom "$MOONWM_WALLPAPER"
@@ -290,7 +292,8 @@ setup_displays () {
 
 setup_keyboard () {
     setxkbmap $MOONWM_KEYMAP
-    cat "$XDG_DATA_HOME/moonwm/modmap" | xmodmap -e
+    xmodmap -e < "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap" 2> /dev/null
+    return 0
 }
 
 volume () {
