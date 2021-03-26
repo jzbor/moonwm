@@ -292,7 +292,8 @@ setup_displays () {
 
 setup_keyboard () {
     setxkbmap $MOONWM_KEYMAP
-    xmodmap -e < "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap" 2> /dev/null
+    [ -f "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap" ] && \
+        xmodmap - < "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap"
     return 0
 }
 
