@@ -64,6 +64,9 @@ If you are using a layout with third level remember to swap back right Alt to lv
 ```sh
 export MOONWM_KEYMAP="de -option -option altwin:swap_alt_win -option lv3:ralt_switch"
 ```
+If you want to use a custom modmap setup just put the `xmodmap` expressions in `~/.local/share/moonwm/modmap`.
+If will be evaluated automatically.
+
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh

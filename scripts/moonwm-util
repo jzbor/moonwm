@@ -75,8 +75,8 @@ default_dmenu_run () {
 
 dmenu_drun () {
     list="$(moonwm-xdg-xmenu | sed 's/IMG:[a-zA-Z0-9./_-]*//;s/^\s*//' | grep '	')"
-    selected="$(echo "$list" | cut -f1 | $0 dmenu "$@")" || return
-    eval "$(echo "$list" | grep -F "$selected" | head -n 1 | cut -f2)"
+    selected="$(echo "$list" | cut -f1 | $0 dmenu -i "$@")" \
+    	&& eval "$(echo "$list" | grep -F "$selected" | head -n 1 | cut -f2)"
     nice moonwm-xdg-xmenu -u &
 }
 
@@ -194,8 +194,9 @@ layouts () {
     layout="$HOME/.screenlayout/$(ls -1u ~/.screenlayout/ | $0 dmenu -p "Layouts: ")"
     if [ -x "$layout" ]; then
         sh -c "$layout"
+        setup_keyboard
         xwallpaper --zoom "$MOONWM_WALLPAPER"
-        generate_lock_file &
+        (sleep 20; generate_lock_file) &
     fi
 }
 
@@ -283,11 +284,13 @@ setup_displays () {
     done
 
     xwallpaper --zoom "$MOONWM_WALLPAPER"
+    setup_keyboard
     (sleep 20; generate_lock_file) &
 }
 
 setup_keyboard () {
     setxkbmap $MOONWM_KEYMAP
+    cat "$XDG_DATA_HOME/moonwm/modmap" | xmodmap -e
 }
 
 volume () {
