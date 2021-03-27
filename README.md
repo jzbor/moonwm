@@ -74,7 +74,6 @@ export MOONWM_NONOTIFYD=1        # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
 export MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
 ```
-If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
 ### Set custom colours with xrdb
 Custom values for colors and some other properties can be set via `xrdb(1)`.
@@ -112,6 +111,8 @@ On login or reload `moonwm-util` starts a bunch of useful services by default.
 Most of them are listed below in the dependencies.
 In addition `touchegg` also gets started if installed, but it only really makes sense if you set it up properly.
 Same goes for `nextcloud`. If you have it installed it gets started.
+
+If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
 ### Creating your own status script
 The built-in `moonwm-status` script should be a good foundation for making your own statuscmd.
