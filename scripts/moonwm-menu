@@ -24,10 +24,10 @@ command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
 command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
   Mail				thunderbird"
 
-contextmenu="  Fullscreen		moonie togglefullscr
-  Floating			moonie togglefloating
-  Zoom				moonie zoom
-  Close			moonie killclient"
+contextmenu="  Close			xdotool windowactivate \$(slop -b 0 -f %i); moonie killclient
+ﭔ  Resize			xdotool windowactivate \$(slop -b 0 -f %i); moonie rioresize
+  Floating			xdotool windowactivate \$(slop -b 0 -f %i); moonie togglefloating
+  Fullscreen		xdotool windowactivate \$(slop -b 0 -f %i); moonie togglefullscr"
 
 
 case $1 in
