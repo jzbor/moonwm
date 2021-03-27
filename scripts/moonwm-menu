@@ -24,10 +24,10 @@ command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
 command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
   Mail				thunderbird"
 
-contextmenu="  Close			xdotool windowactivate \$(slop -b 0 -f %i); moonie killclient
-ﭔ  Resize			xdotool windowactivate \$(slop -b 0 -f %i); moonie rioresize
-  Floating			xdotool windowactivate \$(slop -b 0 -f %i); moonie togglefloating
-  Fullscreen		xdotool windowactivate \$(slop -b 0 -f %i); moonie togglefullscr"
+contextmenu="  Close			moonie killclient
+ﭔ  Resize			moonie rioresize
+  Floating			moonie togglefloating
+  Fullscreen		moonie togglefullscr"
 
 
 case $1 in
@@ -36,7 +36,11 @@ case $1 in
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     2) echo "$appsmenu" | xmenu -p 0x0:current | sh ;;
     3) echo "$rightmenu" | xmenu -p 0x0:current | sh ;;
-    "context") echo "$contextmenu" | xmenu | sh ;;
+    "context")
+        selection="$(echo "$contextmenu" | xmenu)"
+        xdotool windowactivate --sync "$(slop -b 0 -f %i)"
+		echo "$selection" | sh
+		;;
 esac
 
 nice moonwm-xdg-xmenu -u &
