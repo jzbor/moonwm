@@ -35,12 +35,12 @@ case $1 in
     # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     2) echo "$appsmenu" | xmenu -p 0x0:current | sh ;;
-    3) echo "$rightmenu" | xmenu -p 0x0:current | sh ;;
+    3) echo "$rightmenu" | xmenu -p 0x0:current | sh; nice moonwm-xdg-xmenu -u & ;;
     "context")
         selection="$(echo "$contextmenu" | xmenu)"
-        xdotool windowactivate --sync "$(slop -b 0 -f %i)"
+        [ -z "$selection" ] && exit
+        xdotool windowactivate --sync "$(slop -b 0 -f %i)" || exit
 		echo "$selection" | sh
 		;;
 esac
 
-nice moonwm-xdg-xmenu -u &
