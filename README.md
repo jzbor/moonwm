@@ -189,6 +189,7 @@ polkit-gnome
 redshift
 skippy-xd
 wmname
+xdotool
 xfce4-power-manager
 xorg-setxkbmap
 xorg-xrandr
