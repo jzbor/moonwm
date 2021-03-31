@@ -193,7 +193,7 @@ static Key keys[] = {
     DIRECTIONKEY(XK_j, y, {.i = -20})
     DIRECTIONKEY(XK_k, y, {.i = 20})
     DIRECTIONKEY(XK_l, x, {.i = 20})
-    { MODKEY,               XK_a,       rioresize,       {0} },
+    { MODKEY,               XK_r,       rioresize,       {0} },
     { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     /* LAYOUTS */

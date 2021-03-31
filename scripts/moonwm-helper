@@ -28,7 +28,7 @@ options="\
      Move window left/down/up/right         MOD + Shift + { h, j, k, l }
      Resize window                          MOD + Control + { h, j, k, l }
   # On floating and tiling:
-     Resize window by drawing it            MOD + a                            :moonie rioresize
+     Resize window by drawing it            MOD + r                            :moonie rioresize
      Window overview (skippy-xd)            MOD + space                        :pidof skippy-xd || skippy-xd > /dev/null 2>&1
      Close window                           MOD + Shift + q                    :moonie killclient
 
