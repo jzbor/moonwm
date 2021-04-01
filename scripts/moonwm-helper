@@ -8,9 +8,9 @@ options="\
      Toggle tag on window                   MOD + Shift + Control + { 1 - 9 }
      View all tags                          MOD + 0                            :moonie viewall
      Window on all tags                     MOD + Shift + 0                    :moonie tagall
-     Switch to previously selected tags     MOD + BackSpace
-     Switch to next occupied tag            MOD + Tab                          :moonie shiftviewclients +1
-     Switch to previous occupied tag        MOD + Shift + Tab                  :moonie shiftviewclients -1
+     Switch to previously selected tags     MOD + Tab
+     Switch to next occupied tag            MOD + Shift + Tab                  :moonie shiftviewclients +1
+     Switch to previous occupied tag        MOD + Control + Tab                :moonie shiftviewclients -1
      Switch to previous tag                 MOD + comma                        :moonie shiftviewclients -1
      Switch to next tag                     MOD + period                       :moonie shiftviewclients +1
      Focus previous monitor                 MOD + Prior                        :moonie focusmon +1
