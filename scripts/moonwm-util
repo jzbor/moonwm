@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # env variables to set:
-# MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOPICOM MOONWM_NONOTIFYD MOONWM_STATUSHANDLER)
+# MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOKEYS MOONWM_NOPICOM MOONWM_NONOTIFYD MOONWM_STATUSHANDLER)
 
 LOCK_TMP_FILE="/tmp/lockfile.png"
 
@@ -193,7 +193,14 @@ launch () {
     load_env_defaults
 
     xrdb -merge ~/.Xresources
-    exec moonwm
+
+    if (! env | grep '^MOONWM_NOKEYS=' > /dev/null); then
+        touch ~/nokeys
+        exec moonwm
+    else
+        touch ~/keys
+        exec moonwm -n
+    fi
 }
 
 layouts () {
@@ -295,7 +302,7 @@ setup_displays () {
 }
 
 setup_keyboard () {
-    setxkbmap $MOONWM_KEYMAP
+    [ -n "$MOONWM_KEYMAP" ] && setxkbmap $MOONWM_KEYMAP
     [ -f "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap" ] && \
         xmodmap - < "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap"
     return 0
