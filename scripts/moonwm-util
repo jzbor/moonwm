@@ -387,6 +387,6 @@ case $1 in
     setup-keyboard) setup_keyboard;;
     start) autostart;;
     volume) volume "$2";;
-    *) echo "Unknown operation"; exit 1;;
+    *) printf "Unknown operation '$1'.\nTry 'moonwm-util -h' for more information.\n"; exit 1;;
 esac
 
