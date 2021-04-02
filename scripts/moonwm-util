@@ -333,18 +333,58 @@ xrdb_set_color () {
     echo "$1: $2" | xrdb -merge
 }
 
+helptext="
+moonwm-util [-h] [-r] command
+
+options:
+    -h    Prints this help text
+    -r    Check if MoonWM is running first
+
+commands:
+    brightness     Change display brightness (e.g. moonwm-util brightness -5)
+    dmenu          Themed wrapper for dmenu (for use in scripts etc.)
+    drun           Default application launcher
+    help           Prints this help text
+    launch         Wrapper to launch MoonWM properly (used in moonwm.desktop, can be used in .xinitrc)
+    lock           Locks the screen
+    run            Launcher with all exectutables in \$PATH
+    screenlayouts  Select monitor configuration via dmenu
+    screensetup    Set up monitors with default procedure
+    screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
+    setup-keyboard Initialize keyboard layout
+    start          Launch autostart applications
+    volume         Change output volume (e.g. moonwm-util volume -5 or moonwm-util volume mute)
+"
+
+while getopts "hr" arg; do
+    case "$arg" in
+        h)
+            echo "$helptext"
+            exit
+            ;;
+        r)
+            if ! pidof moonwm > /dev/null; then
+                echo "MoonWM is not running."
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
 
 case $1 in
     brightness) brightness "$2";;
     dmenu) shift; dmenu_wrapper "$@";;
-    run) shift; default_dmenu_run "$@";;
     drun) shift; dmenu_drun "$@";;
-    screensetup) setup_displays;;
+    help) echo "$helptext"; exit;;
     launch) launch;;
+    lock) lock;;
+    run) shift; default_dmenu_run "$@";;
     screenlayouts) layouts;;
+    screensetup) setup_displays;;
     screenshot) screenshot "$2";;
     setup-keyboard) setup_keyboard;;
-    lock) lock;;
     start) autostart;;
     volume) volume "$2";;
     *) echo "Unknown operation"; exit 1;;
