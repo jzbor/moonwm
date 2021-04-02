@@ -239,6 +239,7 @@ static Key keys[] = {
     { MODKEY,               XK_F5,      xrdb,            {0} },
     { MODKEY,               XK_F10,     spawn,           SHCMD("arandr") },
     { MODKEY|ShiftMask,     XK_F10,     spawn,           SHCMD("moonwm-util screenlayouts") },
+    { MODKEY|ControlMask,   XK_F10,     spawn,           SHCMD("moonwm-util screensetup") },
     { MODKEY,               XK_F11,     spawn,           SHCMD("moonwm-helper") },
 };
 

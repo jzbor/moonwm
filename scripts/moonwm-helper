@@ -64,6 +64,7 @@ options="\
      Reload styling from xrdb               MOD + F5                           :moonie xrdb
      Setup and save monitor setups          MOD + F10                          :arandr
      Load custom monitor setup (arandr)     MOD + Shift + F10                  :moonwm-util screenlayouts
+     Setup monitors automatically           MOD + Control + F10                :moonwm-util screensetup
      This menu                              MOD + F11                          :moonwm-helper
 "
 
