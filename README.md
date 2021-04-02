@@ -70,10 +70,13 @@ If will be evaluated automatically.
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh
-export MOONWM_NONOTIFYD=1        # disables dunst
+export MOONWM_NONOTIFYD=1      # disables dunst
 export MOONWM_NOPICOM=1        # disables picom
 export MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
+export MOONWM_NOKEYS=1         # disables MoonWMs internal key management
 ```
+You can disable the hotkey deamon built into MoonWM with `export MOONWM_NOKEYS=1`, when using a display manager with the provided desktop file or `moonwm-util launch` (this is the default).
+If you start MoonWM directly you can achieve this by using the `-n` option.
 
 ### Set custom colours with xrdb
 Custom values for colors and some other properties can be set via `xrdb(1)`.
