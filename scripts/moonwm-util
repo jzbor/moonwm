@@ -123,6 +123,8 @@ get_default_notification_daemon () {
         echo /usr/lib/notification-daemon-1.0/notification-daemon
     elif command -v /usr/lib/xfce4/notifyd/xfce4-notifyd > /dev/null; then
         echo /usr/lib/xfce4/notifyd/xfce4-notifyd
+    elif command -v /usr/lib/notify-osd/notify-osd > /dev/null; then
+        echo /usr/lib/notify-osd/notify-osd
     else
         return 1
     fi
