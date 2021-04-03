@@ -230,9 +230,9 @@ run () {
     # 3: '1' to run synchronously
     if ( [ -z "$1" ] || command -v "$1" > /dev/null 2>&1 ); then
         if [ "$3" = 1 ]; then
-            $2
+            echo "$2" | sh
         else
-            $2 &
+            echo "$2" | sh &
         fi
     fi
 }
