@@ -36,7 +36,7 @@ autostart_async () {
     killall -9 redshift; redshift -x; redshift -l geoclue2) &
 
     pidof touchegg > /dev/null || rm ~/.config/touchegg/.touchegg.lock
-    run touchegg "touchegg --daemon"
+    run touchegg "touchegg --daemon $TOUCHEGG_THRESHOLDS"
     run touchegg touchegg
 
     # Auto setup displays

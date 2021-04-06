@@ -54,6 +54,7 @@ export TERMINAL="alacritty"
 export DMENUCMD="rofi -show drun"
 export MOONWM_KEYMAP="us"
 export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
+export TOUCHEGG_THRESHOLD="750 750"
 ```
 You should also be able to add `setxbkmap` options to your keyboard layout like this:
 ```sh
