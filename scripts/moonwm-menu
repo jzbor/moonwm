@@ -39,7 +39,9 @@ case $1 in
     "context")
         selection="$(echo "$contextmenu" | xmenu)"
         [ -z "$selection" ] && exit
-        xdotool windowactivate --sync "$(slop -b 0 -f %i)" || exit
+        wid="$(slop -b 0 -f %i)"
+        [ -z "$wid" ] && exit
+        timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
 		echo "$selection" | sh
 		;;
 esac
