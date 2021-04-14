@@ -1863,7 +1863,7 @@ movemouse(const Arg *arg)
 
 void
 moveorplace(const Arg *arg) {
-	if (ISFLOATING(selmon->sel))
+	if (selmon->sel && ISFLOATING(selmon->sel))
 		movemouse(arg);
 	else
 		placemouse(arg);
@@ -1975,6 +1975,8 @@ placemouse(const Arg *arg)
 		return;
 	restack(selmon);
 	prevr = c;
+    px = c->x;
+    py = c->y;
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
 		return;
@@ -2071,11 +2073,12 @@ placemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 
-	if ((m = recttomon(ev.xmotion.x, ev.xmotion.y, 1, 1)) && m != c->mon) {
+	if ((m = recttomon(px, py, 1, 1)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
 		arrangemon(c->mon);
 		c->mon = m;
+        c->tags = m->tagset[m->seltags];
 		attach(c);
 		attachstack(c);
 		selmon = m;
