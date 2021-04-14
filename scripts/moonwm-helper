@@ -14,11 +14,11 @@ options="\
      Switch to previous tag                         MOD + comma                        :moonie shiftviewclients -1
      Switch to next tag                             MOD + period                       :moonie shiftviewclients +1
      Focus previous monitor                         MOD + Prior                        :moonie focusmon +1
-     Move window to previous monitor                MOD + Shift + Prior                :moonie focusmon +1
-     Move window to previous monitor (keep tags)    MOD + Control + Prior              :moonie focusmonkt +1
+     Move window to previous monitor                MOD + Shift + Prior                :moonie tagmon +1
+     Move window to previous monitor (keep tags)    MOD + Control + Prior              :moonie tagmonkt +1
      Focus next monitor                             MOD + Next                         :moonie focusmon -1
-     Move window to next monitor                    MOD + Shift + Next                 :moonie focusmon -1
-     Move window to next monitor (keep tags)        MOD + Control + Next               :moonie focusmonkt +1
+     Move window to next monitor                    MOD + Shift + Next                 :moonie tagmon -1
+     Move window to next monitor (keep tags)        MOD + Control + Next               :moonie tagmonkt -1
 
 ### WINDOW MANAGEMENT ###
      Focus window to the left/down/up/right         MOD + { h, j, k, l }
