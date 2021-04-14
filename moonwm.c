@@ -1,4 +1,6 @@
-/* See LICENSE file for copyright and license details.
+/* vim: set noet:
+ *
+ * See LICENSE file for copyright and license details.
  *
  * dynamic window manager is designed like any other X client as well. It is
  * driven through handling X events. In contrast to other X clients, a window
@@ -1449,7 +1451,7 @@ grabbuttons(Client *c, int focused)
 void
 grabkeys(void)
 {
-    if (!managekeys)
+	if (!managekeys)
 		return;
 	updatenumlockmask();
 	{
@@ -1975,8 +1977,8 @@ placemouse(const Arg *arg)
 		return;
 	restack(selmon);
 	prevr = c;
-    px = c->x;
-    py = c->y;
+	px = c->x;
+	py = c->y;
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
 		return;
@@ -2078,7 +2080,7 @@ placemouse(const Arg *arg)
 		detachstack(c);
 		arrangemon(c->mon);
 		c->mon = m;
-        c->tags = m->tagset[m->seltags];
+	c->tags = m->tagset[m->seltags];
 		attach(c);
 		attachstack(c);
 		selmon = m;
@@ -2442,7 +2444,7 @@ void
 rioposition(Client *c, int x, int y, int w, int h)
 {
 	Monitor *m, *mold;
-    mold = c->mon;
+	mold = c->mon;
 	if ((m = recttomon(x, y, w, h)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
