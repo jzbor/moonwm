@@ -314,7 +314,7 @@ static void run(void);
 static void runautostart(void);
 static void scan(void);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
-static void sendmon(Client *c, Monitor *m);
+static void sendmon(Client *c, Monitor *m, int keeptags);
 static void setclientstate(Client *c, long state);
 static void setcurrentdesktop(void);
 static void setdesktopnames(void);
@@ -337,6 +337,7 @@ static Client *swallowingclient(Window w);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
+static void tagmonkt(const Arg *arg);
 static Client *termforwin(const Client *c);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
@@ -1857,7 +1858,7 @@ movemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m);
+		sendmon(c, m, 0);
 		selmon = m;
 		focus(NULL);
 	}
@@ -1962,6 +1963,7 @@ nexttiled(Client *c)
 void
 placemouse(const Arg *arg)
 {
+	// arg->i = 1 to keep tags
 	int x, y, px, py, ocx, ocy, nx = -9999, ny = -9999, freemove = 0;
 	Client *c, *r = NULL, *at, *prevr;
 	Monitor *m;
@@ -2080,7 +2082,8 @@ placemouse(const Arg *arg)
 		detachstack(c);
 		arrangemon(c->mon);
 		c->mon = m;
-	c->tags = m->tagset[m->seltags];
+		if (!arg->i)
+			c->tags = m->tagset[m->seltags];
 		attach(c);
 		attachstack(c);
 		selmon = m;
@@ -2091,7 +2094,10 @@ placemouse(const Arg *arg)
 
 	if (nx != -9999)
 		resize(c, nx, ny, c->w, c->h, c->bw, 0);
-	arrangemon(c->mon);
+	if (!arg->i)
+		arrangemon(c->mon);
+	else
+		arrange(c->mon);
 }
 
 void
@@ -2323,7 +2329,7 @@ resizemouse(const Arg *arg)
 	XUngrabPointer(dpy, CurrentTime);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m);
+		sendmon(c, m, 0);
 		selmon = m;
 		focus(NULL);
 	}
@@ -2617,7 +2623,7 @@ scan(void)
 }
 
 void
-sendmon(Client *c, Monitor *m)
+sendmon(Client *c, Monitor *m, int keeptags)
 {
 	if (c->mon == m)
 		return;
@@ -2625,7 +2631,8 @@ sendmon(Client *c, Monitor *m)
 	detach(c);
 	detachstack(c);
 	c->mon = m;
-	c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+	if (!keeptags)
+		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 	attachaside(c);
 	attachstack(c);
 	focus(NULL);
@@ -3021,7 +3028,15 @@ tagmon(const Arg *arg)
 {
 	if (!selmon->sel || !mons->next)
 		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
+	sendmon(selmon->sel, dirtomon(arg->i), 0);
+}
+
+void
+tagmonkt(const Arg *arg)
+{
+	if (!selmon->sel || !mons->next)
+		return;
+	sendmon(selmon->sel, dirtomon(arg->i), 1);
 }
 
 void
