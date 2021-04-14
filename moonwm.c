@@ -2441,7 +2441,8 @@ riodraw(Client *c, const char slopstyle[])
 void
 rioposition(Client *c, int x, int y, int w, int h)
 {
-	Monitor *m;
+	Monitor *m, *mold;
+    mold = c->mon;
 	if ((m = recttomon(x, y, w, h)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
@@ -2458,7 +2459,9 @@ rioposition(Client *c, int x, int y, int w, int h)
 		resize(c, x, y, w - (borderpx * 2), h - (borderpx * 2), borderpx, 0);
 	else
 		resize(c, x - borderpx, y - borderpx, w, h, borderpx, 0);
+	drawbar(mold);
 	drawbar(c->mon);
+	arrange(mold);
 	arrange(c->mon);
 
 	riodimensions[3] = -1;
