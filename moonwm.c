@@ -440,6 +440,20 @@ struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 /* function implementations */
 void
+activate(Client *c) {
+	unsigned int i;
+	for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
+	if (i < LENGTH(tags)) {
+		const Arg a = {.ui = 1 << i};
+		selmon = c->mon;
+		if (!(c->mon->tagset[c->mon->seltags] & 1 << i))
+			view(&a);
+		focus(c);
+		restack(selmon);
+	}
+}
+
+void
 applyrules(Client *c)
 {
 	const char *class, *instance;
@@ -794,7 +808,6 @@ clientmessage(XEvent *e)
 	XSetWindowAttributes swa;
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
-	unsigned int i;
 
 	if (showsystray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
 		/* add systray icons */
@@ -861,15 +874,7 @@ clientmessage(XEvent *e)
 		/* if (maximize_vert || maximize_horz) */
 			/* togglefloating(NULL); */
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
-		for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
-		if (i < LENGTH(tags)) {
-			const Arg a = {.ui = 1 << i};
-			selmon = c->mon;
-			if (!(c->mon->tagset[c->mon->seltags] & 1 << i))
-				view(&a);
-			focus(c);
-			restack(selmon);
-		}
+		activate(c);
 	} else if (cme->message_type == wmatom[WMChangeState]) {
 		pushstack(&((Arg) { .i = PREVSEL }));
 	} else if (cme->message_type == netatom[NetWMActionClose]) {
@@ -2048,7 +2053,13 @@ placemouse(const Arg *arg)
 				detach(c);
 				if (c->mon != r->mon) {
 					arrangemon(c->mon);
-					c->tags = r->mon->tagset[r->mon->seltags];
+					if (!arg->i)
+						c->tags = r->mon->tagset[r->mon->seltags];
+					/* if (!arg->i) { */
+					/* 	arrangemon(c->mon); */
+					/* 	c->tags = r->mon->tagset[r->mon->seltags]; */
+					/* } else */
+					/* 	arrange(c->mon); */
 				}
 
 				c->mon = r->mon;
@@ -2096,8 +2107,10 @@ placemouse(const Arg *arg)
 		resize(c, nx, ny, c->w, c->h, c->bw, 0);
 	if (!arg->i)
 		arrangemon(c->mon);
-	else
+	else {
 		arrange(c->mon);
+		activate(c);
+	}
 }
 
 void
