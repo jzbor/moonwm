@@ -53,7 +53,7 @@ autostart_async () {
 
     # Start compositor
     sleep 2
-    [ -z "$MOONWM_NOPICOM" ] && run picom "killall -9 picom && picom"
+    [ -z "$MOONWM_NOPICOM" ] && run picom "killall -9 picom; picom"
 
 }
 
