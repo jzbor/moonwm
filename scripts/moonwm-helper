@@ -2,70 +2,72 @@
 
 options="\
 ### TAGS AND MONITORS ###
-     Select tag                             MOD + { 1 - 9 }
-     Toggle tag                             MOD + Control + { 1 - 9 }
-     Move window to tag                     MOD + Shift + { 1 - 9 }
-     Toggle tag on window                   MOD + Shift + Control + { 1 - 9 }
-     View all tags                          MOD + 0                            :moonie viewall
-     Window on all tags                     MOD + Shift + 0                    :moonie tagall
-     Switch to previously selected tags     MOD + Tab
-     Switch to next occupied tag            MOD + Shift + Tab                  :moonie shiftviewclients +1
-     Switch to previous occupied tag        MOD + Control + Tab                :moonie shiftviewclients -1
-     Switch to previous tag                 MOD + comma                        :moonie shiftviewclients -1
-     Switch to next tag                     MOD + period                       :moonie shiftviewclients +1
-     Focus previous monitor                 MOD + Prior                        :moonie focusmon +1
-     Move window to previous monitor        MOD + Shift + Prior                :moonie focusmon +1
-     Focus next monitor                     MOD + Prior                        :moonie focusmon -1
-     Move window to next monitor            MOD + Shift + Prior                :moonie focusmon -1
+     Select tag                                     MOD + { 1 - 9 }
+     Toggle tag                                     MOD + Control + { 1 - 9 }
+     Move window to tag                             MOD + Shift + { 1 - 9 }
+     Toggle tag on window                           MOD + Shift + Control + { 1 - 9 }
+     View all tags                                  MOD + 0                            :moonie viewall
+     Window on all tags                             MOD + Shift + 0                    :moonie tagall
+     Switch to previously selected tags             MOD + Tab
+     Switch to next occupied tag                    MOD + Shift + Tab                  :moonie shiftviewclients +1
+     Switch to previous occupied tag                MOD + Control + Tab                :moonie shiftviewclients -1
+     Switch to previous tag                         MOD + comma                        :moonie shiftviewclients -1
+     Switch to next tag                             MOD + period                       :moonie shiftviewclients +1
+     Focus previous monitor                         MOD + Prior                        :moonie focusmon +1
+     Move window to previous monitor                MOD + Shift + Prior                :moonie tagmon +1
+     Move window to previous monitor (keep tags)    MOD + Control + Prior              :moonie tagmonkt +1
+     Focus next monitor                             MOD + Next                         :moonie focusmon -1
+     Move window to next monitor                    MOD + Shift + Next                 :moonie tagmon -1
+     Move window to next monitor (keep tags)        MOD + Control + Next               :moonie tagmonkt -1
 
 ### WINDOW MANAGEMENT ###
-     Focus window to the left/down/up/right MOD + { h, j, k, l }
+     Focus window to the left/down/up/right         MOD + { h, j, k, l }
   # On tiled clients/layouts:
-     Switch master                          MOD + Shift + { h, l }
-     Move window up/down in stack list      MOD + Shift + { j, k }
-     Change master factor (resize master)   MOD + Control + { h, l }
+     Switch master                                  MOD + Shift + { h, l }
+     Move window up/down in stack list              MOD + Shift + { j, k }
+     Change master factor (resize master)           MOD + Control + { h, l }
   # On floating clients/layouts:
-     Move window left/down/up/right         MOD + Shift + { h, j, k, l }
-     Resize window                          MOD + Control + { h, j, k, l }
+     Move window left/down/up/right                 MOD + Shift + { h, j, k, l }
+     Resize window                                  MOD + Control + { h, j, k, l }
   # On floating and tiling:
-     Resize window by drawing it            MOD + r                            :moonie rioresize
-     Window overview (skippy-xd)            MOD + space                        :pidof skippy-xd || skippy-xd > /dev/null 2>&1
-     Close window                           MOD + Shift + q                    :moonie killclient
+     Resize window by drawing it                    MOD + r                            :moonie rioresize
+     Window overview (skippy-xd)                    MOD + space                        :pidof skippy-xd || skippy-xd > /dev/null 2>&1
+     Close window                                   MOD + Shift + q                    :moonie killclient
 
 ### LAYOUTS ###
-     Default tiling layout                  MOD + t                            :moonie setlayout 0
-     Deck layout                            MOD + c                            :moonie setlayout 1
-     Monocle layout                         MOD + m                            :moonie setlayout 2
-     Floating layout                        MOD + Shift + f                    :moonie setlayout 3
-     Mirrored tiling layout                 MOD + Shift + t                    :moonie setlayout 4
-     Bottom tiling layout                   MOD + Control + t                  :moonie setlayout 5
-     Toggle floating for window             MOD + Shift + space                :moonie togglefloating
-     Center floating window                 MOD + z                            :moonie center
-     Load saved screen setup                MOD + Shift + r                    :moonwm-util screen-layouts
+     Default tiling layout                          MOD + t                            :moonie setlayout 0
+     Deck layout                                    MOD + c                            :moonie setlayout 1
+     Monocle layout                                 MOD + m                            :moonie setlayout 2
+     Floating layout                                MOD + Shift + f                    :moonie setlayout 3
+     Mirrored tiling layout                         MOD + Shift + t                    :moonie setlayout 4
+     Bottom tiling layout                           MOD + Control + t                  :moonie setlayout 5
+     Toggle floating for window                     MOD + Shift + space                :moonie togglefloating
+     Center floating window                         MOD + z                            :moonie center
+     Load saved screen setup                        MOD + Shift + r                    :moonwm-util screen-layouts
 
 ### APPS AND MENUS ###
-     Open terminal                          MOD + Return                       :\$TERMINAL
-     Open browser                           MOD + w                            :\$BROWSER
-     Open file manager                      MOD + b                            :\$FILEMANAGER
-     Open launcher/dmenu                    MOD + d                            :\$DMENUCMD
-     Open menu                              Control + Alt + Delete             :moonwm-menu 3
+     Open terminal                                  MOD + Return                       :\$TERMINAL
+     Open browser                                   MOD + w                            :\$BROWSER
+     Open file manager                              MOD + b                            :\$FILEMANAGER
+     Open launcher/dmenu                            MOD + d                            :\$DMENUCMD
+     Open menu                                      Control + Alt + Delete             :moonwm-menu 3
 
 ### OTHER ###
-     Screenshot (select area)               MOD + Print                        :moonwm-util screenshot
-     Screenshot whole screen                MOD + Print                        :moonwm-util screenshot screen
-     Screenshot focused window              MOD + Print                        :moonwm-util screenshot focused
-     Lock screen                            MOD + x                            :moonwm-util lock
-     Log out                                Control + MOD + BackSpace          :moonie quit
+     Screenshot (select area)                       MOD + Print                        :moonwm-util screenshot
+     Screenshot whole screen                        MOD + Print                        :moonwm-util screenshot screen
+     Screenshot focused window                      MOD + Print                        :moonwm-util screenshot focused
+     Lock screen                                    MOD + x                            :moonwm-util lock
+     Log out                                        Control + MOD + BackSpace          :moonie quit
 
 ### FUNCTION KEYS ###
-     Toggle top bar                         MOD + F1                           :moonie togglebar
-     Toggle gaps between windows            MOD + F2                           :moonie togglegaps
-     Load keyboard settings                 MOD + F3                           :moonwm-util setup-keyboard
-     Reload styling from xrdb               MOD + F5                           :moonie xrdb
-     Setup and save monitor setups          MOD + F10                          :arandr
-     Load custom monitor setup (arandr)     MOD + Shift + F10                  :moonwm-util screenlayouts
-     Setup monitors automatically           MOD + Control + F10                :moonwm-util screensetup
-     This menu                              MOD + F11                          :moonwm-helper
+     Toggle top bar                                 MOD + F1                           :moonie togglebar
+     Toggle gaps between windows                    MOD + F2                           :moonie togglegaps
+     Load keyboard settings                         MOD + F3                           :moonwm-util setup-keyboard
+     Reload styling from xrdb                       MOD + F5                           :moonie xrdb
+     Setup and save monitor setups                  MOD + F10                          :arandr
+     Load custom monitor setup (arandr)             MOD + Shift + F10                  :moonwm-util screenlayouts
+     Setup monitors automatically                   MOD + Control + F10                :moonwm-util screensetup
+     This menu                                      MOD + F11                          :moonwm-helper
 "
 
 echo "$options" | moonwm-util dmenu -p Help: -l 30 | grep ':' | sed 's/.*://'| sh

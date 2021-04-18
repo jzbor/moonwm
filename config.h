@@ -186,8 +186,10 @@ static Key keys[] = {
     { MODKEY,               XK_period,  shiftview,       {.i = +1 } },
     { MODKEY,               XK_Prior,   focusmon,        {.i = -1 } },
     { MODKEY|ShiftMask,     XK_Prior,   tagmon,          {.i = -1 } },
+    { MODKEY|ControlMask,   XK_Prior,   tagmonkt,        {.i = -1 } },
     { MODKEY,               XK_Next,    focusmon,        {.i = +1 } },
     { MODKEY|ShiftMask,     XK_Next,    tagmon,          {.i = +1 } },
+    { MODKEY|ControlMask,   XK_Next,    tagmonkt,        {.i = +1 } },
     /* WINDOW MANAGEMENT */
     FOCUSKEYS(XK_h, XK_j, XK_k, XK_l)
     DIRECTIONKEY(XK_h, x, {.i = -20})
@@ -278,7 +280,7 @@ static Button buttons[] = {
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
     { ClkLtSymbol,          0,              Button1,        setlayout,      {.v = &layouts[0]} },
-    { ClkLtSymbol,          0,              Button2,        setlayout,      {.v = &layouts[2]} },
+    { ClkLtSymbol,          0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
@@ -293,14 +295,14 @@ static Button buttons[] = {
     { ClkStatusText,        0,              Button5,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button8,        spawn,          SHCMD("mpv") },
     { ClkStatusText,        0,              Button9,        spawn,          SHCMD("spotify") },
-    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {0} },
-    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+    { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
+    { ClkClientWin,         MODKEY|ControlMask, Button1,    moveorplace,    {.i = 1} },
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
+    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-    { ClkRootWin,           MODKEY,         Button1,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu context") },
-    { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("mpv") },
+    { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },
     { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
 };

@@ -1,4 +1,6 @@
-/* See LICENSE file for copyright and license details.
+/* vim: set noet:
+ *
+ * See LICENSE file for copyright and license details.
  *
  * dynamic window manager is designed like any other X client as well. It is
  * driven through handling X events. In contrast to other X clients, a window
@@ -312,7 +314,7 @@ static void run(void);
 static void runautostart(void);
 static void scan(void);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
-static void sendmon(Client *c, Monitor *m);
+static void sendmon(Client *c, Monitor *m, int keeptags);
 static void setclientstate(Client *c, long state);
 static void setcurrentdesktop(void);
 static void setdesktopnames(void);
@@ -335,6 +337,7 @@ static Client *swallowingclient(Window w);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
+static void tagmonkt(const Arg *arg);
 static Client *termforwin(const Client *c);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
@@ -436,6 +439,20 @@ struct Pertag {
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 /* function implementations */
+void
+activate(Client *c) {
+	unsigned int i;
+	for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
+	if (i < LENGTH(tags)) {
+		const Arg a = {.ui = 1 << i};
+		selmon = c->mon;
+		if (!(c->mon->tagset[c->mon->seltags] & 1 << i))
+			view(&a);
+		focus(c);
+		restack(selmon);
+	}
+}
+
 void
 applyrules(Client *c)
 {
@@ -791,7 +808,6 @@ clientmessage(XEvent *e)
 	XSetWindowAttributes swa;
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
-	unsigned int i;
 
 	if (showsystray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
 		/* add systray icons */
@@ -858,15 +874,7 @@ clientmessage(XEvent *e)
 		/* if (maximize_vert || maximize_horz) */
 			/* togglefloating(NULL); */
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
-		for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
-		if (i < LENGTH(tags)) {
-			const Arg a = {.ui = 1 << i};
-			selmon = c->mon;
-			if (!(c->mon->tagset[c->mon->seltags] & 1 << i))
-				view(&a);
-			focus(c);
-			restack(selmon);
-		}
+		activate(c);
 	} else if (cme->message_type == wmatom[WMChangeState]) {
 		pushstack(&((Arg) { .i = PREVSEL }));
 	} else if (cme->message_type == netatom[NetWMActionClose]) {
@@ -1449,7 +1457,7 @@ grabbuttons(Client *c, int focused)
 void
 grabkeys(void)
 {
-    if (!managekeys)
+	if (!managekeys)
 		return;
 	updatenumlockmask();
 	{
@@ -1855,7 +1863,7 @@ movemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m);
+		sendmon(c, m, 0);
 		selmon = m;
 		focus(NULL);
 	}
@@ -1863,7 +1871,7 @@ movemouse(const Arg *arg)
 
 void
 moveorplace(const Arg *arg) {
-	if (ISFLOATING(selmon->sel))
+	if (selmon->sel && ISFLOATING(selmon->sel))
 		movemouse(arg);
 	else
 		placemouse(arg);
@@ -1960,6 +1968,7 @@ nexttiled(Client *c)
 void
 placemouse(const Arg *arg)
 {
+	// arg->i = 1 to keep tags
 	int x, y, px, py, ocx, ocy, nx = -9999, ny = -9999, freemove = 0;
 	Client *c, *r = NULL, *at, *prevr;
 	Monitor *m;
@@ -1975,6 +1984,8 @@ placemouse(const Arg *arg)
 		return;
 	restack(selmon);
 	prevr = c;
+	px = c->x;
+	py = c->y;
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
 		return;
@@ -2042,7 +2053,13 @@ placemouse(const Arg *arg)
 				detach(c);
 				if (c->mon != r->mon) {
 					arrangemon(c->mon);
-					c->tags = r->mon->tagset[r->mon->seltags];
+					if (!arg->i)
+						c->tags = r->mon->tagset[r->mon->seltags];
+					/* if (!arg->i) { */
+					/* 	arrangemon(c->mon); */
+					/* 	c->tags = r->mon->tagset[r->mon->seltags]; */
+					/* } else */
+					/* 	arrange(c->mon); */
 				}
 
 				c->mon = r->mon;
@@ -2071,11 +2088,13 @@ placemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 
-	if ((m = recttomon(ev.xmotion.x, ev.xmotion.y, 1, 1)) && m != c->mon) {
+	if ((m = recttomon(px, py, 1, 1)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
 		arrangemon(c->mon);
 		c->mon = m;
+		if (!arg->i)
+			c->tags = m->tagset[m->seltags];
 		attach(c);
 		attachstack(c);
 		selmon = m;
@@ -2086,7 +2105,12 @@ placemouse(const Arg *arg)
 
 	if (nx != -9999)
 		resize(c, nx, ny, c->w, c->h, c->bw, 0);
-	arrangemon(c->mon);
+	if (!arg->i)
+		arrangemon(c->mon);
+	else {
+		arrange(c->mon);
+		activate(c);
+	}
 }
 
 void
@@ -2318,7 +2342,7 @@ resizemouse(const Arg *arg)
 	XUngrabPointer(dpy, CurrentTime);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m);
+		sendmon(c, m, 0);
 		selmon = m;
 		focus(NULL);
 	}
@@ -2442,6 +2466,7 @@ rioposition(Client *c, int x, int y, int w, int h)
 	if ((m = recttomon(x, y, w, h)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
+		arrange(c->mon);
 		c->mon = m;
 		c->tags = m->tagset[m->seltags];
 		attach(c);
@@ -2455,7 +2480,6 @@ rioposition(Client *c, int x, int y, int w, int h)
 		resize(c, x, y, w - (borderpx * 2), h - (borderpx * 2), borderpx, 0);
 	else
 		resize(c, x - borderpx, y - borderpx, w, h, borderpx, 0);
-	drawbar(c->mon);
 	arrange(c->mon);
 
 	riodimensions[3] = -1;
@@ -2609,7 +2633,7 @@ scan(void)
 }
 
 void
-sendmon(Client *c, Monitor *m)
+sendmon(Client *c, Monitor *m, int keeptags)
 {
 	if (c->mon == m)
 		return;
@@ -2617,7 +2641,8 @@ sendmon(Client *c, Monitor *m)
 	detach(c);
 	detachstack(c);
 	c->mon = m;
-	c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+	if (!keeptags)
+		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 	attachaside(c);
 	attachstack(c);
 	focus(NULL);
@@ -3013,7 +3038,15 @@ tagmon(const Arg *arg)
 {
 	if (!selmon->sel || !mons->next)
 		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
+	sendmon(selmon->sel, dirtomon(arg->i), 0);
+}
+
+void
+tagmonkt(const Arg *arg)
+{
+	if (!selmon->sel || !mons->next)
+		return;
+	sendmon(selmon->sel, dirtomon(arg->i), 1);
 }
 
 void
