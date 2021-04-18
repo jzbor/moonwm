@@ -198,7 +198,6 @@ launch () {
     xrdb -merge ~/.Xresources
 
     if (! env | grep '^MOONWM_NOKEYS=' > /dev/null); then
-        touch ~/nokeys
         exec moonwm
     else
         touch ~/keys
