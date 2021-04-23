@@ -322,6 +322,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
+static void setmodkey();
 static void setnumdesktops(void);
 static void setup(void);
 static void setviewport(void);
@@ -2782,6 +2783,34 @@ setmfact(const Arg *arg)
 }
 
 void
+setmodkey()
+{
+	char* modenv = getenv("MOONWM_MODKEY");
+	unsigned int modkey;
+
+    if(!modenv)
+		modkey = Mod1Mask;
+	else if (strcmp(modenv, "Super") == 0)
+		modkey = Mod4Mask;
+    else
+		modkey = Mod1Mask;
+
+	for (int i = 0; i < LENGTH(keys); i++) {
+		if ((keys[i].mod & DynamicModifier) != 0) {
+			keys[i].mod &= ~DynamicModifier;
+			keys[i].mod |= modkey;
+		}
+	}
+
+	for (int i = 0; i < LENGTH(buttons); i++) {
+		if ((buttons[i].mask & DynamicModifier) != 0) {
+			buttons[i].mask &= ~DynamicModifier;
+			buttons[i].mask |= modkey;
+		}
+	}
+}
+
+void
 setup(void)
 {
 	int i;
@@ -3919,8 +3948,9 @@ main(int argc, char *argv[])
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("moonwm: cannot get xcb connection\n");
 	checkotherwm();
-		XrmInitialize();
-		loadxrdb();
+	setmodkey();
+	XrmInitialize();
+	loadxrdb();
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec", NULL) == -1)

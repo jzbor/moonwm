@@ -45,7 +45,7 @@ If you want to change something more sophisticated, like replacing `moonwm-util`
 
 ### Set personal defaults in .profile
 MoonWM tries to use sensible defaults if it finds them on the system.
-Howerver you might want to explicitly define your default applications like a terminal or browser, especially if you have multiple installed.
+However you might want to explicitly define your default applications like a terminal or browser, especially if you have multiple installed.
 You can do this by adding the according variable to your `~/.profile` as shown below.
 ```sh
 export BROWSER="firefox"
@@ -54,19 +54,15 @@ export TERMINAL="alacritty"
 export DMENUCMD="rofi -show drun"
 export MOONWM_KEYMAP="us"
 export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
+export MOONWM_MODKEY="Super"    # defaults to Alt
 export TOUCHEGG_THRESHOLD="750 750"
 ```
 You should also be able to add `setxbkmap` options to your keyboard layout like this:
 ```sh
 export MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
 ```
-This way you can also use Alt as modifier key - by just swapping Alt and Win.
-If you are using a layout with third level remember to swap back right Alt to lvl-shift.
-```sh
-export MOONWM_KEYMAP="de -option -option altwin:swap_alt_win -option lv3:ralt_switch"
-```
 If you want to use a custom modmap setup just put the `xmodmap` expressions in `~/.local/share/moonwm/modmap`.
-If will be evaluated automatically.
+It will be evaluated automatically.
 
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:

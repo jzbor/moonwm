@@ -2,6 +2,7 @@
 
 # define Button8 8
 # define Button9 9
+# define DynamicModifier    (1<<16)
 
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
@@ -128,7 +129,8 @@ static const Layout layouts[] = {
 #include "signal.h"
 
 /* key definitions */
-#define MODKEY Mod4Mask
+/* #define MODKEY Mod4Mask */
+#define MODKEY DynamicModifier
 #define TAGKEYS(KEY,TAG) \
     { MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
     { MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
