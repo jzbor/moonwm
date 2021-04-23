@@ -135,7 +135,7 @@ date: 11:05 |\x01 volume: 55% |\x02 cpu-usage: 21% ||
 Once you press one of the blocks the statuscmd script will be called with `action` as its first parameter.
 The according mouse button will be set as `$BUTTON` and the block number as `$STATUSCMDN`.
 
-The standard MoonWM status interface also includes the `update` parameter, which tells the bar to immediatly refresh.
+The standard MoonWM status interface also includes the `update` parameter, which tells the bar to immediately refresh.
 `status` as first parameter prints out the current statusline to stdout.
 
 
