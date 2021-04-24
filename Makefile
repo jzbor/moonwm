@@ -3,6 +3,7 @@
 
 include config.mk
 
+VPATH = src
 SRC = drw.c moonwm.c util.c
 OBJ = ${SRC:.c=.o}
 
