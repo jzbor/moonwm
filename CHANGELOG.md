@@ -8,6 +8,10 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
+## Upcoming
+* Modkey configurable via `MOONWM_MODKEY`
+* Improved support for Steam (especially Proton)
+
 ## v7.0.0
 * Wrapper script to ensure out-of-the-box usability
 * Barmenu

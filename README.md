@@ -232,9 +232,9 @@ You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 
 ## Forking
 You are encouraged to fork this project.
-At the moment `config.def.h` might be a little outdated, so you are probably better off just editing `config.h`
+At the moment `config.def.h` might be a little outdated, so you are probably better off just editing `config.h`.
 However please consider the project is not "suckless" neither is that its goal.
-MoonWM should mostly be compatible wtih dwm patches although the huge amount of patches already applied make it a little hard.
+MoonWM should mostly be compatible wtih dwm patches although the huge amount of patches already applied make it a little hard and due to the code being relocated to `src/` you will have to patch them manually.
 
 
 ## Credits
