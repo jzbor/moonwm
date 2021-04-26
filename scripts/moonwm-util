@@ -145,6 +145,16 @@ get_default_terminal () {
     fi
 }
 
+kill_window () {
+    menu="Close window	close\nKill process	kill\nAbort	abort\n"
+    selection="$(printf "$menu" | xmenu)"
+    case $selection in
+        close) xdotool getwindowfocus windowclose;;
+        kill) kill "$(xdotool getwindowfocus getwindowpid)";;
+        *) echo "Aborting...";;
+    esac
+}
+
 load_env_defaults () {
     if (! env | grep '^TERMINAL=' > /dev/null) \
             && get_default_terminal; then
@@ -347,6 +357,7 @@ commands:
     dmenu          Themed wrapper for dmenu (for use in scripts etc.)
     drun           Default application launcher
     help           Prints this help text
+    killwindow     Close or kill the active window
     launch         Wrapper to launch MoonWM properly (used in moonwm.desktop, can be used in .xinitrc)
     lock           Locks the screen
     run            Launcher with all exectutables in \$PATH
@@ -380,6 +391,7 @@ case $1 in
     dmenu) shift; dmenu_wrapper "$@";;
     drun) shift; dmenu_drun "$@";;
     help) echo "$helptext"; exit;;
+    killwindow) kill_window;;
     launch) launch;;
     lock) lock;;
     run) shift; default_dmenu_run "$@";;

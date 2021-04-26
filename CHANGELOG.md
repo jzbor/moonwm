@@ -11,6 +11,7 @@
 ## Upcoming
 * Modkey configurable via `MOONWM_MODKEY`
 * Improved support for Steam (especially Proton)
+* Kill menu (Mod + Shift + right click)
 
 ## v7.0.0
 * Wrapper script to ensure out-of-the-box usability

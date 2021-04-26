@@ -272,6 +272,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+    { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-util killwindow") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu context") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
