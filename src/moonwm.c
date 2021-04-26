@@ -426,6 +426,7 @@ static Window root, wmcheckwin;
 static xcb_connection_t *xcon;
 
 /* configuration, allows nested code to access above variables */
+#include "rules.h"
 #include "config.h"
 
 struct Pertag {
