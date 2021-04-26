@@ -210,8 +210,25 @@ launch () {
     if (! env | grep '^MOONWM_NOKEYS=' > /dev/null); then
         exec moonwm
     else
-        touch ~/keys
         exec moonwm -n
+    fi
+}
+
+launch_valgrind () {
+    # Load default values for env variables
+    logfile="${XDG_DATA_HOME:-$USER/.local/share}/moonwm/valgrind.log"
+    options="--leak-check=full --show-leak-kinds=all --track-origins=yes -v"
+
+    load_env_defaults
+
+    xrdb -merge ~/.Xresources
+
+    [ -f "$logfile" ] && mv "$logfile" "$logfile.bak"
+
+    if (! env | grep '^MOONWM_NOKEYS=' > /dev/null); then
+        exec valgrind $options moonwm > "$logfile" 2>&1
+    else
+        exec valgrind $options moonwm -n > "$logfile" 2>&1
     fi
 }
 
@@ -393,6 +410,7 @@ case $1 in
     help) echo "$helptext"; exit;;
     killwindow) kill_window;;
     launch) launch;;
+    launch-valgrind) launch_valgrind;;
     lock) lock;;
     run) shift; default_dmenu_run "$@";;
     screenlayouts) layouts;;
