@@ -6,6 +6,7 @@ VERSION = 7.0.0
 # paths
 PREFIX = /usr/local
 MANPREFIX = ${PREFIX}/share/man
+DOCPREFIX = ${PREFIX}/share/doc
 
 X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
