@@ -146,7 +146,7 @@ get_default_terminal () {
 }
 
 kill_window () {
-    menu="Close window	close\nKill process	kill\nAbort	abort\n"
+    menu="Close window	close\nKill process	kill\nCancel	cancel\n"
     selection="$(printf "$menu" | xmenu)"
     case $selection in
         close) xdotool getwindowfocus windowclose;;
