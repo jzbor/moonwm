@@ -54,7 +54,7 @@ uninstall:
 	# rm -f ${DESTDIR}/usr/share/xsessions/moonwm.desktop
 
 install-scripts:
-	install -Dm755 moonwm-helper moonwm-menu moonwm-status moonwm-util moonwm-xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
+	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-util scripts/moonwm-xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-helper

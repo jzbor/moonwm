@@ -4,11 +4,12 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [v7.0.0](#v700)
+- [7.0.1](#701)
+- [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming
+## 7.0.1
 * Modkey configurable via `MOONWM_MODKEY`
 * Improved support for Steam (especially Proton)
 * Kill menu (Mod + Shift + right click)
