@@ -1686,6 +1686,8 @@ loadxrdb()
 				XRDB_LOAD_COLOR("moonwm.focusedTitleFg", hightitlefg);
 				XRDB_LOAD_COLOR("moonwm.focusedTitleBg", hightitlebg);
 				XRDB_LOAD_COLOR("moonwm.focusedBorder", highborderfg);
+
+				XrmDestroyDatabase(xrdb);
 			}
 		}
 	}
