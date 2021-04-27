@@ -771,6 +771,8 @@ cleanup(void)
 	for (m = mons; m; m = m->next)
 		while (m->stack)
 			unmanage(m->stack, 0);
+	while (systray->icons)
+		removesystrayicon(systray->icons);
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
