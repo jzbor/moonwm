@@ -772,12 +772,12 @@ cleanup(void)
 	for (m = mons; m; m = m->next)
 		while (m->stack)
 			unmanage(m->stack, 0);
-	while (systray->icons)
-		removesystrayicon(systray->icons);
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
 	if (showsystray) {
+		while (systray->icons)
+			removesystrayicon(systray->icons);
 		XUnmapWindow(dpy, systray->win);
 		XDestroyWindow(dpy, systray->win);
 		free(systray);
@@ -3974,10 +3974,10 @@ main(int argc, char *argv[])
 	scan();
 	runautostart();
 	run();
+	cleanup();
 	if (restart) {
 		execvp(argv[0], argv);
 	}
-	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
