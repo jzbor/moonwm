@@ -13,6 +13,7 @@
 * Config file in `~/.config/moonwm/config.env`
 * Moving modmap file to `~/.config/moonwm/modmap`
 * Reloading config when restarting in place
+* Use picom's experimental backends (`MOONWM_PICOMEXP`)
 * Multiple fixed bugs and memory leaks
 
 ## 7.0.1

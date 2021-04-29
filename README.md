@@ -94,6 +94,11 @@ MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
 MOONWM_NOKEYS=1         # disables MoonWMs internal key management
 ```
 
+Further options you can customize:
+```sh
+MOONWM_PICOMEXP=1       # Start picom with --experimental-backends flag
+```
+
 ### Set custom colours with xrdb
 Custom values for colors and some other properties can be set via `xrdb(1)`.
 To edit the design simply add/change these values in your `~/.Xresources`:

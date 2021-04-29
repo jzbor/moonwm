@@ -59,9 +59,12 @@ autostart_async () {
 
     # Start compositor
     sleep 2
-    if [ -z "$MOONWM_NOPICOM" ]; then
-        # if [ -z "$MOON"
-        run picom "killall -9 picom; picom"
+    if ! env_is_set MOONWM_NOPICOM; then
+        if env_is_set MOONWM_PICOMEXP; then
+            run picom "killall -9 picom; picom --experimental-backends"
+        else
+            run picom "killall -9 picom; picom"
+        fi
     fi
 
 }
