@@ -21,6 +21,7 @@ options="\
      Move window to next monitor (keep tags)        MOD + Control + Next               :moonie tagmonkt -1
 
 ### WINDOW MANAGEMENT ###
+  # All of the hjkl bindings also work with arrow keys
      Focus window to the left/down/up/right         MOD + { h, j, k, l }
   # On tiled clients/layouts:
      Switch master                                  MOD + Shift + { h, l }

@@ -164,10 +164,15 @@ static Key keys[] = {
     { MODKEY|ControlMask,   XK_Next,    tagmonkt,        {.i = +1 } },
     /* WINDOW MANAGEMENT */
     FOCUSKEYS(XK_h, XK_j, XK_k, XK_l)
+    FOCUSKEYS(XK_Left, XK_Down, XK_Up, XK_Right)
     DIRECTIONKEY(XK_h, x, {.i = -20})
     DIRECTIONKEY(XK_j, y, {.i = -20})
     DIRECTIONKEY(XK_k, y, {.i = 20})
     DIRECTIONKEY(XK_l, x, {.i = 20})
+    DIRECTIONKEY(XK_Left,  x, {.i = -20})
+    DIRECTIONKEY(XK_Down,  y, {.i = -20})
+    DIRECTIONKEY(XK_Up,    y, {.i = 20})
+    DIRECTIONKEY(XK_Right, x, {.i = 20})
     { MODKEY,               XK_r,       rioresize,       {0} },
     { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
