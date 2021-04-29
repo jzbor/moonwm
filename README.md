@@ -31,6 +31,7 @@
 * `MOD + 1-9` **Switch Tag**
 * `MOD + Shift + q` **Close Application**
 * `MOD + F11` **Help Menu (see below)**
+
 Use **hjkl** or **arrow keys** for `<direction>`:
 * `MOD + <direction>` **Focus Client**
 * `MOD + Shift + <direction>` **Move Client**
