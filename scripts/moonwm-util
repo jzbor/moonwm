@@ -8,6 +8,7 @@ TEMPORARYDIR="${TMPDIR:-/tmp}/moonwm/${USER:-default}"
 LOCK_TMP_FILE="$TEMPORARYDIR/lockfile.png"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
 CONFIG_FILE="$CONFIG_DIR/config.env"
+MODMAP_FILE="$CONFIG_DIR/modmap"
 
 autostart () {
     # Configure X
@@ -350,8 +351,8 @@ setup_displays () {
 
 setup_keyboard () {
     [ -n "$MOONWM_KEYMAP" ] && setxkbmap $MOONWM_KEYMAP
-    [ -f "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap" ] && \
-        xmodmap - < "${XDG_DATA_HOME:-$USER/.local/share}/moonwm/modmap"
+    [ -f "$MODMAP_FILE" ] && \
+        xmodmap - < "$MODMAP_FILE"
     return 0
 }
 
