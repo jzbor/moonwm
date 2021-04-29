@@ -23,7 +23,8 @@ Arguments: (i) for int, (ui) for tagmask, (f) for float, none else
 	resizex (i)
 	resizey (i)
 	rioresize
-	rquit
+	restart
+	restartlaunched
 	setlayout (i)
 	setmfact (f)
 	shiftview (i)
@@ -52,7 +53,7 @@ case $# in
 1)
 	case $1 in
 	togglefullscr | togglegaps | viewall | tagall | xrdb | rioresize | center\
-				| togglebar | togglefloating | zoom | killclient | quit | rquit | cyclelayout)
+				| togglebar | togglefloating | zoom | killclient | quit | restart | restartlaunched | cyclelayout)
 		signal $1
 		;;
 	-h | --help)

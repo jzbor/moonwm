@@ -1,7 +1,3 @@
-void rquit(const Arg *arg) {
-    quit(&((Arg) { .i = 1 }));
-}
-
 void
 setlayoutex(const Arg *arg) {
     for(int i = 0; layouts[i].symbol && i <= arg->i; i++)
@@ -58,7 +54,8 @@ static Signal signals[] = {
 	{ "resizex",        resizex },
 	{ "resizey",        resizey },
 	{ "rioresize",      rioresize },
-	{ "rquit",          rquit },
+	{ "restart",        restart },
+	{ "restartlaunched", restartlaunched },
 	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },
 	{ "shiftview",      shiftview },

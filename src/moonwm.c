@@ -305,6 +305,8 @@ static void resizerequest(XEvent *e);
 static void resizex(const Arg *arg);
 static void resizey(const Arg *arg);
 static void restack(Monitor *m);
+static void restart(const Arg *arg);
+static void restartlaunched(const Arg *arg);
 static int riodraw(Client *c, const char slopstyle[]);
 static void rioposition(Client *c, int x, int y, int w, int h);
 static void rioresize(const Arg *arg);
@@ -380,6 +382,7 @@ static void zoom(const Arg *arg);
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
 static const char providedautostart[] = "moonwm-util start";
+static char *launcherargs[] = { "moonwm-util", "launch" };
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static const char moonwmdir[] = "moonwm";
@@ -415,7 +418,8 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 };
 static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], motifatom;
 static int running = 1;
-static int restart = 0;
+static int restartwm = 0;
+static int restartlauncher = 0;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -2213,9 +2217,6 @@ pushstack(const Arg *arg) {
 void
 quit(const Arg *arg)
 {
-	if (arg->i) {
-		restart = 1;
-	}
 	running = 0;
 }
 
@@ -2418,6 +2419,20 @@ restack(Monitor *m)
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 	if (m == selmon && (m->tagset[m->seltags] & m->sel->tags) && selmon->lt[selmon->sellt] != &layouts[2])
 		warp(m->sel);
+}
+
+void
+restart(const Arg *arg)
+{
+	restartwm = 1;
+	running = 0;
+}
+
+void
+restartlaunched(const Arg *arg)
+{
+	restartlauncher = 1;
+	running = 0;
 }
 
 // drag out an area using slop and resize the selected window to it.
@@ -3975,8 +3990,10 @@ main(int argc, char *argv[])
 	runautostart();
 	run();
 	cleanup();
-	if (restart) {
+	if (restartwm) {
 		execvp(argv[0], argv);
+	} else if (restartlauncher) {
+		execvp(launcherargs[0], launcherargs);
 	}
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;

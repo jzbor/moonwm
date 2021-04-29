@@ -7,7 +7,7 @@ $(moonwm-xdg-xmenu | sed -e 's/^/	/')
   Reboot			reboot || sudo reboot
   Suspend			moonwm-util lock; loginctl suspend || systemctl suspend
 
-  Reload MoonWM	moonie rquit
+  Reload MoonWM	moonie restartlaunched
   Log out			moonie quit"
 
 appsmenu="  Terminal			$TERMINAL"
