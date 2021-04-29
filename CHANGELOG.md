@@ -9,6 +9,12 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
+## Upcoming
+* Config file in `~/.config/moonwm/config.env`
+* Moving modmap file to `~/.config/moonwm/modmap`
+* Reloading config when restarting in place
+* Multiple fixed bugs and memory leaks
+
 ## 7.0.1
 * Modkey configurable via `MOONWM_MODKEY`
 * Improved support for Steam (especially Proton)

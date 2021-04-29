@@ -20,6 +20,7 @@ autostart () {
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
 
     rm "${XDG_CACHE_HOME:-$HOME/.cache}/moonwm-xdg-xmenu/*.part"
+    moonwm-xdg-xmenu -u
 
     autostart_async &
 }
