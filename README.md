@@ -83,7 +83,7 @@ export MOONWM_NOKEYS=1         # disables MoonWMs internal key management
 ### Set custom colours with xrdb
 Custom values for colors and some other properties can be set via `xrdb(1)`.
 To edit the design simply add/change these values in your `~/.Xresources`:
-```css
+```yaml
 moonwm.focusedBorder:      #ebdbb2
 moonwm.focusedTitleBg:     #1d2021
 moonwm.focusedTitleFg:     #ebdbb2
@@ -101,7 +101,7 @@ moonwm.vacantTagFg:        #7c6f64
 ```
 
 You should also edit the according xmenu and general entries to get everything to fit together:
-```css
+```yaml
 *background:            #1d2021
 *foreground:            #ebdbb2
 
