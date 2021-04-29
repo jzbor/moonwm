@@ -6,6 +6,7 @@
 **Table of Contents**
 
 - [Usage](#usage)
+    - [Most important shortcuts](#most-important-shortcuts)
     - [Quick help](#quick-help)
     - [Setting up different screen layouts](#setting-up-different-screen-layouts)
 - [Customizing](#customizing)
@@ -24,6 +25,16 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Usage
+
+### Most important shortcuts
+* `MOD + d` **Open Application**
+* `MOD + 1-9` **Switch Tag**
+* `MOD + Shift + q` **Close Application**
+* `MOD + F11` **Help Menu (see below)**
+Use **hjkl** or **arrow keys** for `<direction>`:
+* `MOD + <direction>` **Focus Client**
+* `MOD + Shift + <direction>` **Move Client**
+* `MOD + Control + <direction>` **Resize Client**
 
 ### Quick help
 **For a quick interactive help page press MOD(Win)+F11.
