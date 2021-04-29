@@ -39,7 +39,7 @@ autostart_async () {
 
     # Applets & tray icons
     (killall -9 /usr/lib/geoclue-2.0/demos/agent; /usr/lib/geoclue-2.0/demos/agent & sleep 5;
-    killall -9 redshift; redshift -x; redshift -l geoclue2) &
+    run redshift "killall -9 redshift; redshift -x; redshift -l geoclue2") &
 
     pidof touchegg > /dev/null || rm ~/.config/touchegg/.touchegg.lock
     run touchegg "touchegg --daemon $TOUCHEGG_THRESHOLDS"
