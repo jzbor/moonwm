@@ -89,15 +89,16 @@ MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh
-MOONWM_NONOTIFYD=1      # disables dunst
-MOONWM_NOPICOM=1        # disables picom
-MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
-MOONWM_NOKEYS=1         # disables MoonWMs internal key management
+MOONWM_NOTIFYD=0      # disables dunst
+MOONWM_PICOM=0        # disables picom
+MOONWM_THEMEDDMENU=0  # disables built in dmenu theming
+MOONWM_KEYS=0         # disables MoonWMs internal key management
 ```
 
 Further options you can customize:
 ```sh
-MOONWM_PICOMEXP=1       # Start picom with --experimental-backends flag
+MOONWM_PICOMEXP=1       # start picom with --experimental-backends flag
+MOONWM_THEMEDDMENU=0    # disable automatic dmenu theming
 ```
 
 ### Set custom colours with xrdb

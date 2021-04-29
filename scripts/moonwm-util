@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # env variables to set:
-# MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOKEYS MOONWM_NOPICOM MOONWM_NONOTIFYD MOONWM_STATUSHANDLER)
+# MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_KEYS MOONWM_PICOM MOONWM_NOTIFYD MOONWM_STATUSHANDLER)
 
 TEMPORARYDIR="${TMPDIR:-/tmp}/moonwm/${USER:-default}"
 [ -d "$TEMPORARYDIR" ] || mkdir -vp "$TEMPORARYDIR"
@@ -32,7 +32,7 @@ autostart_async () {
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-    [ -z "$MOONWM_NONOTIFYD" ] && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
+    env_def_true MOONWM_NOTIFYD && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
     run kdeconnect-indicator kdeconnect-indicator
     run nm-applet nm-applet
     run xfce4-power-manager xfce4-power-manager
@@ -59,8 +59,8 @@ autostart_async () {
 
     # Start compositor
     sleep 2
-    if ! env_is_true MOONWM_NOPICOM; then
-        if env_is_true MOONWM_PICOMEXP; then
+    if env_def_true MOONWM_PICOM; then
+        if env_def_false MOONWM_PICOMEXP; then
             run picom "killall -9 picom; picom --experimental-backends"
         else
             run picom "killall -9 picom; picom"
@@ -100,7 +100,7 @@ dmenu_drun () {
 }
 
 dmenu_wrapper () {
-    if ! env_is_true MOONWM_NOTHEMEDDMENU; then
+    if env_def_true MOONWM_THEMEDDMENU; then
         exec dmenu -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10' "$@"
     else
        	exec dmenu "$@"
@@ -111,8 +111,14 @@ env_is_set () {
     env | grep "^$1=" > /dev/null
 }
 
-env_is_true () {
-    env_is_set "$1" && [ "$(eval echo \$$1)" = "1" ]
+# for settings that default to false
+env_def_false () {
+    env_is_set "$1" && [ "$(eval echo "\$$1")" = "1" ]
+}
+
+# for settings that default to true
+env_def_true () {
+    (! env_is_set "$1") || [ "$(eval echo "\$$1")" = "1" ]
 }
 
 get_default_browser () {
@@ -232,7 +238,7 @@ launch () {
 
     xrdb -merge ~/.Xresources
 
-    if ! env_is_true MOONWM_NOKEYS; then
+    if env_def_true MOONWM_KEYS; then
         exec moonwm
     else
         exec moonwm -n
@@ -257,7 +263,7 @@ launch_valgrind () {
 
     [ -f "$logfile" ] && mv "$logfile" "$logfile.bak"
 
-    if ! env_is_true MOONWM_NOKEYS; then
+    if env_def_true MOONWM_KEYS; then
         exec valgrind $options moonwm > "$logfile" 2>&1
     else
         exec valgrind $options moonwm -n > "$logfile" 2>&1
