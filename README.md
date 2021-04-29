@@ -45,39 +45,42 @@ If you want to change something more sophisticated, like replacing `moonwm-util`
 
 ### Set personal defaults in .profile
 MoonWM is configured through environment variables.
-You can set them in your `~/.profile` or `~/.config/moonwm/config.env` (which is preferred).
-MoonWM tries to use **sensible defaults** for all settings.
+You can place them in the **config file** `~/.config/moonwm/config.env` in the format shown below.
+These are automatically loaded, exported and reloaded on restart.
+(Environmental variables set and exported in `~/.profile` or similar will work too, but the config file is the preferred method.)
 
-You might want to customize the **keyboard layout**, **wallpaper**, etc...
+MoonWM tries to use **sensible defaults** for all settings.
+But you might want to customize the **keyboard layout**, **wallpaper**, etc.:
 ```sh
-export MOONWM_KEYMAP="us"
-export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
-export MOONWM_MODKEY="Super"            # defaults to Alt
-export TOUCHEGG_THRESHOLD="750 750"     # if you are using touchegg
+MOONWM_KEYMAP="us"
+MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
+MOONWM_MODKEY="Super"            # defaults to Alt
+TOUCHEGG_THRESHOLD="750 750"     # if you are using touchegg
 ```
 
-However you might want to explicitly define your **default applications** like a terminal or browser, especially if you have multiple installed.
+In addition you can explicitly define your **default applications** like a terminal or browser.
+MoonWM will automatically look for defaults if they are not set.
 ```sh
-export BROWSER="firefox"
-export FILEMANAGER="pcmanfm"
-export TERMINAL="alacritty"
-export DMENUCMD="rofi -show drun"
+BROWSER="firefox"
+FILEMANAGER="pcmanfm"
+TERMINAL="alacritty"
+DMENUCMD="rofi -show drun"
 ```
 
 To even further customize your keyboard you can put a file with `xmodmap` expressions in `~/.config/moonwm/modmap`.
 It will be evaluated automatically.
 Or you can add `setxkbmap` options to your configuration like so:
 ```sh
-export MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
+MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
 ```
 
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh
-export MOONWM_NONOTIFYD=1      # disables dunst
-export MOONWM_NOPICOM=1        # disables picom
-export MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
-export MOONWM_NOKEYS=1         # disables MoonWMs internal key management
+MOONWM_NONOTIFYD=1      # disables dunst
+MOONWM_NOPICOM=1        # disables picom
+MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
+MOONWM_NOKEYS=1         # disables MoonWMs internal key management
 ```
 
 ### Set custom colours with xrdb
