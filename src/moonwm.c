@@ -3990,11 +3990,11 @@ main(int argc, char *argv[])
 	runautostart();
 	run();
 	cleanup();
+	XCloseDisplay(dpy);
 	if (restartwm) {
 		execvp(argv[0], argv);
 	} else if (restartlauncher) {
 		execvp(launcherargs[0], launcherargs);
 	}
-	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
