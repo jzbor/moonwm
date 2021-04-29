@@ -131,10 +131,16 @@ xmenu.selforeground:    #1d2021
 
 ### Autostart
 
-On login or reload `moonwm-util` starts a bunch of useful services by default.
-Most of them are listed below in the dependencies.
-In addition `touchegg` also gets started if installed, but it only really makes sense if you set it up properly.
-Same goes for `nextcloud`. If you have it installed it gets started.
+On login or reload `moonwm-util` starts a bunch of useful programs by default.
+You can find a list of "essential" utilities that are started automatically [below](#Dependencies).
+In addition these programs get started, provided you have installed them:
+```
+nextcloud       # cloud for your data
+redshift        # make screen less blue at night time
+touchegg        # touch gestures
+kdeconnect      # interaction with your mobile phone
+```
+
 
 If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
@@ -191,34 +197,36 @@ All packages are listed with their names in the Arch or Arch User Repositories.
 
 **These are the ones required by the MoonWM build itself:**
 ```
+libx11
+libxcb
+libxinerama
 slop
 xmenu
 xorg-xsetroot
 ```
 **These are the ones the `moonwm-util` script uses, starts or other programs I deem essential for a working desktop interface:**
 ```
-dmenu
-ffmpeg
-geoclue
-i3lock
-imagemagick
-kdeconnect
-libnotify
-light
-network-manager-applet
-otf-nerd-fonts-fira-code
-pamixer
-picom
-polkit-gnome
-redshift
-skippy-xd
-wmname
-xdotool
-xfce4-power-manager
-xorg-setxkbmap
-xorg-xrandr
-xorg-xrdb
-xwallpaper
+arandr          # gui to setup screens
+dmenu           # (application) menu
+ffmpeg          # playing sounds
+geoclue         # location services
+i3lock          # screen locking
+imagemagick     # lock screen generation
+libnotify       # desktop notifications
+light           # change background light of screen
+network-manager-applet      # network management
+otf-nerd-fonts-fira-code    # default font
+pamixer         # volume manipulation
+picom           # compositor
+polkit-gnome    # security policy agent
+skippy-xd       # application overview
+wmname          # change wmname for Java compatibility
+xdotool         # wm interaction
+xfce4-power-manager         # power management
+xorg-setxkbmap  # set keyboard layout
+xorg-xrandr     # setup screens
+xorg-xrdb       # interaction with xres database
+xwallpaper      # set wallpaper
 ```
 You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 
