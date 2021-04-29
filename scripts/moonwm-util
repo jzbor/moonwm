@@ -59,7 +59,10 @@ autostart_async () {
 
     # Start compositor
     sleep 2
-    [ -z "$MOONWM_NOPICOM" ] && run picom "killall -9 picom; picom"
+    if [ -z "$MOONWM_NOPICOM" ]; then
+        # if [ -z "$MOON"
+        run picom "killall -9 picom; picom"
+    fi
 
 }
 
@@ -94,11 +97,15 @@ dmenu_drun () {
 }
 
 dmenu_wrapper () {
-    if (! env | grep '^MOONWM_NOTHEMEDDMENU=' > /dev/null); then
+    if ! env_is_set MOONWM_NOTHEMEDDMENU; then
         exec dmenu -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10' "$@"
     else
        	exec dmenu "$@"
    	fi
+}
+
+env_is_set () {
+    env | grep "^$1=" > /dev/null
 }
 
 get_default_browser () {
@@ -162,19 +169,17 @@ kill_window () {
 }
 
 load_env_defaults () {
-    if (! env | grep '^TERMINAL=' > /dev/null) \
-            && get_default_terminal; then
+    if (! env_is_set TERMINAL) && get_default_terminal; then
         export TERMINAL="$(get_default_terminal)"
         export TERM="xterm-256color"
     fi
-    if (! env | grep '^BROWSER=' > /dev/null) \
-            && get_default_browser; then
+    if (! env_is_set BROWSER) && get_default_browser; then
         export BROWSER="$(get_default_browser)"
     fi
-    if (! env | grep '^DMENUCMD=' > /dev/null); then
+    if ! env_is_set DMENUCMD; then
         export DMENUCMD="$(get_default_dmenucmd)"
     fi
-    if (! env | grep '^MOONWM_STATUSCMD=' > /dev/null); then
+    if ! env_is_set MOONWM_STATUSCMD; then
         export MOONWM_STATUSCMD="moonwm-status"
     fi
 }
@@ -220,7 +225,7 @@ launch () {
 
     xrdb -merge ~/.Xresources
 
-    if (! env | grep '^MOONWM_NOKEYS=' > /dev/null); then
+    if ! env_is_set MOONWM_NOKEYS; then
         exec moonwm
     else
         exec moonwm -n
@@ -245,7 +250,7 @@ launch_valgrind () {
 
     [ -f "$logfile" ] && mv "$logfile" "$logfile.bak"
 
-    if (! env | grep '^MOONWM_NOKEYS=' > /dev/null); then
+    if ! env_is_set MOONWM_NOKEYS; then
         exec valgrind $options moonwm > "$logfile" 2>&1
     else
         exec valgrind $options moonwm -n > "$logfile" 2>&1
