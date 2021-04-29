@@ -59,8 +59,8 @@ autostart_async () {
 
     # Start compositor
     sleep 2
-    if ! env_is_set MOONWM_NOPICOM; then
-        if env_is_set MOONWM_PICOMEXP; then
+    if ! env_is_true MOONWM_NOPICOM; then
+        if env_is_true MOONWM_PICOMEXP; then
             run picom "killall -9 picom; picom --experimental-backends"
         else
             run picom "killall -9 picom; picom"
@@ -100,7 +100,7 @@ dmenu_drun () {
 }
 
 dmenu_wrapper () {
-    if ! env_is_set MOONWM_NOTHEMEDDMENU; then
+    if ! env_is_true MOONWM_NOTHEMEDDMENU; then
         exec dmenu -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10' "$@"
     else
        	exec dmenu "$@"
@@ -109,6 +109,10 @@ dmenu_wrapper () {
 
 env_is_set () {
     env | grep "^$1=" > /dev/null
+}
+
+env_is_true () {
+    env_is_set "$1" && [ "$(eval echo \$$1)" = "1" ]
 }
 
 get_default_browser () {
@@ -228,7 +232,7 @@ launch () {
 
     xrdb -merge ~/.Xresources
 
-    if ! env_is_set MOONWM_NOKEYS; then
+    if ! env_is_true MOONWM_NOKEYS; then
         exec moonwm
     else
         exec moonwm -n
@@ -253,7 +257,7 @@ launch_valgrind () {
 
     [ -f "$logfile" ] && mv "$logfile" "$logfile.bak"
 
-    if ! env_is_set MOONWM_NOKEYS; then
+    if ! env_is_true MOONWM_NOKEYS; then
         exec valgrind $options moonwm > "$logfile" 2>&1
     else
         exec valgrind $options moonwm -n > "$logfile" 2>&1
