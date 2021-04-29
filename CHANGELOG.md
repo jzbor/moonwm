@@ -4,12 +4,14 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [Upcoming](#upcoming)
 - [7.0.1](#701)
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
+* Changed config option names
 * Config file in `~/.config/moonwm/config.env`
 * Moving modmap file to `~/.config/moonwm/modmap`
 * Reloading config when restarting in place
