@@ -43,8 +43,8 @@ install: all
 	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	install -Dm644 CHANGELOG.md README.md -t ${DESTDIR}${DOCPREFIX}/moonwm/
-	# mkdir -p ${DESTDIR}/usr/share/xsessions/
-	# sed "s/PREFIX/$(shell echo "${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}/usr/share/xsessions/moonwm.desktop
+	mkdir -p ${DESTDIR}${PREFIX}/share/xsessions/
+	sed "s/PREFIX/$(shell echo "${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \
