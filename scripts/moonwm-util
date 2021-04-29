@@ -3,7 +3,11 @@
 # env variables to set:
 # MOONWM_WALLPAPER MOONWM_KEYMAP BROWSER DMENUCMD TERMINAL (MOONWM_INTERNAL_SCREEN MOONWM_NOKEYS MOONWM_NOPICOM MOONWM_NONOTIFYD MOONWM_STATUSHANDLER)
 
-LOCK_TMP_FILE="/tmp/lockfile.png"
+TEMPORARYDIR="${TMPDIR:-/tmp}/moonwm/${USER:-default}"
+[ -d "$TEMPORARYDIR" ] || mkdir -vp "$TEMPORARYDIR"
+LOCK_TMP_FILE="$TEMPORARYDIR/lockfile.png"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
+CONFIG_FILE="$CONFIG_DIR/config.env"
 
 autostart () {
     # Configure X
@@ -202,6 +206,13 @@ get_primary_resolution () {
 }
 
 launch () {
+    # Load user configuration
+    if [ -f "$CONFIG_FILE" ]; then
+        set -o allexport
+        . "$CONFIG_FILE"
+        set +o allexport
+    fi
+
     # Load default values for env variables
     load_env_defaults
 
@@ -215,10 +226,17 @@ launch () {
 }
 
 launch_valgrind () {
-    # Load default values for env variables
     logfile="${XDG_DATA_HOME:-$USER/.local/share}/moonwm/valgrind.log"
     options="--leak-check=full --show-leak-kinds=all --track-origins=yes -v"
 
+    # Load user configuration
+    if [ -f "$CONFIG_FILE" ]; then
+        set -o allexport
+        . "$CONFIG_FILE"
+        set +o allexport
+    fi
+
+    # Load default values for env variables
     load_env_defaults
 
     xrdb -merge ~/.Xresources
