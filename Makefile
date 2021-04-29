@@ -51,7 +51,7 @@ uninstall:
 		${DESTDIR}${MANPREFIX}/man1/moonwm.1 \
 		${DESTDIR}${PREFIX}/bin/moonie \
 		${DESTDIR}${PREFIX}/bin/moonwm-layoutmenu
-	# rm -f ${DESTDIR}/usr/share/xsessions/moonwm.desktop
+	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
 install-scripts:
 	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-util scripts/moonwm-xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
