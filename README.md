@@ -44,25 +44,32 @@ There is no real configuration file.
 If you want to change something more sophisticated, like replacing `moonwm-util` consider forking the git repository (see below).
 
 ### Set personal defaults in .profile
-MoonWM tries to use sensible defaults if it finds them on the system.
-However you might want to explicitly define your default applications like a terminal or browser, especially if you have multiple installed.
-You can do this by adding the according variable to your `~/.profile` as shown below.
+MoonWM is configured through environment variables.
+You can set them in your `~/.profile` or `~/.config/moonwm/config.env` (which is preferred).
+MoonWM tries to use **sensible defaults** for all settings.
+
+You might want to customize the **keyboard layout**, **wallpaper**, etc...
+```sh
+export MOONWM_KEYMAP="us"
+export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
+export MOONWM_MODKEY="Super"            # defaults to Alt
+export TOUCHEGG_THRESHOLD="750 750"     # if you are using touchegg
+```
+
+However you might want to explicitly define your **default applications** like a terminal or browser, especially if you have multiple installed.
 ```sh
 export BROWSER="firefox"
 export FILEMANAGER="pcmanfm"
 export TERMINAL="alacritty"
 export DMENUCMD="rofi -show drun"
-export MOONWM_KEYMAP="us"
-export MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
-export MOONWM_MODKEY="Super"    # defaults to Alt
-export TOUCHEGG_THRESHOLD="750 750"
 ```
-You should also be able to add `setxbkmap` options to your keyboard layout like this:
+
+To even further customize your keyboard you can put a file with `xmodmap` expressions in `~/.config/moonwm/modmap`.
+It will be evaluated automatically.
+Or you can add `setxkbmap` options to your configuration like so:
 ```sh
 export MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
 ```
-If you want to use a custom modmap setup just put the `xmodmap` expressions in `~/.local/share/moonwm/modmap`.
-It will be evaluated automatically.
 
 You can disable certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
@@ -72,13 +79,11 @@ export MOONWM_NOPICOM=1        # disables picom
 export MOONWM_NOTHEMEDDMENU=1  # disables built in dmenu theming
 export MOONWM_NOKEYS=1         # disables MoonWMs internal key management
 ```
-You can disable the hotkey deamon built into MoonWM with `export MOONWM_NOKEYS=1`, when using a display manager with the provided desktop file or `moonwm-util launch` (this is the default).
-If you start MoonWM directly you can achieve this by using the `-n` option.
 
 ### Set custom colours with xrdb
 Custom values for colors and some other properties can be set via `xrdb(1)`.
 To edit the design simply add/change these values in your `~/.Xresources`:
-```xrdb
+```css
 moonwm.focusedBorder:      #ebdbb2
 moonwm.focusedTitleBg:     #1d2021
 moonwm.focusedTitleFg:     #ebdbb2
@@ -96,7 +101,7 @@ moonwm.vacantTagFg:        #7c6f64
 ```
 
 You should also edit the according xmenu and general entries to get everything to fit together:
-```xrdb
+```css
 *background:            #1d2021
 *foreground:            #ebdbb2
 
