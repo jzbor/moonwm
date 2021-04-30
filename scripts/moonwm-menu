@@ -29,6 +29,14 @@ contextmenu="  Close			moonie killclient
   Floating			moonie togglefloating
   Fullscreen		moonie togglefullscr"
 
+layouts () {
+    moonie setlayout "$(layouts_classic)"
+}
+
+layouts_classic () {
+    moonie printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu
+}
+
 
 case $1 in
     # 1) rofi -show drun -config ~/.config/rofi/apps.rasi -fullscreen ;;
@@ -44,5 +52,11 @@ case $1 in
         timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
 		echo "$selection" | sh
 		;;
+    layouts)
+        layouts
+        ;;
+    layouts-classic)
+        layouts_classic
+        ;;
 esac
 

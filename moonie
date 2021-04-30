@@ -4,6 +4,37 @@ signal() {
 	xsetroot -name "fsignal:$*"
 }
 
+layouts="\
+[]= Tiled Layout        tile
+[]D Deck Layout         deck
+[M] Monocle Layout      monocle
+><> Floating Layout     floating
+=[] Left Tiled Layout   tileleft
+TTT Bottom Stack Layout bstack
+HHH Grid Layout         grid"
+
+get_layout_index () {
+    if echo "$layouts" | grep "\s$1" > /dev/null; then
+        echo "$layouts" | nl -v0 -w1 | grep "\s$1$" | cut -f1
+    else
+        echo "$1 is no valid layout identifier" > /dev/stderr
+        return 1
+    fi
+}
+
+print_layouts () {
+    echo "$layouts"
+}
+
+set_layout () {
+    if echo "$1" | grep '^[[:digit:]]*$' > /dev/null; then
+		signal setlayout i $1
+    else
+        index="$(get_layout_index "$1")" || return 1
+		signal setlayout i $index
+    fi
+}
+
 print_help() {
 	echo "
 Usage: moonie CALL [ARGUMENT]
@@ -56,6 +87,9 @@ case $# in
 				| togglebar | togglefloating | zoom | killclient | quit | restart | restartlaunched | cyclelayout)
 		signal $1
 		;;
+    printlayouts)
+        print_layouts
+        ;;
 	-h | --help)
 		print_help
 		;;
@@ -71,13 +105,19 @@ case $# in
 	view | tag)
 		signal $1 ui $2
 		;;
-	shiftview | shiftviewclients | toggleview | toggletag | setlayout | focusstack \
+	shiftview | shiftviewclients | toggleview | toggletag | focusstack \
             | incnmaster | focusmon | tagmon | tagmonkt | movex | movey | resizex | resizey)
 		signal $1 i $2
 		;;
 	setmfact)
 		signal $1 f $2
 		;;
+    setlayout)
+        set_layout "$2"
+        ;;
+    layoutindex)
+        get_layout_index "$2"
+        ;;
 	*)
 		echo "Unknown command or one too many arguments."
 		echo "Try 'moonie --help' for more information."

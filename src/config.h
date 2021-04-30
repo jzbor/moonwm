@@ -138,7 +138,7 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {  "/bin/sh", "-c", "$DMENUCMD", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
-static const char *layoutmenu_cmd = "moonwm-layoutmenu";
+static const char *layoutmenu_cmd = "moonwm-menu layouts-classic";
 
 /* this script or program gets called for bar button presses
  * the button is exported as BUTTON the according module as STATUSCMDN (a number)*/
