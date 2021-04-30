@@ -81,7 +81,7 @@ static const Layout layouts[] = {
     { "=[]",    tileleft },        /* Tile, but with switched sides */
     { "TTT",    bstack },          /* Master on top, stack on bottom */
 
-    { "HHH",    gaplessgrid },
+    { "HHH",    gaplessgrid },     /* All clients in a (gapless) grid */
 
     /* { "[@]",    spiral },          /1* Fibonacci spiral *1/ */
     /* { "[\\]",    dwindle },        /1* Decreasing in size right and leftward *1/ */
@@ -91,6 +91,14 @@ static const Layout layouts[] = {
 
     { NULL,        NULL },
 };
+
+#define TILEPOS     0
+#define DECKPOS     1
+#define MONOCLEPOS  2
+#define FLOATPOS    3
+#define TILELEFTPOS 4
+#define BSTACKPOS   5
+#define GRIDPOS     6
 
 /* static const Layout cyclablelayouts[] = { */
 /*     layouts[0], layouts[8], layouts[4], layouts[5], */
@@ -179,13 +187,13 @@ static Key keys[] = {
     { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     /* LAYOUTS */
-    { MODKEY,               XK_t,       setlayout,       {.v = &layouts[0]} },
-    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[1]} },
-    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[2]} },
-    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[3]} },
-    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[4]} },
-    { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
-    { MODKEY,               XK_g,       setlayout,       {.v = &layouts[6]} },
+    { MODKEY,               XK_t,       setlayout,       {.v = &layouts[TILEPOS]} },
+    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[DECKPOS]} },
+    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[MONOCLEPOS]} },
+    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[FLOATPOS]} },
+    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[TILELEFTPOS]} },
+    { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[BSTACKPOS]} },
+    { MODKEY,               XK_g,       setlayout,       {.v = &layouts[GRIDPOS]} },
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_z,       center,          {0} },
