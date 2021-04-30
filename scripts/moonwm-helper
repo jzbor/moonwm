@@ -42,6 +42,7 @@ options="\
      Floating layout                                MOD + Shift + f                    :moonie setlayout 3
      Mirrored tiling layout                         MOD + Shift + t                    :moonie setlayout 4
      Bottom tiling layout                           MOD + Control + t                  :moonie setlayout 5
+     Grid layout                                    MOD + Shift + t                    :moonie setlayout 6
      Toggle floating for window                     MOD + Shift + space                :moonie togglefloating
      Center floating window                         MOD + z                            :moonie center
      Load saved screen setup                        MOD + Shift + r                    :moonwm-util screen-layouts

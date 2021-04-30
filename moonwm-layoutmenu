@@ -7,4 +7,5 @@ cat <<EOF | xmenu
 ><> Floating Layout		3
 =[] Left Tiled Layout	4
 TTT Bottom Stack Layout	5
+HHH Grid Layout 		6
 EOF

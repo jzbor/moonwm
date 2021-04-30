@@ -81,6 +81,8 @@ static const Layout layouts[] = {
     { "=[]",    tileleft },        /* Tile, but with switched sides */
     { "TTT",    bstack },          /* Master on top, stack on bottom */
 
+    { "HHH",    gaplessgrid },
+
     /* { "[@]",    spiral },          /1* Fibonacci spiral *1/ */
     /* { "[\\]",    dwindle },        /1* Decreasing in size right and leftward *1/ */
 
@@ -183,6 +185,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[3]} },
     { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[4]} },
     { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[5]} },
+    { MODKEY,               XK_g,       setlayout,       {.v = &layouts[6]} },
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_z,       center,          {0} },
