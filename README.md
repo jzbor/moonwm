@@ -91,14 +91,24 @@ This is useful if you for example have your own wrapper scripts or other replace
 ```sh
 MOONWM_NOTIFYD=0      # disables the notification daemon
 MOONWM_PICOM=0        # disables picom
-MOONWM_THEMEDDMENU=0  # disables built in dmenu theming
-MOONWM_KEYS=0         # disables MoonWMs internal key management
 ```
 
 Further options you can customize:
 ```sh
-MOONWM_PICOMEXP=1       # start picom with --experimental-backends flag
-MOONWM_THEMEDDMENU=0    # disable automatic dmenu theming
+MOONWM_KEYS=1           # enable/disable internal moonwm key handling
+# bar
+MOONWM_SHOWBAR=1        # show a bar
+MOONWM_SYSTRAY=1        # show system tray icons
+MOONWM_TOPBAR=1         # place bar at the top or bottom
+# clients
+MOONWM_GAPS=1           # gaps
+MOONWM_SMARTGAPS=1      # disable gaps when only one client is visible
+MOONWM_RESIZEHINTS=0    # let clients choose their size when tiled
+MOONWM_CENTERONRH=0     # if resizehints applies, center the window
+MOONWM_DECORHINTS=1     # decoration hints (MOTIF)
+# handled by moonwm-util launch
+MOONWM_PICOMEXP=0       # start picom with --experimental-backends flag
+MOONWM_THEMEDDMENU=1    # automatic dmenu theming
 ```
 
 ### Set custom colours with xrdb

@@ -254,6 +254,7 @@ static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static void enternotify(XEvent *e);
+static void envsettings(void);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusdir(const Arg *arg);
@@ -276,6 +277,7 @@ static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void layoutmenu(const Arg *arg);
 static void loadxrdb(void);
+static void loadenv(char *name, int *var);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -1223,6 +1225,20 @@ enternotify(XEvent *e)
 }
 
 void
+envsettings() {
+	setmodkey();
+	loadenv("MOONWM_CENTERONRH",	&centeronrh);
+	loadenv("MOONWM_DECORHINTS",	&decorhints);
+	loadenv("MOONWM_GAPS",			&enablegaps);
+	loadenv("MOONWM_KEYS",			&managekeys);
+	loadenv("MOONWM_RESIZEHINTS",	&resizehints);
+	loadenv("MOONWM_SHOWBAR",		&showbar);
+	loadenv("MOONWM_SMARTGAPS",		&smartgaps);
+	loadenv("MOONWM_SYSTRAY",		&showsystray);
+	loadenv("MOONWM_TOPBAR",		&topbar);
+}
+
+void
 expose(XEvent *e)
 {
 	Monitor *m;
@@ -1663,6 +1679,17 @@ layoutmenu(const Arg *arg) {
 
 	i = atoi(c);
 	setlayout(&((Arg) { .v = &layouts[i] }));
+}
+
+void
+loadenv(char *name, int *var) {
+	char *value = getenv(name);
+	if (value) {
+		if (strcmp(value, "1") == 0)
+			*var = 1;
+		else if (strcmp(value, "0") == 0)
+			*var = 0;
+	}
 }
 
 void
@@ -3984,7 +4011,7 @@ main(int argc, char *argv[])
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("moonwm: cannot get xcb connection\n");
 	checkotherwm();
-	setmodkey();
+	envsettings();
 	XrmInitialize();
 	loadxrdb();
 	setup();
