@@ -19,6 +19,8 @@ command -v $FILEMANAGER > /dev/null 2>&1 && appsmenu="$appsmenu
   Files			$FILEMANAGER"
 command -v discord > /dev/null 2>&1     && appsmenu="$appsmenu
 ﭮ  Discord			discord"
+command -v discord-canary > /dev/null 2>&1     && appsmenu="$appsmenu
+ﭮ  Discord [c]		discord-canary"
 command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
   Spotify			if pidof spotify; then moonie toggleview 7; else spotify; fi"
 command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
