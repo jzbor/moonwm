@@ -504,12 +504,14 @@ applyrules(Client *c)
 int
 applysizehints(Client *c, int *x, int *y, int *w, int *h, int *bw, int interact)
 {
-	int baseismin;
+	int baseismin, targetw, targeth;
 	Monitor *m = c->mon;
 
 	/* set minimum possible */
 	*w = MAX(1, *w);
 	*h = MAX(1, *h);
+	targetw = *w;
+	targeth = *h;
 	if (interact) {
 		if (*x > sw)
 			*x = sw - WIDTH(c);
@@ -563,6 +565,10 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int *bw, int interact)
 			*w = MIN(*w, c->maxw);
 		if (c->maxh)
 			*h = MIN(*h, c->maxh);
+		if (resizehints && centeronrh) {
+			*x = (2 * *x + targetw - *w) / 2;
+			*y = (2 * *y + targeth - *h) / 2;
+		}
 	}
 	return *x != c->x || *y != c->y || *w != c->w || *h != c->h || *bw != c->bw;
 }
