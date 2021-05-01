@@ -82,6 +82,7 @@ static const Layout layouts[] = {
     { "TTT",    bstack },          /* Master on top, stack on bottom */
 
     { "HHH",    gaplessgrid },     /* All clients in a (gapless) grid */
+    { "===",    horizgrid },       /* same as gaplessgrid, but horizontal */
 
     /* { "[@]",    spiral },          /1* Fibonacci spiral *1/ */
     /* { "[\\]",    dwindle },        /1* Decreasing in size right and leftward *1/ */

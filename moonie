@@ -5,13 +5,14 @@ signal() {
 }
 
 layouts="\
-[]= Tiled Layout        tile
-[]D Deck Layout         deck
-[M] Monocle Layout      monocle
-><> Floating Layout     floating
-=[] Left Tiled Layout   tileleft
-TTT Bottom Stack Layout bstack
-HHH Grid Layout         grid"
+[]= Tiled Layout        	tile
+[]D Deck Layout         	deck
+[M] Monocle Layout      	monocle
+><> Floating Layout     	floating
+=[] Left Tiled Layout   	tileleft
+TTT Bottom Stack Layout 	bstack
+HHH Grid Layout         	grid
+=== Horizontal Grid Layout	horgrid"
 
 get_layout_index () {
     if echo "$layouts" | grep "\s$1" > /dev/null; then

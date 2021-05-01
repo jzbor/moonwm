@@ -17,6 +17,7 @@ static void deck(Monitor *m);
 static void dwindle(Monitor *m);
 static void fibonacci(Monitor *m, int s);
 static void gaplessgrid(Monitor *m);
+static void horizgrid(Monitor *m);
 static void monocle(Monitor *m);
 static void spiral(Monitor *m);
 static void tile(Monitor *);
@@ -576,6 +577,65 @@ gaplessgrid(Monitor *m)
 			cn++;
 		}
 	}
+}
+
+/*
+ * Horizontal grid layout + gaps
+ * https://dwm.suckless.org/patches/horizgrid/
+ */
+void
+horizgrid(Monitor *m) {
+	Client *c;
+	unsigned int n, i, bw;
+	int oh, ov, ih, iv;
+	int mx = 0, my = 0, mh = 0, mw = 0;
+	int sx = 0, sy = 0, sh = 0, sw = 0;
+	int ntop, nbottom = 1;
+	float mfacts, sfacts;
+	int mrest, srest;
+
+	/* Count windows */
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+	if (n == 0)
+		return;
+
+	if (n == 1)
+		bw = 0;
+	else
+		bw = borderpx;
+
+	if (n <= 2)
+		ntop = n;
+	else {
+		ntop = n / 2;
+		nbottom = n - ntop;
+	}
+	sx = mx = m->wx + ov;
+	sy = my = m->wy + oh;
+	sh = mh = m->wh - 2*oh;
+	sw = mw = m->ww - 2*ov;
+
+	if (n > ntop) {
+		sh = (mh - ih) / 2;
+		mh = mh - ih - sh;
+		sy = my + mh + ih;
+		mw = m->ww - 2*ov - iv * (ntop - 1);
+		sw = m->ww - 2*ov - iv * (nbottom - 1);
+	}
+
+	mfacts = ntop;
+	sfacts = nbottom;
+	mrest = mw - (mw / ntop) * ntop;
+	srest = sw - (sw / nbottom) * nbottom;
+
+	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+		if (i < ntop) {
+			resize(c, mx, my, (mw / mfacts) + (i < mrest ? 1 : 0) - (2*c->bw), mh - (2*c->bw), bw, 0);
+			mx += WIDTH(c) + iv;
+		} else {
+			resize(c, sx, sy, (sw / sfacts) + ((i - ntop) < srest ? 1 : 0) - (2*c->bw), sh - (2*c->bw), bw, 0);
+			sx += WIDTH(c) + iv;
+		}
 }
 
 void
