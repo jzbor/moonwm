@@ -4000,10 +4000,8 @@ main(int argc, char *argv[])
 {
 	if (argc == 2 && !strcmp("-v", argv[1]))
 		die("moonwm-"VERSION);
-	else if (argc == 2 && !strcmp("-n", argv[1]))
-		managekeys = 0;
 	else if (argc != 1)
-		die("usage: moonwm [-v | -n]");
+		die("usage: moonwm [-v]");
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
 		fputs("warning: no locale support\n", stderr);
 	if (!(dpy = XOpenDisplay(NULL)))
