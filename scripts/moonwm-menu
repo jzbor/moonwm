@@ -31,6 +31,28 @@ contextmenu="  Close			moonie killclient
   Floating			moonie togglefloating
   Fullscreen		moonie togglefullscr"
 
+closemenu="Close window	close
+Close multiple	closemult
+Kill process	kill
+Cancel			cancel"
+
+close () {
+    selection="$(printf "$closemenu" | xmenu)"
+    case $selection in
+        close) xdotool getwindowfocus windowclose;;
+        closemult)
+            while [ 1 = 1 ]; do
+                wid="$(slop -b 0 -f %i)"
+                [ -z "$wid" ] && exit
+                xdotool
+                timeout -k 3s 3s xdotool windowclose "$wid"
+            done
+            ;;
+        kill) kill "$(xdotool getwindowfocus getwindowpid)";;
+        *) echo "Aborting...";;
+    esac
+}
+
 layouts () {
     moonie setlayout "$(layouts_classic)"
 }
@@ -55,10 +77,10 @@ case $1 in
 		echo "$selection" | sh
 		;;
     layouts)
-        layouts
-        ;;
+        layouts ;;
     layouts-classic)
-        layouts_classic
-        ;;
+        layouts_classic ;;
+    close)
+        close ;;
 esac
 

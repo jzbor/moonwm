@@ -253,6 +253,7 @@ static Button buttons[] = {
     WINBUTTON(MODKEY,       ControlMask,    Button5,        resizey,        {.i = 20 })
     WINBUTTON(MODKEY,       0,              Button8,        pushstack,      {.i = INC(+1) })
     WINBUTTON(MODKEY,       0,              Button9,        pushstack,      {.i = INC(-1) })
+    WINBUTTON(MODKEY,       ShiftMask,      Button3,        spawn,          SHCMD("moonwm-menu close"))
     { ClkMenu,              0,              Button1,        spawn,          SHCMD("moonwm-menu 1") },
     { ClkMenu,              0,              Button2,        spawn,          SHCMD("moonwm-menu 2") },
     { ClkMenu,              0,              Button3,        spawn,          SHCMD("moonwm-menu 3") },
@@ -290,7 +291,6 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-    { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-util killwindow") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu context") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
