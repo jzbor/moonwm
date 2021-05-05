@@ -440,6 +440,7 @@ struct Pertag {
 	int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */
 	float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */
 	unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */
+	unsigned int lastlts[LENGTH(tags) + 1]; /* last layouts */
 	const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */
 };
 
@@ -1054,6 +1055,7 @@ createmon(void)
 		m->pertag->ltidxs[i][0] = m->lt[0];
 		m->pertag->ltidxs[i][1] = m->lt[1];
 		m->pertag->sellts[i] = m->sellt;
+		m->pertag->lastlts[i] = m->sellt;
 	}
 	return m;
 }
@@ -1236,6 +1238,7 @@ envsettings() {
 	loadenv("MOONWM_SMARTGAPS",		&smartgaps);
 	loadenv("MOONWM_SYSTRAY",		&showsystray);
 	loadenv("MOONWM_TOPBAR",		&topbar);
+	loadenv("MOONWM_TOGGLELAYOUT",	&togglelayout);
 }
 
 void
@@ -2816,11 +2819,12 @@ setfullscreen(Client *c, int fullscreen)
 void
 setlayout(const Arg *arg)
 {
-	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt]) {
+	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt]
+			|| (togglelayout && arg->v == selmon->lt[selmon->sellt])) {
 		selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;
 		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
 	}
-	if (arg && arg->v)
+	if (arg && arg->v && arg->v && (!togglelayout || arg->v != selmon->lt[selmon->sellt^1]))
 		selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
 	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);

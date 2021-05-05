@@ -96,6 +96,7 @@ MOONWM_PICOM=0        # disables picom
 Further options you can customize:
 ```sh
 MOONWM_KEYS=1           # enable/disable internal moonwm key handling
+MOONWM_TOGGLELAYOUT=0   # toggle layout when its already set
 # bar
 MOONWM_SHOWBAR=1        # show a bar
 MOONWM_SYSTRAY=1        # show system tray icons
