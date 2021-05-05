@@ -189,13 +189,12 @@ menu() {
 }
 
 generate_cache() {
-    if ! [ -f "$CACHE_MENU_FILE.part" ]; then
-        if [ -n "$1" ]; then
-            echo "$1" > "$CACHE_MENU_FILE.part"
-        else
-            menu > "$CACHE_MENU_FILE.part"
-        fi
-        mv "$CACHE_MENU_FILE.part" "$CACHE_MENU_FILE"
+    # may cause racing conditions
+    if [ -n "$1" ]; then
+        echo "$1" > "$CACHE_MENU_FILE"
+    else
+        temp="$(menu)"
+        echo "$temp" > "$CACHE_MENU_FILE"
     fi
 }
 
