@@ -19,8 +19,7 @@ autostart () {
     # Other daemons
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
 
-    rm "${XDG_CACHE_HOME:-$HOME/.cache}/moonwm-xdg-xmenu/*.part"
-    moonwm-xdg-xmenu -u
+    (sleep 120; nice moonwm-xdg-xmenu -f > /dev/null 2>&1) &
 
     autostart_async &
 }
@@ -89,14 +88,13 @@ default_dmenu_run () {
 }
 
 dmenu_drun () {
-    list="$(moonwm-xdg-xmenu | sed 's/IMG:[a-zA-Z0-9./_-]*//;s/^\s*//' | grep '	')"
+    list="$(moonwm-xdg-xmenu -at)"
     selected="$(echo "$list" | cut -f1 | $0 dmenu -i "$@")" \
     	&& if echo "$list" | grep -F "$selected" > /dev/null; then
            eval "$(echo "$list" | grep -F "$selected" | head -n 1 | cut -f2)"
        else
            eval "$selected"
        fi
-    nice moonwm-xdg-xmenu -u &
 }
 
 dmenu_wrapper () {

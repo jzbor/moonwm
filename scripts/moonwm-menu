@@ -1,7 +1,7 @@
 #!/bin/sh
 
 rightmenu="  Applications
-$(moonwm-xdg-xmenu | sed -e 's/^/	/')
+$(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
 
   Shutdown			poweroff || sudo poweroff
   Reboot			reboot || sudo reboot
@@ -67,7 +67,7 @@ case $1 in
     # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     2) echo "$appsmenu" | xmenu -p 0x0:current | sh ;;
-    3) echo "$rightmenu" | xmenu -p 0x0:current | sh; nice moonwm-xdg-xmenu -u & ;;
+    3) echo "$rightmenu" | xmenu -p 0x0:current | sh & ;;
     "context")
         selection="$(echo "$contextmenu" | xmenu)"
         [ -z "$selection" ] && exit
