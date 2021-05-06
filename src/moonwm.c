@@ -450,6 +450,8 @@ struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 void
 activate(Client *c) {
 	unsigned int i;
+	if (c == selmon->sel)
+		return;
 	for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
 	if (i < LENGTH(tags)) {
 		const Arg a = {.ui = 1 << i};
