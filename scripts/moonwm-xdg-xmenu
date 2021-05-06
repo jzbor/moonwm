@@ -215,12 +215,12 @@ def set_icon(entity):
         image_found = False
         if imagefiles == []:
             imagefiles = get_image_files()
-        if icontheme == '':
+        if icontheme and icontheme == '':
             icontheme = get_icon_theme()
         for imagefile in imagefiles:
             for ext in ['png', 'svg']:
                 if imagefile.endswith('/{}.{}'.format(name, ext)) \
-                        and (entity.iconpath == '' or icontheme in imagefile):
+                        and (entity.iconpath == '' or (icontheme and icontheme in imagefile)):
                     entity.iconpath = load_icon(name, ext, imagefile)
                     print("{}.png <= {}".format(name, imagefile), file=sys.stderr)
                     image_found = True
