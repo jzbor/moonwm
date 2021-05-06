@@ -62,4 +62,8 @@ uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-util
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-xdg-xmenu
 
-.PHONY: all options clean dist install install-scripts uninstall uninstall-scripts
+pull-xdg-xmenu:
+	wget https://raw.githubusercontent.com/jzbor/mashup/master/utils/xdg-xmenu
+	mv xdg-xmenu scripts/moonwm-xdg-xmenu
+
+.PHONY: all options clean dist install install-scripts uninstall uninstall-scripts pull-xdg-xmenu

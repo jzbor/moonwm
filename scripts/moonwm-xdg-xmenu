@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 
 XDG_DATA_HOME       = os.getenv('XDG_DATA_HOME', os.path.join(os.getenv('HOME'), '.local/share'))
 XDG_CONFIG_HOME     = os.getenv('XDG_CONFIG_HOME', os.path.join(os.getenv('HOME'), '.config'))
@@ -19,6 +20,7 @@ APPLICATION_DIRS    = set([os.path.join(dir, 'applications') for dir in XDG_DATA
 CACHE_DIR           = os.path.join(os.getenv('XDG_CACHE_HOME',
                         os.path.join(os.getenv('HOME'), '.cache')), os.path.basename(__file__))
 TERMINAL            = os.getenv('TERMINAL', 'xterm')
+EXECFILTER          = re.compile('%[a-zA-Z]')
 ICON_SIZE           = 24
 IMAGEMAGICK_OPTIONS = ['-background', 'none', '-size', '{0}x{0}'.format(ICON_SIZE)]
 MULTIPLE_CATEGORIES = True
@@ -26,6 +28,10 @@ PRINT_IMAGES        = True
 SORT_BY_CATEGORY    = True
 COMPILE_IMAGES      = True
 FORCE_REFRESH_CACHE = False
+EXPIRY_DAYS         = 7
+EXPIRY_TIME         = EXPIRY_DAYS * 24 * 60 * 60
+UPDATEEXPIRED       = False
+USER_ICON_THEME     = ''
 
 imagefiles = []
 icontheme = ''
@@ -82,10 +88,20 @@ def add_category(label, iconname, matchstr):
     categories[label] = newcat
 
 
+def cache_is_expired():
+    now = time.time()
+    for filename in os.listdir(CACHE_DIR):
+        filestamp = os.stat(os.path.join(CACHE_DIR, filename)).st_mtime
+        filecompare = now - EXPIRY_TIME
+        if filestamp >= filecompare:
+            return False
+    return True
+
+
 def dict_to_application(dictionary:dict):
     app = Application()
     app.name = dictionary['Name']
-    app.execute = dictionary['Exec']
+    app.execute = re.sub(EXECFILTER, '', dictionary['Exec'])
     if 'GenericName' in dictionary:
         app.genname = dictionary['GenericName']
     if 'Icon' in dictionary and PRINT_IMAGES:
@@ -132,6 +148,8 @@ def get_image_files():
 
 
 def get_icon_theme():
+    if USER_ICON_THEME != '':
+        return USER_ICON_THEME
     path = os.path.join(XDG_CONFIG_HOME, 'gtk-3.0/settings.ini')
     if os.path.isfile(path):
         file = open(path, 'r')
@@ -229,8 +247,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Generate application menu in xmenu format')
     parser.add_argument('-a', '--applications', help='don\'t sort applications by category',
                         action='store_false', dest='sort_by_category')
+    parser.add_argument('-e', '--expired', help='refresh image cache if older than {} days'.format(EXPIRY_DAYS),
+                        action='store_true', dest='updateexpired')
     parser.add_argument('-f', '--force', help='force refresh image cache',
                         action='store_true', dest='force_refresh_cache')
+    parser.add_argument('-i', '--icontheme', help='select a custom icon theme', nargs=1, type=str,
+                        default=[''],  metavar='THEME', action='store', dest='user_icon_theme')
     parser.add_argument('-l', '--lazy', help='don\'t compile images on demand (this is way faster)',
                         action='store_false', dest='compile_images')
     parser.add_argument('-m', '--multiple', help='add applications to multiple categories',
@@ -258,8 +280,10 @@ if __name__ == '__main__':
     args = parse_args()
     MULTIPLE_CATEGORIES = args.multiple_categories
     SORT_BY_CATEGORY = args.sort_by_category
-    COMPILE_IMAGES = args.compile_images and args.print_images
     PRINT_IMAGES = args.print_images
-    FORCE_REFRESH_CACHE = args.force_refresh_cache
+    COMPILE_IMAGES = args.compile_images and PRINT_IMAGES
+    UPDATEEXPIRED = args.updateexpired
+    FORCE_REFRESH_CACHE = args.force_refresh_cache or (UPDATEEXPIRED and cache_is_expired())
+    USER_ICON_THEME = args.user_icon_theme[0]
     load_desktop_files()
     format_xmenu(applications)
