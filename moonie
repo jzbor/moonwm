@@ -11,8 +11,7 @@ layouts="\
 ><> Floating Layout     	floating
 =[] Left Tiled Layout   	tileleft
 TTT Bottom Stack Layout 	bstack
-HHH Grid Layout         	grid
-=== Horizontal Grid Layout	horgrid"
+HHH Grid Layout         	grid"
 
 get_layout_index () {
     if echo "$layouts" | grep "\s$1" > /dev/null; then
