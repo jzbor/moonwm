@@ -12,10 +12,11 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
-* Improved version of xdg-xmenu
 * Grid layout
 * More config options exposed via env/config variables
+* Highly improved version of xdg-xmenu
 * Improved layout handling in scripts
+* Loading moonwm xres values as defaults for xmenu
 
 ## 7.0.2
 * Changed config option names
