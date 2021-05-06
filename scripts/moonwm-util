@@ -19,7 +19,11 @@ autostart () {
     # Other daemons
     killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
 
-    (sleep 120; nice moonwm-xdg-xmenu -f > /dev/null 2>&1) &
+    if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/moonwm-xdg-xmenu" ]; then
+        (sleep 120; nice moonwm-xdg-xmenu -e > /dev/null 2>&1) &
+    else
+        nice moonwm-xdg-xmenu -f > /dev/null 2>&1 &
+    fi
 
     autostart_async &
 }

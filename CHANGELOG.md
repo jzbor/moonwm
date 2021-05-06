@@ -12,6 +12,7 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
+* Improved version of xdg-xmenu
 * Grid layout
 * More config options exposed via env/config variables
 * Improved layout handling in scripts

@@ -90,6 +90,8 @@ def add_category(label, iconname, matchstr):
 
 def cache_is_expired():
     now = time.time()
+    if not os.path.isdir(CACHE_DIR):
+        return False
     for filename in os.listdir(CACHE_DIR):
         filestamp = os.stat(os.path.join(CACHE_DIR, filename)).st_mtime
         filecompare = now - EXPIRY_TIME
