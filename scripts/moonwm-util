@@ -123,6 +123,13 @@ env_def_true () {
     (! env_is_set "$1") || [ "$(eval echo "\$$1")" = "1" ]
 }
 
+generate_lock_file () {
+    resolution="$(get_primary_resolution)"
+    if ! [ "$(file "$LOCK_TMP_FILE" | cut -f11 -d',' | sed 's/\s//g')" = "$resolution" ]; then
+        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$MOONWM_WALLPAPER" "$LOCK_TMP_FILE"
+    fi
+}
+
 get_default_browser () {
     if command -v firefox > /dev/null 2>&1; then
         echo firefox
@@ -173,6 +180,10 @@ get_default_terminal () {
     fi
 }
 
+get_primary_resolution () {
+    xrandr | grep '\*' | sed 's/^\s*\([0-9]*x[0-9]*\).*/\1/g' | head -n 1
+}
+
 load_env_defaults () {
     if (! env_is_set TERMINAL) && get_default_terminal; then
         export TERMINAL="$(get_default_terminal)"
@@ -189,38 +200,24 @@ load_env_defaults () {
     fi
 }
 
-load_xmenu_defaults () {
-    xrdb_has '\*background' \
-        || xrdb_set '*background' '#1d2021'
-    xrdb_has '\*foreground' \
-        || xrdb_set '*foreground' '#ebdbb2'
-    xrdb_has xmenu.border \
-        || xrdb_set xmenu.border '#282828'
-    xrdb_has xmenu.foreground \
-        || xrdb_set xmenu.foreground '#ebdbb2'
-    xrdb_has xmenu.background \
-        || xrdb_set xmenu.background '#1d2021'
-    xrdb_has xmenu.selforeground \
-        || xrdb_set xmenu.selforeground '#1d2021'
-    xrdb_has xmenu.selbackground \
-        || xrdb_set xmenu.selbackground '#ebdbb2'
-    xrdb_has xmenu.font \
-        || xrdb_set xmenu.font 'FiraCode Nerd Font:size=9'
-    xrdb_has xmenu.borderWidth \
-        || xrdb_set xmenu.borderWidth 2
-    xrdb_has xmenu.separator \
-        || xrdb_set xmenu.separator '#ebdbb2'
-}
-
-generate_lock_file () {
-    resolution="$(get_primary_resolution)"
-    if ! [ "$(file "$LOCK_TMP_FILE" | cut -f11 -d',' | sed 's/\s//g')" = "$resolution" ]; then
-        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$MOONWM_WALLPAPER" "$LOCK_TMP_FILE"
+load_xmenu_value () {
+    if ! xrdb_has "$1"; then
+        temp="$(xrdb_get "$2")"
+        xrdb_set "$1" "${temp:-$3}"
     fi
 }
 
-get_primary_resolution () {
-    xrandr | grep '\*' | sed 's/^\s*\([0-9]*x[0-9]*\).*/\1/g' | head -n 1
+load_xmenu_defaults () {
+    load_xmenu_value '\*background'     'moonwm.focusedTitleBg'     '#1d2021'
+    load_xmenu_value '\*foreground'     'moonwm.focusedTitleFg'     '#ebdbb2'
+    load_xmenu_value xmenu.border       'moonwm.unfocusedBorder'    '#282828'
+    load_xmenu_value xmenu.foreground   'moonwm.focusedTitleFg'     '#ebdbb2'
+    load_xmenu_value xmenu.background   'moonwm.focusedTitleBg'     '#1d2021'
+    load_xmenu_value xmenu.selforeground 'moonwm.focusedTitleBg'    '#1d2021'
+    load_xmenu_value xmenu.selbackground 'moonwm.focusedTitleFg'    '#ebdbb2'
+    load_xmenu_value xmenu.font         ''          'FiraCode Nerd Font:size=9'
+    load_xmenu_value xmenu.borderWidth  ''                          2
+    load_xmenu_value xmenu.separator    'moonwm.focusedTitleFg'     '#ebdbb2'
 }
 
 launch () {
@@ -390,6 +387,11 @@ xrdb_set () {
     echo "$1: $2" | xrdb -merge
 }
 
+xrdb_refresh () {
+    moonie xrdb
+    load_xmenu_defaults
+}
+
 helptext="
 moonwm-util [-h] [-r] command
 
@@ -411,6 +413,7 @@ commands:
     setup-keyboard Initialize keyboard layout
     start          Launch autostart applications
     volume         Change output volume (e.g. moonwm-util volume -5 or moonwm-util volume mute)
+    xrdb           Refresh xrdb values of moonwm and utils
 "
 
 while getopts "hr" arg; do
@@ -445,6 +448,7 @@ case $1 in
     setup-keyboard) setup_keyboard;;
     start) autostart;;
     volume) volume "$2";;
+    xrdb) xrdb_refresh ;;
     *) printf "Unknown operation '$1'.\nTry 'moonwm-util -h' for more information.\n"; exit 1;;
 esac
 
