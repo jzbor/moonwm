@@ -26,30 +26,36 @@ command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
 command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
   Mail				thunderbird"
 
-contextmenu="  Close			moonie killclient
-ﭔ  Resize			moonie rioresize
-  Floating			moonie togglefloating
-  Fullscreen		moonie togglefullscr"
+contextmenu="  Close			close
+ﭔ  Resize			resize
+  Floating			float
+  Fullscreen		fullscreen
 
-closemenu="Close window	close
-Close multiple	closemult
-Kill process	kill
-Cancel			cancel"
+   More
+	  Close multiple		closemult
+	  Kill process			kill"
 
-close () {
-    selection="$(printf "$closemenu" | xmenu)"
+context () {
+    selection="$(printf "$contextmenu" | xmenu)"
+    [ -z "$selection" ] && exit
+    if [ "$1" = select ] && [ "$selection" != closemult ]; then
+        wid="$(slop -b 0 -f %i)"
+        [ -z "$wid" ] && exit
+        timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
+    fi
     case $selection in
-        close) xdotool getwindowfocus windowclose;;
+        close) moonie killclient ;;
+        resize) moonie rioresize ;;
+        float) moonie togglefloating ;;
+        fullscreen) moonie togglefullscr ;;
+        kill) kill "$(xdotool getwindowfocus getwindowpid)" ;;
         closemult)
             while [ 1 = 1 ]; do
                 wid="$(slop -b 0 -f %i)"
                 [ -z "$wid" ] && exit
-                xdotool
                 timeout -k 3s 3s xdotool windowclose "$wid"
             done
             ;;
-        kill) kill "$(xdotool getwindowfocus getwindowpid)";;
-        *) echo "Aborting...";;
     esac
 }
 
@@ -68,19 +74,12 @@ case $1 in
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     2) echo "$appsmenu" | xmenu -p 0x0:current | sh ;;
     3) echo "$rightmenu" | xmenu -p 0x0:current | sh & ;;
-    "context")
-        selection="$(echo "$contextmenu" | xmenu)"
-        [ -z "$selection" ] && exit
-        wid="$(slop -b 0 -f %i)"
-        [ -z "$wid" ] && exit
-        timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
-		echo "$selection" | sh
-		;;
+    context) context select ;;
+    context-client) context client ;;
+    context-select) context select ;;
     layouts)
         layouts ;;
     layouts-classic)
         layouts_classic ;;
-    close)
-        close ;;
 esac
 

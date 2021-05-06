@@ -191,19 +191,25 @@ load_env_defaults () {
 
 load_xmenu_defaults () {
     xrdb_has '\*background' \
-        || xrdb_set_color '*background' '#1d2021'
+        || xrdb_set '*background' '#1d2021'
     xrdb_has '\*foreground' \
-        || xrdb_set_color '*foreground' '#ebdbb2'
+        || xrdb_set '*foreground' '#ebdbb2'
     xrdb_has xmenu.border \
-        || xrdb_set_color xmenu.border '#1d2021'
+        || xrdb_set xmenu.border '#282828'
     xrdb_has xmenu.foreground \
-        || xrdb_set_color xmenu.foreground '#ebdbb2'
+        || xrdb_set xmenu.foreground '#ebdbb2'
     xrdb_has xmenu.background \
-        || xrdb_set_color xmenu.background '#1d2021'
+        || xrdb_set xmenu.background '#1d2021'
     xrdb_has xmenu.selforeground \
-        || xrdb_set_color xmenu.selforeground '#1d2021'
+        || xrdb_set xmenu.selforeground '#1d2021'
     xrdb_has xmenu.selbackground \
-        || xrdb_set_color xmenu.selbackground '#ebdbb2'
+        || xrdb_set xmenu.selbackground '#ebdbb2'
+    xrdb_has xmenu.font \
+        || xrdb_set xmenu.font 'FiraCode Nerd Font:size=9'
+    xrdb_has xmenu.borderWidth \
+        || xrdb_set xmenu.borderWidth 2
+    xrdb_has xmenu.separator \
+        || xrdb_set xmenu.separator '#ebdbb2'
 }
 
 generate_lock_file () {
@@ -372,7 +378,7 @@ volume () {
     [ -n "$MOONWM_STATUSCMD" ] && $MOONWM_STATUSCMD update
 }
 
-xrdb_get_color () {
+xrdb_get () {
     xrdb -query -all | grep "^$1": | sed 's/.*#/#/g' | sort | head -n 1
 }
 
@@ -380,7 +386,7 @@ xrdb_has () {
     xrdb -query -all | grep "^$1": > /dev/null
 }
 
-xrdb_set_color () {
+xrdb_set () {
     echo "$1: $2" | xrdb -merge
 }
 
