@@ -218,7 +218,7 @@ load_xmenu_defaults () {
     load_xmenu_value xmenu.background   'moonwm.focusedTitleBg'     '#1d2021'
     load_xmenu_value xmenu.selforeground 'moonwm.focusedTitleBg'    '#1d2021'
     load_xmenu_value xmenu.selbackground 'moonwm.focusedTitleFg'    '#ebdbb2'
-    load_xmenu_value xmenu.font         ''          'FiraCode Nerd Font:size=9'
+    load_xmenu_value xmenu.font         ''          'FiraCode Nerd Font:size=9,monospace:size=9'
     load_xmenu_value xmenu.borderWidth  ''                          2
     load_xmenu_value xmenu.separator    'moonwm.focusedTitleFg'     '#ebdbb2'
 }
