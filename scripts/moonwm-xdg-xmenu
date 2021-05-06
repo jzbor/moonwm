@@ -34,7 +34,7 @@ UPDATEEXPIRED       = False
 USER_ICON_THEME     = ''
 
 imagefiles = []
-icontheme = ''
+icontheme = None
 applications = []
 categories = {}
 
@@ -158,7 +158,7 @@ def get_icon_theme():
         for line in file.readlines():
             if 'gtk-icon-theme-name' in line:
                 return line.strip().split('=')[1]
-    return False
+    return ''
 
 
 def load_desktop_file(filepath):
@@ -215,12 +215,12 @@ def set_icon(entity):
         image_found = False
         if imagefiles == []:
             imagefiles = get_image_files()
-        if icontheme and icontheme == '':
+        if icontheme == None:
             icontheme = get_icon_theme()
         for imagefile in imagefiles:
             for ext in ['png', 'svg']:
                 if imagefile.endswith('/{}.{}'.format(name, ext)) \
-                        and (entity.iconpath == '' or (icontheme and icontheme in imagefile)):
+                        and (entity.iconpath == '' or (type(icontheme) == str and icontheme in imagefile)):
                     entity.iconpath = load_icon(name, ext, imagefile)
                     print("{}.png <= {}".format(name, imagefile), file=sys.stderr)
                     image_found = True
