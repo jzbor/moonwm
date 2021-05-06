@@ -4,14 +4,14 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [Upcoming](#upcoming)
+- [7.0.3](#703)
 - [7.0.2](#702)
 - [7.0.1](#701)
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming
+## 7.0.3
 * Grid layout
 * More config options exposed via env/config variables
 * Highly improved version of xdg-xmenu
