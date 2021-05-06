@@ -67,13 +67,19 @@ layouts_classic () {
     moonie printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu
 }
 
+menupos () {
+    if ! [ "$MOONWM_TOPBAR" = 0 ]; then
+        echo -p 0x0:current
+    fi
+}
+
 
 case $1 in
     # 1) rofi -show drun -config ~/.config/rofi/apps.rasi -fullscreen ;;
     # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
-    2) echo "$appsmenu" | xmenu -p 0x0:current | sh ;;
-    3) echo "$rightmenu" | xmenu -p 0x0:current | sh & ;;
+    2) echo "$appsmenu" | xmenu $(menupos) | sh ;;
+    3) echo "$rightmenu" | xmenu $(menupos) | sh ;;
     context) context select ;;
     context-client) context client ;;
     context-select) context select ;;

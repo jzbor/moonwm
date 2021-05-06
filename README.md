@@ -110,6 +110,7 @@ MOONWM_DECORHINTS=1     # decoration hints (MOTIF)
 # handled by moonwm-util launch
 MOONWM_PICOMEXP=0       # start picom with --experimental-backends flag
 MOONWM_THEMEDDMENU=1    # automatic dmenu theming
+MOONWM_THEMEDXMENU=1    # automatic xmenu theming
 ```
 
 ### Set custom colours with xrdb

@@ -208,6 +208,7 @@ load_xmenu_value () {
 }
 
 load_xmenu_defaults () {
+    env_def_true MOONWM_THEMEDXMENU || return
     load_xmenu_value '\*background'     'moonwm.focusedTitleBg'     '#1d2021'
     load_xmenu_value '\*foreground'     'moonwm.focusedTitleFg'     '#ebdbb2'
     load_xmenu_value xmenu.border       'moonwm.unfocusedBorder'    '#282828'
