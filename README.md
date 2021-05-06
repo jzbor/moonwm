@@ -6,23 +6,29 @@
 **Table of Contents**
 
 - [Usage](#usage)
-    - [Most important shortcuts](#most-important-shortcuts)
-    - [Quick help](#quick-help)
-    - [Setting up different screen layouts](#setting-up-different-screen-layouts)
+  - [Most important shortcuts](#most-important-shortcuts)
+  - [Quick help](#quick-help)
+  - [Setting up different screen layouts](#setting-up-different-screen-layouts)
 - [Customizing](#customizing)
-    - [Set personal defaults in .profile](#set-personal-defaults-in-profile)
-    - [Set custom colours with xrdb](#set-custom-colours-with-xrdb)
-    - [Autostart](#autostart)
-    - [Creating your own status script](#creating-your-own-status-script)
+  - [Setup personal defaults](#setup-personal-defaults)
+  - [Customize WM settings](#customize-wm-settings)
+  - [Set custom colours with xrdb](#set-custom-colours-with-xrdb)
+  - [Autostart](#autostart)
+  - [Creating your own status script](#creating-your-own-status-script)
 - [Details](#details)
-    - [Default tags](#default-tags)
-    - [Available layouts](#available-layouts)
-    - [Dependencies](#dependencies)
-    - [Patches implemented](#patches-implemented)
+  - [Default tags](#default-tags)
+  - [Available layouts](#available-layouts)
+  - [Dependencies](#dependencies)
+  - [Patches implemented](#patches-implemented)
 - [Forking](#forking)
 - [Credits](#credits)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+
+
+**Screenshot:** ![Screenshot](screenshot.png)
+
+**Packages:** `aur/moonwm`, `aur/moonwm-git`
 
 ## Usage
 
@@ -55,7 +61,7 @@ Most of MoonWMs defaults are overwriteable through environment variables, xrdb o
 There is no real configuration file.
 If you want to change something more sophisticated, like replacing `moonwm-util` consider forking the git repository (see below).
 
-### Set personal defaults in .profile
+### Setup personal defaults
 MoonWM is configured through environment variables.
 You can place them in the **config file** `~/.config/moonwm/config.env` in the format shown below.
 These are automatically loaded, exported and reloaded on restart.
@@ -79,6 +85,7 @@ TERMINAL="alacritty"
 DMENUCMD="rofi -show drun"
 ```
 
+### Customize WM settings
 To even further customize your keyboard you can put a file with `xmodmap` expressions in `~/.config/moonwm/modmap`.
 It will be evaluated automatically.
 Or you can add `setxkbmap` options to your configuration like so:
