@@ -13,7 +13,8 @@ MODMAP_FILE="$CONFIG_DIR/modmap"
 autostart () {
     # Configure X
     wmname LG3D
-    xwallpaper --zoom "$MOONWM_WALLPAPER" 2> /dev/null &
+    [ -f "$MOONWM_WALLPAPER" ] \
+        && xwallpaper --zoom "$MOONWM_WALLPAPER" 2> /dev/null &
     setup_keyboard
 
     # Other daemons
@@ -51,7 +52,8 @@ autostart_async () {
     # Auto setup displays
     if [ -x ~/.screenlayout/autoload.sh ]; then
         ~/.screenlayout/autoload.sh
-        xwallpaper --zoom "$MOONWM_WALLPAPER"
+        [ -f "$MOONWM_WALLPAPER" ] \
+            && xwallpaper --zoom "$MOONWM_WALLPAPER"
     else
         setup_displays
     fi
@@ -263,7 +265,8 @@ layouts () {
     if [ -x "$layout" ]; then
         sh -c "$layout"
         setup_keyboard
-        xwallpaper --zoom "$MOONWM_WALLPAPER"
+        [ -f "$MOONWM_WALLPAPER" ] \
+            && xwallpaper --zoom "$MOONWM_WALLPAPER"
         (sleep 20; generate_lock_file) &
     fi
 }
@@ -351,7 +354,8 @@ setup_displays () {
         xrandr --output "$display" --off
     done
 
-    xwallpaper --zoom "$MOONWM_WALLPAPER"
+    [ -f "$MOONWM_WALLPAPER" ] \
+        && xwallpaper --zoom "$MOONWM_WALLPAPER"
     setup_keyboard
     (sleep 20; generate_lock_file) &
 }
