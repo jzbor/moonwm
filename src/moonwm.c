@@ -680,7 +680,7 @@ buttonpress(XEvent *e)
 {
 	unsigned int i, x, click;
 	Arg arg = {0};
-	Client *c;
+	Client *c, *sel;
 	Monitor *m;
 	XButtonPressedEvent *ev = &e->xbutton;
 	*lastbutton = '0' + ev->button;
@@ -688,8 +688,9 @@ buttonpress(XEvent *e)
 	click = ClkRootWin;
 	/* focus monitor if necessary */
 	if ((m = wintomon(ev->window)) && m != selmon) {
-		unfocus(selmon->sel, 1);
+		sel = selmon->sel;
 		selmon = m;
+		unfocus(sel, 1);
 		focus(NULL);
 	}
 
@@ -1208,7 +1209,7 @@ drawbars(void)
 void
 enternotify(XEvent *e)
 {
-	Client *c;
+	Client *c, *sel;
 	Monitor *m;
 	XCrossingEvent *ev = &e->xcrossing;
 
@@ -1217,8 +1218,9 @@ enternotify(XEvent *e)
 	c = wintoclient(ev->window);
 	m = c ? c->mon : wintomon(ev->window);
 	if (m != selmon) {
-		unfocus(selmon->sel, 1);
+		sel = selmon->sel;
 		selmon = m;
+		unfocus(sel, 1);
 	} else if (!c || c == selmon->sel)
 		return;
 	focus(c);
@@ -1360,13 +1362,15 @@ void
 focusmon(const Arg *arg)
 {
 	Monitor *m;
+	Client *sel;
 
 	if (!mons->next)
 		return;
 	if ((m = dirtomon(arg->i)) == selmon)
 		return;
-	unfocus(selmon->sel, 0);
+	sel = selmon->sel;
 	selmon = m;
+	unfocus(sel, 0);
 	focus(NULL);
 	warp(selmon->sel);
 }
@@ -1849,13 +1853,15 @@ motionnotify(XEvent *e)
 {
 	static Monitor *mon = NULL;
 	Monitor *m;
+	Client *sel;
 	XMotionEvent *ev = &e->xmotion;
 
 	if (ev->window != root)
 		return;
 	if ((m = recttomon(ev->x_root, ev->y_root, 1, 1)) != mon && mon) {
-		unfocus(selmon->sel, 1);
+		sel = selmon->sel;
 		selmon = m;
+		unfocus(sel, 1);
 		focus(NULL);
 	}
 	mon = m;
@@ -3246,6 +3252,8 @@ unfocus(Client *c, int setfocus)
 {
 	if (!c)
 		return;
+	if (c->isfullscreen && ISVISIBLE(c) && c->mon == selmon)
+		setfullscreen(c, 0);
 	grabbuttons(c, 0);
 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
 	if (setfocus) {
