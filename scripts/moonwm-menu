@@ -36,7 +36,7 @@ contextmenu="  Close			close
 	  Kill process			kill"
 
 context () {
-    selection="$(printf "$contextmenu" | xmenu)"
+    selection="$(printf "$contextmenu" | xmenu -i)"
     [ -z "$selection" ] && exit
     if [ "$1" = select ] && [ "$selection" != closemult ]; then
         wid="$(slop -b 0 -f %i)"
@@ -64,7 +64,7 @@ layouts () {
 }
 
 layouts_classic () {
-    moonie printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu
+    moonie printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu -i
 }
 
 menupos () {
@@ -79,7 +79,7 @@ case $1 in
     # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     2) echo "$appsmenu" | xmenu $(menupos) | sh ;;
-    3) echo "$rightmenu" | xmenu $(menupos) | sh ;;
+    3) echo "$rightmenu" | xmenu -i $(menupos) | sh ;;
     context) context select ;;
     context-client) context client ;;
     context-select) context select ;;
