@@ -30,6 +30,11 @@
 
 **Packages:** `aur/moonwm`, `aur/moonwm-git`
 
+**Installation from source:**
+```sh
+sudo make install install-scripts clean
+```
+
 ## Usage
 
 ### Most important shortcuts
