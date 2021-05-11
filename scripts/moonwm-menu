@@ -78,8 +78,8 @@ case $1 in
     # 1) rofi -show drun -config ~/.config/rofi/apps.rasi -fullscreen ;;
     # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
     1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
-    2) echo "$appsmenu" | xmenu $(menupos) | sh ;;
-    3) echo "$rightmenu" | xmenu -i $(menupos) | sh ;;
+    2) echo "$appsmenu" | xmenu -i $(menupos) | sh ;;
+    3) echo "$rightmenu" | xmenu $(menupos) | sh ;;
     context) context select ;;
     context-client) context client ;;
     context-select) context select ;;
