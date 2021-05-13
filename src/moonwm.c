@@ -400,6 +400,7 @@ static int bh, blw = 0;      /* bar geometry */
 static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
+static int ignorewarp = 1;
 static int riodimensions[4] = { -1, -1, -1, -1 };
 static pid_t riopid = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -2475,8 +2476,11 @@ restack(Monitor *m)
 	}
 	XSync(dpy, False);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
-	if (m == selmon && (m->tagset[m->seltags] & m->sel->tags) && selmon->lt[selmon->sellt] != &layouts[2])
-		warp(m->sel);
+	if (m == selmon && (m->tagset[m->seltags] & m->sel->tags) && selmon->lt[selmon->sellt] != &layouts[2]) {
+		if (!ignorewarp)
+			warp(m->sel);
+		ignorewarp = 0;
+	}
 }
 
 void
@@ -3283,7 +3287,10 @@ unfocus(Client *c, int setfocus)
 void
 unmanage(Client *c, int destroyed)
 {
+	int di;
+	unsigned int dui;
 	Monitor *m = c->mon;
+	Window dummy, win;
 	XWindowChanges wc;
 
 	if (c->swallowing) {
@@ -3316,8 +3323,13 @@ unmanage(Client *c, int destroyed)
 	free(c);
 
 	if (!s) {
+		ignorewarp = 1;
 		arrange(m);
-		focus(NULL);
+		/* focus under mouse instead of last focused */
+		if (XQueryPointer(dpy, root, &dummy, &win, &di, &di, &di, &di, &dui) && win)
+			focus(wintoclient(win));
+		else
+			focus(NULL);
 		updateclientlist();
 	}
 }
