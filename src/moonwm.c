@@ -2670,7 +2670,7 @@ runautostart(void)
 	/* run moonwm-util if available */
 	system(providedautostart);
 
-	/* run statuscmd if availablea */
+	/* run statuscmd if available */
 	spawn(&((Arg) { .v = statuscmd }));
 
 	/* if $XDG_DATA_HOME is set and not empty, use $XDG_DATA_HOME/moonwm,
@@ -3134,9 +3134,12 @@ pid_t
 spawncmd(const Arg *arg)
 {
 	pid_t pid;
+	int now = time(NULL);
 	if (arg->v == dmenucmd)
 		dmenumon[0] = '0' + selmon->num;
 	else if (arg->v == statushandler) {
+		if (now != -1 && now - istatustimer <= istatustimeout)
+			return ~0;
 		char strstatuscmdn[8];
 		sprintf(strstatuscmdn, "%i", statuscmdn);
 		setenv("BUTTON", lastbutton, 1);
@@ -3649,9 +3652,9 @@ updatestatus(void)
 			istatustimer = 0;
 			return;
 		} else if (strncmp(istatusprefix, rawstext, strlen(istatusprefix)) == 0) {
-			istatustimer = time(NULL);
+			istatustimer = now;
 			copyvalidchars(stext, rawstext + sizeof(char) * strlen(istatusprefix) );
-		} else if (now - istatustimer > istatustimeout) {
+		} else if (now == -1 || now - istatustimer > istatustimeout) {
 			copyvalidchars(stext, rawstext);
 		} else
 			return;
