@@ -1,7 +1,5 @@
 #!/bin/sh
 
-HINT_TIME=2000
-
 rightmenu="  Applications
 $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
 
@@ -37,24 +35,35 @@ contextmenu="  Close			close
 	  Close multiple		closemult
 	  Kill process			kill"
 
+
+important_msg () {
+    xsetroot -name "important:$1 "
+}
+
+important_msg_close () {
+    xsetroot -name "important:close"
+    command -v "$MOONWM_STATUSCMD" 2>/dev/null \
+        && "$MOONWM_STATUSCMD" update
+}
+
 context () {
     selection="$(printf "$contextmenu" | xmenu -i)"
     [ -z "$selection" ] && exit
     if [ "$1" = select ] && [ "$selection" != closemult ]; then
         case $selection in
             close)
-                xsetroot -name "important:Select a window to close. " ;;
+                important_msg "Select a window to close." ;;
             resize)
-                xsetroot -name "important:Select a window to resize. " ;;
+                important_msg "Select a window to resize." ;;
             float)
-                xsetroot -name "important:Select a window to float/unfloat. " ;;
+                important_msg "Select a window to float/unfloat." ;;
             fullscreen)
-                xsetroot -name "important:Select a window enter/exit fullscreen. " ;;
+                important_msg "Select a window enter/exit fullscreen." ;;
             kill)
-                xsetroot -name "important:Select a window to kill its process. " ;;
+                important_msg "Select a window to kill its process." ;;
         esac
         wid="$(slop -b 0 -f %i)"
-        xsetroot -name "important:close"
+        important_msg_close
         [ -z "$wid" ] && exit
         timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
     fi
@@ -65,10 +74,10 @@ context () {
         fullscreen) moonie togglefullscr ;;
         kill) kill "$(xdotool getwindowfocus getwindowpid)" ;;
         closemult)
-            xsetroot -name "important:Select multiple windows to close; Exit with <Esc> or right click. "
+            important_msg "Select multiple windows to close; Exit with <Esc> or right click."
             while [ 1 = 1 ]; do
                 wid="$(slop -b 0 -f %i)"
-                xsetroot -name "important:close"
+                important_msg_close
                 [ -z "$wid" ] && exit
                 timeout -k 3s 3s xdotool windowclose "$wid"
             done
