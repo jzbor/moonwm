@@ -43,37 +43,18 @@ context () {
     if [ "$1" = select ] && [ "$selection" != closemult ]; then
         case $selection in
             close)
-                notify-send -t "$HINT_TIME" \
-                    -a "MoonWM - Close" "Select a window to close"
-                xsetroot -name "Select a window to close"
-                ;;
+                xsetroot -name "important:Select a window to close. " ;;
             resize)
-                notify-send -t "$HINT_TIME" \
-                    -a "MoonWM - Resize" "Select a window to resize"
-                xsetroot -name "Select a window to resize"
-                ;;
+                xsetroot -name "important:Select a window to resize. " ;;
             float)
-                notify-send -t "$HINT_TIME" \
-                    -a "MoonWM - Float" "Select a window to float/unfloat"
-                xsetroot -name "Select a window to resize"
-                ;;
+                xsetroot -name "important:Select a window to float/unfloat. " ;;
             fullscreen)
-                notify-send -t "$HINT_TIME"
-                    -a "MoonWM - Fullscreen" "Select a window to enter/leave fullscreen"
-                xsetroot -name "Select a window to resize"
-                ;;
+                xsetroot -name "important:Select a window enter/exit fullscreen. " ;;
             kill)
-                notify-send -t "$HINT_TIME" \
-                    -a "MoonWM - Kill" "Select a window to kill its process"
-                xsetroot -name "Select a window to resize"
-                ;;
-            closemult)
-                notify-send -t "$HINT_TIME" \
-                    -a "MoonWM - Close Multiple" "Select multiple windows close. Exit with <Escape> or right click."
-                xsetroot -name "Select a window to resize"
-                ;;
+                xsetroot -name "important:Select a window to kill its process. " ;;
         esac
         wid="$(slop -b 0 -f %i)"
+        xsetroot -name "important:close"
         [ -z "$wid" ] && exit
         timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
     fi
@@ -84,8 +65,10 @@ context () {
         fullscreen) moonie togglefullscr ;;
         kill) kill "$(xdotool getwindowfocus getwindowpid)" ;;
         closemult)
+            xsetroot -name "important:Select multiple windows to close; Exit with <Esc> or right click. "
             while [ 1 = 1 ]; do
                 wid="$(slop -b 0 -f %i)"
+                xsetroot -name "important:close"
                 [ -z "$wid" ] && exit
                 timeout -k 3s 3s xdotool windowclose "$wid"
             done
