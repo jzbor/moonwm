@@ -258,6 +258,7 @@ static void envsettings(void);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusdir(const Arg *arg);
+static void focusfloating(const Arg *arg);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
@@ -1348,6 +1349,19 @@ focusdir(const Arg *arg)
 		focus(f);
 		restack(f->mon);
 	}
+}
+
+void
+focusfloating(const Arg *arg)
+{
+	Client *c;
+
+	if (!selmon->sel)
+		return;
+
+	for (c = selmon->clients; c && (c->isfloating == selmon->sel->isfloating); c = c->next) ;
+	if (c && (c->isfloating != selmon->sel->isfloating))
+		focus(c);
 }
 
 /* there are some broken focus acquiring clients needing extra handling */

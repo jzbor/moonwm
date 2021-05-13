@@ -187,7 +187,8 @@ static Key keys[] = {
     DIRECTIONKEY(XK_Up,    y, {.i = 20})
     DIRECTIONKEY(XK_Right, x, {.i = 20})
     { MODKEY,               XK_r,       rioresize,       {0} },
-    { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") },
+    /* { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") }, */
+    { MODKEY,               XK_space,   focusfloating,   {0} },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     /* LAYOUTS */
     { MODKEY,               XK_t,       setlayout,       {.v = &layouts[TILEPOS]} },
