@@ -1360,8 +1360,10 @@ focusfloating(const Arg *arg)
 		return;
 
 	for (c = selmon->clients; c && (c->isfloating == selmon->sel->isfloating); c = c->next) ;
-	if (c && (c->isfloating != selmon->sel->isfloating))
+	if (c && (c->isfloating != selmon->sel->isfloating)) {
 		focus(c);
+		warp(c);
+	}
 }
 
 /* there are some broken focus acquiring clients needing extra handling */
