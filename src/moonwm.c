@@ -278,7 +278,9 @@ static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void layoutmenu(const Arg *arg);
 static void loadxrdb(void);
-static void loadenv(char *name, int *var);
+static void loadenv(char *name, long *var, int norm);
+static void loadenvi(char *name, int *var, int norm);
+static void loadenvui(char *name, unsigned int *var, int norm);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -1232,17 +1234,28 @@ enternotify(XEvent *e)
 
 void
 envsettings() {
+	unsigned int imfact = mfact * 100;
 	setmodkey();
-	loadenv("MOONWM_CENTERONRH",	&centeronrh);
-	loadenv("MOONWM_DECORHINTS",	&decorhints);
-	loadenv("MOONWM_GAPS",			&enablegaps);
-	loadenv("MOONWM_KEYS",			&managekeys);
-	loadenv("MOONWM_RESIZEHINTS",	&resizehints);
-	loadenv("MOONWM_SHOWBAR",		&showbar);
-	loadenv("MOONWM_SMARTGAPS",		&smartgaps);
-	loadenv("MOONWM_SYSTRAY",		&showsystray);
-	loadenv("MOONWM_TOPBAR",		&topbar);
-	loadenv("MOONWM_TOGGLELAYOUT",	&togglelayout);
+	loadenvi("MOONWM_CENTERONRH",	&centeronrh,	1);
+	loadenvi("MOONWM_DECORHINTS",	&decorhints,	1);
+	loadenvi("MOONWM_GAPS",			&enablegaps,	1);
+	loadenvi("MOONWM_KEYS",			&managekeys,	1);
+	loadenvi("MOONWM_RESIZEHINTS",	&resizehints,	1);
+	loadenvi("MOONWM_SHOWBAR",		&showbar,		1);
+	loadenvi("MOONWM_SMARTGAPS",	&smartgaps,		1);
+	loadenvi("MOONWM_SYSTRAY",		&showsystray,	1);
+	loadenvi("MOONWM_TOPBAR",		&topbar,		1);
+	loadenvi("MOONWM_TOGGLELAYOUT",	&togglelayout,	1);
+	loadenvui("MOONWM_BORDERWIDTH",	&borderpx,		0);
+	loadenvui("MOONWM_FRAMERATE",	&framerate,		0);
+	loadenvui("MOONWM_GAPS",		&gappih,		0);
+	loadenvui("MOONWM_GAPS",		&gappiv,		0);
+	loadenvui("MOONWM_GAPS",		&gappoh,		0);
+	loadenvui("MOONWM_GAPS",		&gappov,		0);
+
+	loadenvui("MOONWM_MFACT",		&imfact,		0);
+	if (imfact >= 5 && imfact <= 95)
+		mfact = (float) imfact / 100;
 }
 
 void
@@ -1706,14 +1719,33 @@ layoutmenu(const Arg *arg) {
 }
 
 void
-loadenv(char *name, int *var) {
-	char *value = getenv(name);
-	if (value) {
-		if (strcmp(value, "1") == 0)
-			*var = 1;
-		else if (strcmp(value, "0") == 0)
-			*var = 0;
-	}
+loadenv(char *name, long *var, int norm) {
+    char *val, *dummy;
+    long lval;
+    val = getenv(name);
+    if (val) {
+		errno = 0;
+        lval = strtol(val, &dummy, 10);
+        if (lval || errno == 0) {
+            *var = lval;
+			if (norm && *var)
+				*var = 1;
+		}
+    }
+}
+
+void
+loadenvi(char *name, int *var, int norm) {
+	long ival = *var;
+	loadenv(name, &ival, norm);
+	*var = ival;
+}
+
+void
+loadenvui(char *name, unsigned int *var, int norm) {
+	long ival = *var;
+	loadenv(name, &ival, norm);
+	*var = ival;
 }
 
 void

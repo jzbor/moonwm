@@ -5,14 +5,14 @@
 # define DynamicModifier    (1<<16)
 
 /* appearance */
-static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static unsigned int borderpx  = 2;        /* border pixel of windows */
 static const unsigned int snap      = 16;       /* snap pixel */
-static const unsigned int framerate = 60;       /* fps to render while moving windows */
+static unsigned int framerate = 60;       /* fps to render while moving windows */
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
-static const unsigned int gappih    = 5;        /* horiz inner gap between windows */
-static const unsigned int gappiv    = 5;        /* vert inner gap between windows */
-static const unsigned int gappoh    = 5;        /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 5;        /* vert outer gap between windows and screen edge */
+static unsigned int gappih    = 5;        /* horiz inner gap between windows */
+static unsigned int gappiv    = 5;        /* vert inner gap between windows */
+static unsigned int gappoh    = 5;        /* horiz outer gap between windows and screen edge */
+static unsigned int gappov    = 5;        /* vert outer gap between windows and screen edge */
 static int smartgaps                = 1;        /* 1 means no outer gap when there is only one window */
 static const unsigned int systraypinning = 1;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
@@ -66,7 +66,7 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 /* static const char *tags[] = { "", "", "", "", "", "", "‭ﭮ", "", "" }; */
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static float mfact           = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static int resizehints       = 0;    /* 1 means respect size hints in tiled resizals */
 static int centeronrh        = 0;    /* 1 means if sizehints are respected center the window */

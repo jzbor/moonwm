@@ -105,7 +105,7 @@ MOONWM_NOTIFYD=0      # disables the notification daemon
 MOONWM_PICOM=0        # disables picom
 ```
 
-Further options you can customize:
+With these settings you can turn features on or off (here are the defaults):
 ```sh
 MOONWM_KEYS=1           # enable/disable internal moonwm key handling
 MOONWM_TOGGLELAYOUT=0   # toggle layout when its already set
@@ -114,7 +114,6 @@ MOONWM_SHOWBAR=1        # show a bar
 MOONWM_SYSTRAY=1        # show system tray icons
 MOONWM_TOPBAR=1         # place bar at the top or bottom
 # clients
-MOONWM_GAPS=1           # gaps
 MOONWM_SMARTGAPS=1      # disable gaps when only one client is visible
 MOONWM_RESIZEHINTS=0    # let clients choose their size when tiled
 MOONWM_CENTERONRH=0     # if resizehints applies, center the window
@@ -123,6 +122,14 @@ MOONWM_DECORHINTS=1     # decoration hints (MOTIF)
 MOONWM_PICOMEXP=0       # start picom with --experimental-backends flag
 MOONWM_THEMEDDMENU=1    # automatic dmenu theming
 MOONWM_THEMEDXMENU=1    # automatic xmenu theming
+```
+
+You can also customize these settings, which all take unsigned integer arguments:
+```sh
+MOONWM_BORDERWIDTH=5    # width of the window borders
+MOONWM_FRAMERATE=60     # frame rate when dragging windows; should be >= monitor refresh rate
+MOONWM_GAPS=5           # gaps; 0 to disable gaps
+MOONWM_MFACT=55         # master size ratio; must be between 5 and 95
 ```
 
 ### Set custom colours with xrdb
