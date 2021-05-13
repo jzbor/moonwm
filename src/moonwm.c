@@ -402,7 +402,8 @@ static int bh, blw = 0;      /* bar geometry */
 static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
-static int ignorewarp = 1;
+static int ignorewarp = 0;
+static int istatustimer = 0;
 static int riodimensions[4] = { -1, -1, -1, -1 };
 static pid_t riopid = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -3639,10 +3640,22 @@ void
 updatestatus(void)
 {
 	Monitor* m;
+	int now;
 	if (!gettextprop(root, XA_WM_NAME, rawstext, sizeof(rawstext)))
 		strcpy(stext, "moonwm-"VERSION);
-	else
-		copyvalidchars(stext, rawstext);
+	else {
+		now = time(NULL);
+		if (strncmp(istatusclose, rawstext, strlen(istatusclose)) == 0) {
+			istatustimer = 0;
+			return;
+		} else if (strncmp(istatusprefix, rawstext, strlen(istatusprefix)) == 0) {
+			istatustimer = time(NULL);
+			copyvalidchars(stext, rawstext + sizeof(char) * strlen(istatusprefix) );
+		} else if (now - istatustimer > istatustimeout) {
+			copyvalidchars(stext, rawstext);
+		} else
+			return;
+	}
 	for (m = mons; m; m = m->next) {
 		drawbar(m);
 	}

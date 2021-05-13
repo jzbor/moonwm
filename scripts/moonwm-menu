@@ -1,5 +1,7 @@
 #!/bin/sh
 
+HINT_TIME=2000
+
 rightmenu="  Applications
 $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
 
@@ -39,6 +41,38 @@ context () {
     selection="$(printf "$contextmenu" | xmenu -i)"
     [ -z "$selection" ] && exit
     if [ "$1" = select ] && [ "$selection" != closemult ]; then
+        case $selection in
+            close)
+                notify-send -t "$HINT_TIME" \
+                    -a "MoonWM - Close" "Select a window to close"
+                xsetroot -name "Select a window to close"
+                ;;
+            resize)
+                notify-send -t "$HINT_TIME" \
+                    -a "MoonWM - Resize" "Select a window to resize"
+                xsetroot -name "Select a window to resize"
+                ;;
+            float)
+                notify-send -t "$HINT_TIME" \
+                    -a "MoonWM - Float" "Select a window to float/unfloat"
+                xsetroot -name "Select a window to resize"
+                ;;
+            fullscreen)
+                notify-send -t "$HINT_TIME"
+                    -a "MoonWM - Fullscreen" "Select a window to enter/leave fullscreen"
+                xsetroot -name "Select a window to resize"
+                ;;
+            kill)
+                notify-send -t "$HINT_TIME" \
+                    -a "MoonWM - Kill" "Select a window to kill its process"
+                xsetroot -name "Select a window to resize"
+                ;;
+            closemult)
+                notify-send -t "$HINT_TIME" \
+                    -a "MoonWM - Close Multiple" "Select multiple windows close. Exit with <Escape> or right click."
+                xsetroot -name "Select a window to resize"
+                ;;
+        esac
         wid="$(slop -b 0 -f %i)"
         [ -z "$wid" ] && exit
         timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
