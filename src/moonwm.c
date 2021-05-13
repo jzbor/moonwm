@@ -1253,6 +1253,12 @@ envsettings() {
 	loadenvui("MOONWM_GAPS",		&gappoh,		0);
 	loadenvui("MOONWM_GAPS",		&gappov,		0);
 
+	/* sanity checks */
+	if (!framerate)
+		framerate = 60;
+	if (borderpx > 100)
+		borderpx = 2;
+
 	loadenvui("MOONWM_MFACT",		&imfact,		0);
 	if (imfact >= 5 && imfact <= 95)
 		mfact = (float) imfact / 100;
