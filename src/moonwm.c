@@ -1158,8 +1158,6 @@ void
 drawbar(Monitor *m)
 {
 	int x, w, tw = 0, stw = 0;
-	int boxs = drw->fonts->h / 9;
-	int boxw = drw->fonts->h / 6 + 2;
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
 
@@ -1207,12 +1205,15 @@ drawbar(Monitor *m)
 	if ((w = m->ww - tw - stw - x) > bh) {
 		if (m->sel) {
 			/* make sure name will not overlap on tags even when it is very long */
-			int mid = (m->ww - (int)TEXTW(m->sel->name)) / 2 - x;
+			char title[LENGTH(m->sel->name) + LENGTH(floatingindicator)] = {0};
+			if (m->sel->isfloating)
+				sprintf(title, floatingindicator, m->sel->name);
+			else
+				strcpy(title, m->sel->name);
+			int mid = (m->ww - (int)TEXTW(title)) / 2 - x;
 			mid = mid >= lrpad / 2 ? mid : lrpad / 2;
 			drw_setscheme(drw, scheme[m == selmon ? SchemeHigh : SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0, ColTitleFg, ColTitleBg);
-			if (m->sel->isfloating)
-				drw_rect(drw, x + MAX(0, mid - lrpad) + boxs, boxs, boxw, boxw, m->sel->isfixed, ColTitleFg);
+			drw_text(drw, x, 0, w, bh, mid, title, 0, ColTitleFg, ColTitleBg);
 		} else {
 			drw_setscheme(drw, scheme[m == selmon ? SchemeHigh : SchemeNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, ColTitleBg);

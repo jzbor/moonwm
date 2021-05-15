@@ -20,6 +20,7 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static int showsystray        = 1;     /* 0 means no systray */
 static int showbar            = 1;        /* 0 means no bar */
 static int topbar             = 1;        /* 0 means bottom bar */
+static const char floatingindicator[] = "[ %s ]";           /* mark floating windows in title bar */
 static const char istatusprefix[]   = "important:";         /* prefix for important status messages */
 static const char istatusclose[]    = "important:close";    /* prefix to close important status messages */
 static const int istatustimeout     = 10;       /* max timeout before displaying regular status after istatus */
