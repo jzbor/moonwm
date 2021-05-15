@@ -1264,6 +1264,7 @@ envsettings() {
 	loadenvi("MOONWM_SYSTRAY",		&showsystray,	1);
 	loadenvi("MOONWM_TOPBAR",		&topbar,		1);
 	loadenvi("MOONWM_TOGGLELAYOUT",	&togglelayout,	1);
+	loadenvi("MOONWM_WORKSPACES",	&workspaces,	1);
 	loadenvui("MOONWM_BORDERWIDTH",	&borderpx,		0);
 	loadenvui("MOONWM_FRAMERATE",	&framerate,		0);
 	loadenvui("MOONWM_GAPS",		&gappih,		0);
@@ -3301,6 +3302,8 @@ toggletag(const Arg *arg)
 
 	if (!selmon->sel)
 		return;
+	if (workspaces)
+		return;
 	newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
 	if (newtags) {
 		selmon->sel->tags = newtags;
@@ -3316,6 +3319,9 @@ toggleview(const Arg *arg)
 {
 	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
 	int i;
+
+	if (workspaces)
+		return;
 
 	if (newtagset) {
 		if (newtagset == ~0) {

@@ -16,6 +16,7 @@
 * Help messages for menu
 * Improved EWMH support
 * Keybinding to focus floating/tiled windows
+* Wallpaper can now be set with `moonwm-util setwallpaper <file>` or via your file manager
 * More config options
 
 ## 7.0.3
