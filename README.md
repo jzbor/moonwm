@@ -105,7 +105,7 @@ MOONWM_NOTIFYD=0      # disables the notification daemon
 MOONWM_PICOM=0        # disables picom
 ```
 
-With these settings you can turn features on or off (here are the defaults):
+With these settings you can turn features on or off (with their default values):
 ```sh
 MOONWM_KEYS=1           # enable/disable internal moonwm key handling
 MOONWM_TOGGLELAYOUT=0   # toggle layout when its already set
@@ -125,7 +125,7 @@ MOONWM_THEMEDDMENU=1    # automatic dmenu theming
 MOONWM_THEMEDXMENU=1    # automatic xmenu theming
 ```
 
-You can also customize these settings, which all take unsigned integer arguments:
+You can also customize these settings (these are the defaults), which all take unsigned integer arguments:
 ```sh
 MOONWM_BORDERWIDTH=5    # width of the window borders
 MOONWM_FRAMERATE=60     # frame rate when dragging windows; should be >= monitor refresh rate
