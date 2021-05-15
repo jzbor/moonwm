@@ -14,6 +14,7 @@
 
 ## Upcoming
 * Help messages for menu
+* Improved EWMH support
 * Keybinding to focus floating/tiled windows
 * More config options
 

@@ -1212,7 +1212,7 @@ drawbar(Monitor *m)
 			drw_setscheme(drw, scheme[m == selmon ? SchemeHigh : SchemeNorm]);
 			drw_text(drw, x, 0, w, bh, mid, m->sel->name, 0, ColTitleFg, ColTitleBg);
 			if (m->sel->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, ColTitleBg);
+				drw_rect(drw, x + MAX(0, mid - lrpad) + boxs, boxs, boxw, boxw, m->sel->isfixed, ColTitleFg);
 		} else {
 			drw_setscheme(drw, scheme[m == selmon ? SchemeHigh : SchemeNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, ColTitleBg);
