@@ -66,7 +66,6 @@ context () {
         important_msg_close
         [ -z "$wid" ] && exit
         [ "$wid" = "$(xdotool search --maxdepth 0 --name '')" ] && exit
-        xdotool get_desktop_for_window 1716
         timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
     fi
     case $selection in

@@ -9,12 +9,13 @@ LOCK_TMP_FILE="$TEMPORARYDIR/lockfile.png"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
 CONFIG_FILE="$CONFIG_DIR/config.env"
 MODMAP_FILE="$CONFIG_DIR/modmap"
+WALLPAPER_FILE="$CONFIG_DIR/background"
+WALLPAPER="${MOONWM_WALLPAPER:-$WALLPAPER_FILE}"
 
 autostart () {
     # Configure X
     wmname LG3D
-    [ -f "$MOONWM_WALLPAPER" ] \
-        && xwallpaper --zoom "$MOONWM_WALLPAPER" 2> /dev/null &
+    load_wallpaper
     setup_keyboard
 
     # Other daemons
@@ -52,8 +53,7 @@ autostart_async () {
     # Auto setup displays
     if [ -x ~/.screenlayout/autoload.sh ]; then
         ~/.screenlayout/autoload.sh
-        [ -f "$MOONWM_WALLPAPER" ] \
-            && xwallpaper --zoom "$MOONWM_WALLPAPER"
+        load_wallpaper
     else
         setup_displays
     fi
@@ -265,10 +265,14 @@ layouts () {
     if [ -x "$layout" ]; then
         sh -c "$layout"
         setup_keyboard
-        [ -f "$MOONWM_WALLPAPER" ] \
-            && xwallpaper --zoom "$MOONWM_WALLPAPER"
-        (sleep 20; generate_lock_file) &
+        load_wallpaper
     fi
+}
+
+load_wallpaper () {
+    [ -f "$WALLPAPER" ] \
+        && xwallpaper --zoom "$WALLPAPER" 2> /dev/null &
+    [ -f "$LOCK_TMP_FILE" ] || generate_lock_file &
 }
 
 lock () {
@@ -329,6 +333,26 @@ screenshot () {
     fi
 }
 
+set_wallpaper () {
+    if [ -z "$1" ]; then
+        echo "No file specified." > /dev/stderr
+        return 1
+    elif ! [ -f "$1" ]; then
+        echo "$1 is not a file." > /dev/stderr
+        return 1
+    elif env_is_set MOONWM_WALLPAPER; then
+        echo "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
+        notify-send -a "MoonWM - Wallpaper" "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
+        return 1
+    else
+        [ -d "$CONFIG_DIR" ] || mkdir -vp "$CONFIG_DIR"
+        cp -f "$1" "$WALLPAPER_FILE"
+        load_wallpaper
+        echo "Successfully set new wallpaper."
+        notify-send -a "MoonWM - Wallpaper" -i "$(realpath "$WALLPAPER_FILE")" "Successfully set new wallpaper."
+    fi
+}
+
 setup_displays () {
     connected="$(xrandr | grep " connected " | cut -d " " -f 1)"
     disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
@@ -354,10 +378,8 @@ setup_displays () {
         xrandr --output "$display" --off
     done
 
-    [ -f "$MOONWM_WALLPAPER" ] \
-        && xwallpaper --zoom "$MOONWM_WALLPAPER"
+    load_wallpaper
     setup_keyboard
-    (sleep 20; generate_lock_file) &
 }
 
 setup_keyboard () {
@@ -415,6 +437,7 @@ commands:
     screenlayouts  Select monitor configuration via dmenu
     screensetup    Set up monitors with default procedure
     screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
+    setwallpaper   Set the wallpaper
     setup-keyboard Initialize keyboard layout
     start          Launch autostart applications
     volume         Change output volume (e.g. moonwm-util volume -5 or moonwm-util volume mute)
@@ -450,6 +473,7 @@ case $1 in
     screenlayouts) layouts;;
     screensetup) setup_displays;;
     screenshot) screenshot "$2";;
+    setwallpaper) set_wallpaper "$2" ;;
     setup-keyboard) setup_keyboard;;
     start) autostart;;
     volume) volume "$2";;
