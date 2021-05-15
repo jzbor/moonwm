@@ -74,8 +74,8 @@ context () {
         fullscreen) moonie togglefullscr ;;
         kill) kill "$(xdotool getwindowfocus getwindowpid)" ;;
         closemult)
-            important_msg "Select multiple windows to close; Exit with <Esc> or right click."
             while [ 1 = 1 ]; do
+                important_msg "Select multiple windows to close; Exit with <Esc> or right click."
                 wid="$(slop -b 0 -f %i)"
                 important_msg_close
                 [ -z "$wid" ] && exit

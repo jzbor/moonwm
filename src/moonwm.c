@@ -120,7 +120,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 	   NetWMActionClose, NetWMActionMinimize, NetWMAction, NetWMMoveResize,
 	   NetWMMaximizedVert, NetWMMaximizedHorz,
 	   NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-	   NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock,
+	   NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock, NetWMDesktop,
 	   NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
 	   NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
 	   NetCurrentDesktop, NetLast, }; /* EWMH atoms */
@@ -355,10 +355,11 @@ static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
-static void updatecurrentdesktop(void);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
+static void updateclientdesktop(Client *c);
 static void updateclientlist(void);
+static void updatecurrentdesktop(void);
 static int updategeom(void);
 static void updatemotifhints(Client *c);
 static void updatenumlockmask(void);
@@ -508,6 +509,7 @@ applyrules(Client *c)
 	if (ch.res_name)
 		XFree(ch.res_name);
 	c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
+	updateclientdesktop(c);
 }
 
 int
@@ -910,6 +912,14 @@ clientmessage(XEvent *e)
 	} else if (cme->message_type == netatom[NetWMActionClose]) {
 		selmon->sel = c;
 		killclient(NULL);
+	} else if (cme->message_type == netatom[NetWMDesktop]) {
+		unsigned int desktop = cme->data.l[0];
+		if (c && desktop & TAGMASK) {
+			c->tags = (1 << desktop) & TAGMASK;
+			focus(NULL);
+			arrange(c->mon);
+		}
+		updateclientdesktop(c);
 	} else if (cme->message_type == netatom[NetWMMoveResize]) {
 		resizemouse(&((Arg) { .v = c }));
 	}
@@ -1843,6 +1853,7 @@ manage(Window w, XWindowAttributes *wa)
 	updatesizehints(c);
 	updatewmhints(c);
 	updatemotifhints(c);
+	updateclientdesktop(c);
 	c->sfx = c->x;
 	c->sfy = c->y;
 	c->sfw = c->w;
@@ -2169,8 +2180,10 @@ placemouse(const Arg *arg)
 				detach(c);
 				if (c->mon != r->mon) {
 					arrangemon(c->mon);
-					if (!arg->i)
+					if (!arg->i) {
 						c->tags = r->mon->tagset[r->mon->seltags];
+						updateclientdesktop(c);
+					}
 					/* if (!arg->i) { */
 					/* 	arrangemon(c->mon); */
 					/* 	c->tags = r->mon->tagset[r->mon->seltags]; */
@@ -2209,8 +2222,10 @@ placemouse(const Arg *arg)
 		detachstack(c);
 		arrangemon(c->mon);
 		c->mon = m;
-		if (!arg->i)
+		if (!arg->i) {
 			c->tags = m->tagset[m->seltags];
+			updateclientdesktop(c);
+		}
 		attach(c);
 		attachstack(c);
 		selmon = m;
@@ -2599,6 +2614,7 @@ rioposition(Client *c, int x, int y, int w, int h)
 		arrange(c->mon);
 		c->mon = m;
 		c->tags = m->tagset[m->seltags];
+		updateclientdesktop(c);
 		attach(c);
 		attachstack(c);
 		selmon = m;
@@ -2771,8 +2787,10 @@ sendmon(Client *c, Monitor *m, int keeptags)
 	detach(c);
 	detachstack(c);
 	c->mon = m;
-	if (!keeptags)
+	if (!keeptags) {
 		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
+		updateclientdesktop(c);
+	}
 	attachaside(c);
 	attachstack(c);
 	focus(NULL);
@@ -2787,11 +2805,13 @@ setclientstate(Client *c, long state)
 	XChangeProperty(dpy, c->win, wmatom[WMState], wmatom[WMState], 32,
 		PropModeReplace, (unsigned char *)data, 2);
 }
+
 void
 setcurrentdesktop(void){
 	long data[] = { 0 };
 	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
+
 void setdesktopnames(void){
 	XTextProperty text;
 	Xutf8TextListToTextProperty(dpy, (char **) tags, TAGSLENGTH, XUTF8StringStyle, &text);
@@ -2977,6 +2997,7 @@ setup(void)
 	netatom[NetSystemTrayOrientation] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
 	netatom[NetSystemTrayOrientationHorz] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION_HORZ", False);
 	netatom[NetWMDemandsAttention] = XInternAtom(dpy, "_NET_WM_DEMANDS_ATTENTION", False);
+	netatom[NetWMDesktop] = XInternAtom(dpy, "_NET_WM_DESKTOP", False);
 	netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
 	netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
 	netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
@@ -3038,6 +3059,7 @@ setup(void)
 	grabkeys();
 	focus(NULL);
 }
+
 void
 setviewport(void){
 	long data[] = { 0, 0 };
@@ -3192,6 +3214,7 @@ tag(const Arg *arg)
 {
 	if (selmon->sel && arg->ui & TAGMASK) {
 		selmon->sel->tags = arg->ui & TAGMASK;
+		updateclientdesktop(selmon->sel);
 		focus(NULL);
 		arrange(selmon);
 	}
@@ -3274,6 +3297,7 @@ toggletag(const Arg *arg)
 	newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
 	if (newtags) {
 		selmon->sel->tags = newtags;
+		updateclientdesktop(selmon->sel);
 		focus(NULL);
 		arrange(selmon);
 	}
@@ -3440,6 +3464,16 @@ updatebarpos(Monitor *m)
 }
 
 void
+updateclientdesktop(Client *c) {
+    unsigned long data[1];
+	int i;
+	for(i = 0; !(c->tags & (1 << i)); i++);
+    data[0] = i;
+    XChangeProperty(dpy, c->win, netatom[NetWMDesktop],
+            XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
+}
+
+void
 updateclientlist()
 {
 	Client *c;
@@ -3459,6 +3493,7 @@ updateclientlist()
 					XA_WINDOW, 32, PropModeAppend,
 					(unsigned char *) &(c->win), 1);
 }
+
 void updatecurrentdesktop(void){
 	long rawdata[] = { selmon->tagset[selmon->seltags] };
 	int i=0;
