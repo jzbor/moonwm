@@ -836,6 +836,7 @@ cleanupmon(Monitor *mon)
 void
 clientmessage(XEvent *e)
 {
+	unsigned int desktop;
 	XWindowAttributes wa;
 	XSetWindowAttributes swa;
 	XClientMessageEvent *cme = &e->xclient;
@@ -889,6 +890,11 @@ clientmessage(XEvent *e)
 		}
 		return;
 	}
+	if (cme->message_type == netatom[NetCurrentDesktop]) {
+		desktop = cme->data.l[0];
+		view(&((Arg) { .ui = (1 << desktop) }));
+		return;
+	}
 	if (!c)
 		return;
 	if (cme->message_type == netatom[NetWMState]) {
@@ -913,7 +919,7 @@ clientmessage(XEvent *e)
 		selmon->sel = c;
 		killclient(NULL);
 	} else if (cme->message_type == netatom[NetWMDesktop]) {
-		unsigned int desktop = cme->data.l[0];
+		desktop = cme->data.l[0];
 		if (c && desktop & TAGMASK) {
 			c->tags = (1 << desktop) & TAGMASK;
 			focus(NULL);
@@ -3495,12 +3501,10 @@ updateclientlist()
 }
 
 void updatecurrentdesktop(void){
-	long rawdata[] = { selmon->tagset[selmon->seltags] };
-	int i=0;
-	while(*rawdata >> (i+1)){
-		i++;
-	}
-	long data[] = { i };
+    unsigned long data[1];
+	int i;
+	for(i = 0; !(selmon->tagset[selmon->seltags] & (1 << i)); i++);
+    data[0] = i;
 	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
 
