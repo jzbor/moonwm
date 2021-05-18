@@ -27,9 +27,8 @@ static const Rule rules[] = {
     { .class = "steam_app_",    .monitor = 0,   .tags = 1 << 5 },
     { .gameid = -1,             .monitor = 0,   .tags = 1 << 5 },
     /* window types */
-    { .wintype = WTYPE "DESKTOP",   .isunmanaged = 1 },
-    { .wintype = WTYPE "DIALOG",    .isfloating = 1},
-    { .wintype = WTYPE "UTILITY",   .isfloating = 1},
-    { .wintype = WTYPE "TOOLBAR",   .isfloating = 1},
-    { .wintype = WTYPE "SPLASH",    .isfloating = 1},
+    { .wintype = "_NET_WM_WINDOW_TYPE_DIALOG",    .isfloating = 1},
+    { .wintype = "_NET_WM_WINDOW_TYPE_UTILITY",   .isfloating = 1},
+    { .wintype = "_NET_WM_WINDOW_TYPE_TOOLBAR",   .isfloating = 1},
+    { .wintype = "_NET_WM_WINDOW_TYPE_SPLASH",    .isfloating = 1},
 };

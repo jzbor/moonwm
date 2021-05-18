@@ -68,7 +68,6 @@
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOD(N,M)                ((N)%(M) < 0 ? (N)%(M) + (M) : (N)%(M))
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
-#define WTYPE                   "_NET_WM_WINDOW_TYPE_"
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
@@ -122,7 +121,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 	   NetWMMaximizedVert, NetWMMaximizedHorz,
 	   NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
 	   NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock, NetWMDesktop,
-	   NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
+	   NetWMWindowTypeDesktop, NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
 	   NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
 	   NetCurrentDesktop, NetLast, }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
@@ -159,7 +158,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen,
-		isterminal, issteam, isunmanaged, noswallow, beingmoved;
+		isterminal, issteam, noswallow, beingmoved;
 	pid_t pid;
 	Client *next;
 	Client *snext;
@@ -222,7 +221,6 @@ typedef struct {
 	int gameid;
 	int isfloating;
 	int isterminal;
-	int isunmanaged;
 	int noswallow;
 	int monitor;
 } Rule;
@@ -514,7 +512,6 @@ applyrules(Client *c)
 			c->isterminal  = r->isterminal;
 			c->noswallow   = r->noswallow;
 			c->isfloating  = r->isfloating;
-			c->isunmanaged = r->isunmanaged;
 			c->tags |= r->tags;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
@@ -1873,7 +1870,7 @@ manage(Window w, XWindowAttributes *wa)
 		term = termforwin(c);
 	}
 
-	if (c->isunmanaged) {
+	if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
 		XMapWindow(dpy, c->win);
 		XLowerWindow(dpy, c->win);
 		free(c);
@@ -3051,6 +3048,7 @@ setup(void)
 	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	netatom[NetWMWindowTypeDock] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
 	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+	netatom[NetWMWindowTypeDesktop] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	netatom[NetWMMaximizedVert] = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_VERT", False);
 	netatom[NetWMMaximizedHorz] = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
 	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
