@@ -68,6 +68,7 @@
 #define LENGTH(X)               (sizeof X / sizeof X[0])
 #define MOD(N,M)                ((N)%(M) < 0 ? (N)%(M) + (M) : (N)%(M))
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
+#define WTYPE                   "_NET_WM_WINDOW_TYPE_"
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
@@ -125,7 +126,9 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 	   NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
 	   NetCurrentDesktop, NetLast, }; /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
-enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState, WMLast }; /* default atoms */
+enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
+	   WMWindowRole, WMLast }; /* default atoms */
+enum { SteamGame, MWMLast }; /* MoonWM atoms */
 enum { ClkMenu, ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
@@ -156,7 +159,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen,
-		isterminal, issteam, noswallow, beingmoved;
+		isterminal, issteam, isunmanaged, noswallow, beingmoved;
 	pid_t pid;
 	Client *next;
 	Client *snext;
@@ -211,11 +214,15 @@ struct Monitor {
 
 typedef struct {
 	const char *class;
+	const char *role;
 	const char *instance;
+	const char *wintype;
 	const char *title;
 	unsigned int tags;
+	int gameid;
 	int isfloating;
 	int isterminal;
+	int isunmanaged;
 	int noswallow;
 	int monitor;
 } Rule;
@@ -263,7 +270,7 @@ static void focusfloating(const Arg *arg);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
-static Atom getatomprop(Client *c, Atom prop);
+static Atom getatomprop(Client *c, Atom prop, Atom req);
 static pid_t getparentprocess(pid_t p);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -425,7 +432,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[ResizeRequest] = resizerequest,
 	[UnmapNotify] = unmapnotify
 };
-static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], motifatom;
+static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], mwmatom[MWMLast], motifatom;
 static int running = 1;
 static int restartwm = 0;
 static int restartlauncher = 0;
@@ -475,8 +482,10 @@ void
 applyrules(Client *c)
 {
 	const char *class, *instance;
-	unsigned int i;
+	char role[64];
+	unsigned int i, steamid = 0;
 	const Rule *r;
+	Atom wintype;
 	Monitor *m;
 	XClassHint ch = { NULL, NULL };
 
@@ -486,19 +495,26 @@ applyrules(Client *c)
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
+	wintype	 = getatomprop(c, netatom[NetWMWindowType], XA_ATOM);
+	gettextprop(c->win, wmatom[WMWindowRole], role, sizeof(role));
 
-	if (strstr(class, "Steam") || strstr(class, "steam_app_"))
+	if (strstr(class, "Steam") || strstr(class, "steam_app_")
+			|| (steamid = getatomprop(c, mwmatom[SteamGame], AnyPropertyType)))
 		c->issteam = 1;
 
 	for (i = 0; i < LENGTH(rules); i++) {
 		r = &rules[i];
 		if ((!r->title || strstr(c->name, r->title))
 		&& (!r->class || strstr(class, r->class))
-		&& (!r->instance || strstr(instance, r->instance)))
+		&& (!r->role || strstr(role, r->role))
+		&& (!r->instance || strstr(instance, r->instance))
+		&& (!r->wintype || wintype == XInternAtom(dpy, r->wintype, False))
+		&& (!r->gameid || steamid == r->gameid || (steamid && r->gameid == -1) ))
 		{
-			c->isterminal = r->isterminal;
-			c->noswallow  = r->noswallow;
-			c->isfloating = r->isfloating;
+			c->isterminal  = r->isterminal;
+			c->noswallow   = r->noswallow;
+			c->isfloating  = r->isfloating;
+			c->isunmanaged = r->isunmanaged;
 			c->tags |= r->tags;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
@@ -1449,18 +1465,15 @@ focusstack(const Arg *arg)
 }
 
 Atom
-getatomprop(Client *c, Atom prop)
+getatomprop(Client *c, Atom prop, Atom req)
 {
 	int di;
 	unsigned long dl;
 	unsigned char *p = NULL;
 	Atom da, atom = None;
+
 	/* FIXME getatomprop should return the number of items and a pointer to
 	 * the stored data instead of this workaround */
-	Atom req = XA_ATOM;
-	if (prop == xatom[XembedInfo])
-		req = xatom[XembedInfo];
-
 	if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, req,
 		&da, &di, &dl, &dl, &p) == Success && p) {
 		atom = *(Atom *)p;
@@ -1507,6 +1520,24 @@ getsystraywidth()
 	if(showsystray)
 		for(i = systray->icons; i; w += i->w + systrayspacing, i = i->next) ;
 	return w ? w + systrayspacing : 1;
+}
+
+Atom
+getintprop(Client *c, Atom prop)
+{
+	int di, ret = 0;
+	unsigned long dl;
+	unsigned char *p = NULL;
+	Atom da;
+
+	/* FIXME getatomprop should return the number of items and a pointer to
+	 * the stored data instead of this workaround */
+	if (XGetWindowProperty(dpy, c->win, prop, 0L, 1, False, XA_CARDINAL,
+		&da, &di, &dl, &dl, &p) == Success && p) {
+		ret = *(int *)p;
+		XFree(p);
+	}
+	return ret;
 }
 
 int
@@ -1840,6 +1871,13 @@ manage(Window w, XWindowAttributes *wa)
 		c->mon = selmon;
 		applyrules(c);
 		term = termforwin(c);
+	}
+
+	if (c->isunmanaged) {
+		XMapWindow(dpy, c->win);
+		XLowerWindow(dpy, c->win);
+		free(c);
+		return;
 	}
 
 	if (c->x + WIDTH(c) > c->mon->mx + c->mon->mw)
@@ -2999,6 +3037,7 @@ setup(void)
 	wmatom[WMState] = XInternAtom(dpy, "WM_STATE", False);
 	wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
 	wmatom[WMChangeState] = XInternAtom(dpy, "WM_CHANGE_STATE", False);
+	wmatom[WMWindowRole] = XInternAtom(dpy, "WM_WINDOW_ROLE", False);
 	netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
 	netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
 	netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
@@ -3028,6 +3067,7 @@ setup(void)
 	xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
 	xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
 	motifatom = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
+	mwmatom[SteamGame] = XInternAtom(dpy, "STEAM_GAME", False);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
@@ -3744,7 +3784,7 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	int code = 0;
 
 	if (!showsystray || !i || ev->atom != xatom[XembedInfo] ||
-			!(flags = getatomprop(i, xatom[XembedInfo])))
+			!(flags = getatomprop(i, xatom[XembedInfo], xatom[XembedInfo])))
 		return;
 
 	if (flags & XEMBED_MAPPED && !i->tags) {
@@ -3840,8 +3880,8 @@ updatetitle(Client *c)
 void
 updatewindowtype(Client *c)
 {
-	Atom state = getatomprop(c, netatom[NetWMState]);
-	Atom wtype = getatomprop(c, netatom[NetWMWindowType]);
+	Atom state = getatomprop(c, netatom[NetWMState], XA_ATOM);
+	Atom wtype = getatomprop(c, netatom[NetWMWindowType], XA_ATOM);
 
 	if (state == netatom[NetWMFullscreen])
 		setfullscreen(c, 1);
