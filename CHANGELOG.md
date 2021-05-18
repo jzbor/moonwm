@@ -4,7 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [Upcoming](#upcoming)
+- [7.0.4](#704)
 - [7.0.3](#703)
 - [7.0.2](#702)
 - [7.0.1](#701)
@@ -12,10 +12,11 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming
+## 7.0.4
 * Help messages for menu
-* Improved EWMH support
+* Improved EWMH and WindowRole/WindowType support
 * Keybinding to focus floating/tiled windows
+* Adding center functionality to menu
 * Wallpaper can now be set with `moonwm-util setwallpaper <file>` or via your file manager
 * More config options
 
