@@ -32,6 +32,7 @@ contextmenu="  Close			close
   Fullscreen		fullscreen
 
    More
+	  Center				center
 	  Close multiple		closemult
 	  Kill process			kill"
 
@@ -61,6 +62,8 @@ context () {
                 important_msg "Select a window enter/exit fullscreen." ;;
             kill)
                 important_msg "Select a window to kill its process." ;;
+            center)
+                important_msg "Select a window to center" ;;
         esac
         wid="$(slop -b 0 -f %i)"
         important_msg_close
@@ -73,7 +76,8 @@ context () {
         resize) moonie rioresize ;;
         float) moonie togglefloating ;;
         fullscreen) moonie togglefullscr ;;
-        kill) kill "$(xdotool getwindowfocus getwindowpid)" ;;
+        kill) sleep 0.25; kill "$(xdotool getwindowfocus getwindowpid)" ;;
+        center) moonie center ;;
         closemult)
             while [ 1 = 1 ]; do
                 important_msg "Select multiple windows to close; Exit with <Esc> or right click."
