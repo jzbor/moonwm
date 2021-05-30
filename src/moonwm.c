@@ -287,6 +287,7 @@ static void loadxrdb(void);
 static void loadenv(char *name, long *var, int norm);
 static void loadenvi(char *name, int *var, int norm);
 static void loadenvui(char *name, unsigned int *var, int norm);
+static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -703,7 +704,7 @@ buttonpress(XEvent *e)
 {
 	unsigned int i, x, click;
 	Arg arg = {0};
-	Client *c, *sel;
+	Client *c;
 	Monitor *m;
 	XButtonPressedEvent *ev = &e->xbutton;
 	*lastbutton = '0' + ev->button;
@@ -711,9 +712,8 @@ buttonpress(XEvent *e)
 	click = ClkRootWin;
 	/* focus monitor if necessary */
 	if ((m = wintomon(ev->window)) && m != selmon) {
-		sel = selmon->sel;
+		unfocus(selmon->sel, 1);
 		selmon = m;
-		unfocus(sel, 1);
 		focus(NULL);
 	}
 
@@ -1247,7 +1247,7 @@ drawbars(void)
 void
 enternotify(XEvent *e)
 {
-	Client *c, *sel;
+	Client *c;
 	Monitor *m;
 	XCrossingEvent *ev = &e->xcrossing;
 
@@ -1256,9 +1256,8 @@ enternotify(XEvent *e)
 	c = wintoclient(ev->window);
 	m = c ? c->mon : wintomon(ev->window);
 	if (m != selmon) {
-		sel = selmon->sel;
+		unfocus(selmon->sel, 1);
 		selmon = m;
-		unfocus(sel, 1);
 	} else if (!c || c == selmon->sel)
 		return;
 	focus(c);
@@ -1433,15 +1432,13 @@ void
 focusmon(const Arg *arg)
 {
 	Monitor *m;
-	Client *sel;
 
 	if (!mons->next)
 		return;
 	if ((m = dirtomon(arg->i)) == selmon)
 		return;
-	sel = selmon->sel;
+	unfocus(selmon->sel, 0);
 	selmon = m;
-	unfocus(sel, 0);
 	focus(NULL);
 	warp(selmon->sel);
 }
@@ -1844,6 +1841,15 @@ loadxrdb()
 }
 
 void
+losefullscreen(Client *sel, Client *c, Monitor *m)
+{
+	if (!sel || !c || !m)
+		return;
+	if (sel->isfullscreen && ISVISIBLE(sel) && sel->mon == m && !c->isfloating)
+		setfullscreen(sel, 0);
+}
+
+void
 manage(Window w, XWindowAttributes *wa)
 {
 	Client *c, *t = NULL, *term = NULL;
@@ -1916,8 +1922,10 @@ manage(Window w, XWindowAttributes *wa)
 		(unsigned char *) &(c->win), 1);
 	XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h); /* some windows require this */
 	setclientstate(c, NormalState);
-	if (c->mon == selmon)
+	if (c->mon == selmon) {
+		losefullscreen(selmon->sel, c, c->mon);
 		unfocus(selmon->sel, 0);
+	}
 	c->mon->sel = c;
 
 	if (riopid && (!riodraw_matchpid || isdescprocess(riopid, c->pid))
@@ -1966,15 +1974,13 @@ motionnotify(XEvent *e)
 {
 	static Monitor *mon = NULL;
 	Monitor *m;
-	Client *sel;
 	XMotionEvent *ev = &e->xmotion;
 
 	if (ev->window != root)
 		return;
 	if ((m = recttomon(ev->x_root, ev->y_root, 1, 1)) != mon && mon) {
-		sel = selmon->sel;
+		unfocus(selmon->sel, 1);
 		selmon = m;
-		unfocus(sel, 1);
 		focus(NULL);
 	}
 	mon = m;
@@ -3392,8 +3398,6 @@ unfocus(Client *c, int setfocus)
 {
 	if (!c)
 		return;
-	if (c->isfullscreen && ISVISIBLE(c) && c->mon == selmon)
-		setfullscreen(c, 0);
 	grabbuttons(c, 0);
 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
 	if (setfocus) {
