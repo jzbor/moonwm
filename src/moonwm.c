@@ -269,6 +269,7 @@ static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop, Atom req);
+static int getintprop(Client *c, Atom prop);
 static pid_t getparentprocess(pid_t p);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -283,6 +284,7 @@ static int isdescprocess(pid_t p, pid_t c);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void layoutmenu(const Arg *arg);
+static void loadclientprops(Client *c);
 static void loadxrdb(void);
 static void loadenv(char *name, long *var, int norm);
 static void loadenvi(char *name, int *var, int norm);
@@ -330,7 +332,6 @@ static void scan(void);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m, int keeptags);
 static void setclientstate(Client *c, long state);
-static void setcurrenttags(void);
 static void setdesktopnames(void);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
@@ -524,7 +525,6 @@ applyrules(Client *c)
 	if (ch.res_name)
 		XFree(ch.res_name);
 	c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
-	updateclienttags(c);
 }
 
 int
@@ -1526,7 +1526,7 @@ getsystraywidth()
 	return w ? w + systrayspacing : 1;
 }
 
-Atom
+int
 getintprop(Client *c, Atom prop)
 {
 	int di, ret = 0;
@@ -1780,6 +1780,19 @@ layoutmenu(const Arg *arg) {
 }
 
 void
+loadclientprops(Client *c)
+{
+	unsigned int ui;
+
+	if (!c)
+		return;
+	ui = getintprop(c, mwmatom[MWMClientTags]);
+	if (ui & TAGMASK)
+		c->tags = ui & TAGMASK;
+	printf("loadclientprops: %s - %d\n", c->name, ui);
+}
+
+void
 loadenv(char *name, long *var, int norm) {
     char *val, *dummy;
     long lval;
@@ -1885,6 +1898,8 @@ manage(Window w, XWindowAttributes *wa)
 		applyrules(c);
 		term = termforwin(c);
 	}
+
+	loadclientprops(c);
 
 	if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
 		XMapWindow(dpy, c->win);
@@ -2866,14 +2881,6 @@ setclientstate(Client *c, long state)
 		PropModeReplace, (unsigned char *)data, 2);
 }
 
-void
-setcurrenttags(void){
-	long data[] = { 0 };
-	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
-	data[0] = 1;
-	XChangeProperty(dpy, root, mwmatom[MWMCurrentTags], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
-}
-
 void setdesktopnames(void){
 	XTextProperty text;
 	Xutf8TextListToTextProperty(dpy, (char **) tags, TAGSLENGTH, XUTF8StringStyle, &text);
@@ -3111,7 +3118,7 @@ setup(void)
 	XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
 		PropModeReplace, (unsigned char *) netatom, NetLast);
 	setnumdesktops();
-	setcurrenttags();
+	updatecurrenttags();
 	setdesktopnames();
 	setviewport();
 	XDeleteProperty(dpy, root, netatom[NetClientList]);
