@@ -926,12 +926,15 @@ clientmessage(XEvent *e)
 
 		/* unsigned int maximize_vert = (cme->data.l[1] == netatom[NetWMMaximizedVert] || cme->data.l[2] == netatom[NetWMMaximizedVert]); */
 		/* unsigned int maximize_horz = (cme->data.l[1] == netatom[NetWMMaximizedHorz] || cme->data.l[2] == netatom[NetWMMaximizedHorz]); */
-		/* if (maximize_vert || maximize_horz) */
-			/* togglefloating(NULL); */
+		/* if (c == selmon->sel && (maximize_vert || maximize_horz)) { */
+		/* 	c->isfloating = 0; */
+		/* 	setlayout(&((Arg) {.v = &layouts[MONOCLEPOS]})); */
+		/* } */
 	} else if (cme->message_type == netatom[NetActiveWindow]) {
 		activate(c);
 	} else if (cme->message_type == wmatom[WMChangeState]) {
-		pushstack(&((Arg) { .i = PREVSEL }));
+		if (c == selmon->sel)
+			togglefloating(NULL);
 	} else if (cme->message_type == netatom[NetWMActionClose]) {
 		selmon->sel = c;
 		killclient(NULL);
