@@ -270,6 +270,7 @@ static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop, Atom req);
 static int getintprop(Client *c, Atom prop);
+static int getintproproot(Atom prop);
 static pid_t getparentprocess(pid_t p);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
@@ -285,10 +286,11 @@ static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void layoutmenu(const Arg *arg);
 static void loadclientprops(Client *c);
-static void loadxrdb(void);
 static void loadenv(char *name, long *var, int norm);
 static void loadenvi(char *name, int *var, int norm);
 static void loadenvui(char *name, unsigned int *var, int norm);
+static void loadwmprops(void);
+static void loadxrdb(void);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
@@ -803,7 +805,7 @@ cleanup(void)
 	Monitor *m;
 	size_t i;
 
-	view(&a);
+	/* view(&a); */
 	selmon->lt[selmon->sellt] = &foo;
 	for (m = mons; m; m = m->next)
 		while (m->stack)
@@ -1548,6 +1550,23 @@ getintprop(Client *c, Atom prop)
 }
 
 int
+getintproproot(Atom prop)
+{
+	int di, ret = 0;
+	unsigned long dl;
+	unsigned char *p = NULL;
+	Atom da;
+
+	/* FIXME getatomprop should return the number of items and a pointer to
+	 * the stored data instead of this workaround */
+	if (XGetWindowProperty(dpy, root, prop, 0L, 1, False, XA_CARDINAL,
+		&da, &di, &dl, &dl, &p) == Success && p) {
+		ret = *(int *)p;
+		XFree(p);
+	}
+	return ret;
+}
+int
 gettextprop(Window w, Atom atom, char *text, unsigned int size)
 {
 	char **list = NULL;
@@ -1792,7 +1811,6 @@ loadclientprops(Client *c)
 	ui = getintprop(c, mwmatom[MWMClientTags]);
 	if (ui & TAGMASK)
 		c->tags = ui & TAGMASK;
-	printf("loadclientprops: %s - %d\n", c->name, ui);
 }
 
 void
@@ -1823,6 +1841,14 @@ loadenvui(char *name, unsigned int *var, int norm) {
 	long ival = *var;
 	loadenv(name, &ival, norm);
 	*var = ival;
+}
+
+void
+loadwmprops(void) {
+	unsigned int ui;
+	ui = getintproproot(mwmatom[MWMCurrentTags]);
+	if (ui)
+		view(&((Arg) { .ui = ui }));
 }
 
 void
@@ -3120,6 +3146,8 @@ setup(void)
 	/* EWMH support per view */
 	XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
 		PropModeReplace, (unsigned char *) netatom, NetLast);
+	/* load properties from last session */
+	loadwmprops();
 	setnumdesktops();
 	updatecurrenttags();
 	setdesktopnames();
