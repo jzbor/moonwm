@@ -127,7 +127,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
 	   WMWindowRole, WMLast }; /* default atoms */
-enum { SteamGame, MWMClientTags, MWMCurrentTags, MWMLast }; /* MoonWM atoms */
+enum { SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMLast }; /* MoonWM atoms */
 enum { ClkMenu, ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
@@ -367,8 +367,9 @@ static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
-static void updateclienttags(Client *c);
 static void updateclientlist(void);
+static void updateclientmonitor(Client *c);
+static void updateclienttags(Client *c);
 static void updatecurrenttags(void);
 static int updategeom(void);
 static void updatemotifhints(Client *c);
@@ -680,6 +681,7 @@ swallow(Client *p, Client *c)
 	arrange(p->mon);
 	configure(p);
 	updateclientlist();
+	updateclientmonitor(c);
 }
 
 void
@@ -800,7 +802,6 @@ checkotherwm(void)
 void
 cleanup(void)
 {
-	Arg a = {.ui = ~0};
 	Layout foo = { "", NULL };
 	Monitor *m;
 	size_t i;
@@ -886,6 +887,7 @@ clientmessage(XEvent *e)
 			c->tags = 1;
 			updatesizehints(c);
 			updatesystrayicongeom(c, wa.width, wa.height);
+			updateclientmonitor(c);
 			XAddToSaveSet(dpy, c->win);
 			XSelectInput(dpy, c->win, StructureNotifyMask | PropertyChangeMask | ResizeRedirectMask);
 			XClassHint ch ={"moonwm-systray", "moonwm-systray"};
@@ -1805,12 +1807,19 @@ void
 loadclientprops(Client *c)
 {
 	unsigned int ui;
+	Monitor *m;
 
 	if (!c)
 		return;
 	ui = getintprop(c, mwmatom[MWMClientTags]);
 	if (ui & TAGMASK)
 		c->tags = ui & TAGMASK;
+	ui = getintprop(c, mwmatom[MWMClientMonitor]);
+	if (ui) {
+		for (m = mons; m && m->num != ui; m = m->next);
+		if (m)
+			c->mon = m;
+	}
 }
 
 void
@@ -1958,6 +1967,7 @@ manage(Window w, XWindowAttributes *wa)
 	updatewmhints(c);
 	updatemotifhints(c);
 	updateclienttags(c);
+	updateclientmonitor(c);
 	c->sfx = c->x;
 	c->sfy = c->y;
 	c->sfw = c->w;
@@ -2311,6 +2321,7 @@ placemouse(const Arg *arg)
 					r->next = c;
 				}
 
+				updateclientmonitor(c);
 				attachstack(c);
 				arrangemon(r->mon);
 				prevr = r;
@@ -2326,6 +2337,7 @@ placemouse(const Arg *arg)
 		detachstack(c);
 		arrangemon(c->mon);
 		c->mon = m;
+		updateclientmonitor(c);
 		if (!arg->i) {
 			c->tags = m->tagset[m->seltags];
 			updateclienttags(c);
@@ -2719,6 +2731,7 @@ rioposition(Client *c, int x, int y, int w, int h)
 		c->mon = m;
 		c->tags = m->tagset[m->seltags];
 		updateclienttags(c);
+		updateclientmonitor(c);
 		attach(c);
 		attachstack(c);
 		selmon = m;
@@ -2891,6 +2904,7 @@ sendmon(Client *c, Monitor *m, int keeptags)
 	detach(c);
 	detachstack(c);
 	c->mon = m;
+	updateclientmonitor(c);
 	if (!keeptags) {
 		c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 		updateclienttags(c);
@@ -3121,6 +3135,7 @@ setup(void)
 	motifatom = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
 	mwmatom[MWMClientTags] = XInternAtom(dpy, "_MWM_CLIENT_TAGS", False);
 	mwmatom[MWMCurrentTags] = XInternAtom(dpy, "_MWM_CURRENT_TAGS", False);
+	mwmatom[MWMClientMonitor] = XInternAtom(dpy, "_MWM_CLIENT_MONITOR", False);
 	mwmatom[SteamGame] = XInternAtom(dpy, "STEAM_GAME", False);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
@@ -3572,19 +3587,6 @@ updatebarpos(Monitor *m)
 }
 
 void
-updateclienttags(Client *c) {
-    unsigned long data[1];
-	int i;
-	for(i = 0; !(c->tags & (1 << i)); i++);
-    data[0] = i;
-    XChangeProperty(dpy, c->win, netatom[NetWMDesktop],
-            XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
-	data[0] = c->tags;
-    XChangeProperty(dpy, c->win, mwmatom[MWMClientTags],
-            XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
-}
-
-void
 updateclientlist()
 {
 	Client *c;
@@ -3603,6 +3605,27 @@ updateclientlist()
 			XChangeProperty(dpy, root, netatom[NetClientListStacking],
 					XA_WINDOW, 32, PropModeAppend,
 					(unsigned char *) &(c->win), 1);
+}
+
+void
+updateclientmonitor(Client *c) {
+    unsigned long data[1];
+    data[0] = c->mon->num;
+    XChangeProperty(dpy, c->win, mwmatom[MWMClientMonitor],
+            XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
+}
+
+void
+updateclienttags(Client *c) {
+    unsigned long data[1];
+	int i;
+	for(i = 0; !(c->tags & (1 << i)); i++);
+    data[0] = i;
+    XChangeProperty(dpy, c->win, netatom[NetWMDesktop],
+            XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
+	data[0] = c->tags;
+    XChangeProperty(dpy, c->win, mwmatom[MWMClientTags],
+            XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
 }
 
 void
@@ -3910,8 +3933,10 @@ updatesystray(void)
 		i->x = w;
 		XMoveResizeWindow(dpy, i->win, i->x, 0, i->w, i->h);
 		w += i->w;
-		if (i->mon != m)
+		if (i->mon != m) {
 			i->mon = m;
+			updateclientmonitor(i);
+		}
 	}
 	w = w ? w + systrayspacing : 1;
 	x -= w;
