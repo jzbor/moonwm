@@ -32,6 +32,7 @@ options="\
      Resize window                                  MOD + Control + { h, j, k, l }
   # On floating and tiling:
      Resize window by drawing it                    MOD + r                            :moonie rioresize
+     Reset all tiled sizing hints                   MOD + Shift + r
      Window overview (skippy-xd)                    MOD + space                        :pidof skippy-xd || skippy-xd > /dev/null 2>&1
      Close window                                   MOD + Shift + q                    :moonie killclient
 

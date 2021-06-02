@@ -1,10 +1,12 @@
+/* vim: set noet: */
+
 void
 setlayoutex(const Arg *arg) {
-    for(int i = 0; layouts[i].symbol && i <= arg->i; i++)
-        if (i == arg->i) {
-            setlayout(&((Arg) { .v = &layouts[arg->i] }));
-            break;
-        }
+	for(int i = 0; layouts[i].symbol && i <= arg->i; i++)
+		if (i == arg->i) {
+			setlayout(&((Arg) { .v = &layouts[arg->i] }));
+			break;
+		}
 }
 
 void
@@ -51,11 +53,13 @@ static Signal signals[] = {
 	{ "movex",          movex },
 	{ "movey",          movey },
 	{ "quit",           quit },
+	{ "resetfacts",     resetfacts },
 	{ "resizex",        resizex },
 	{ "resizey",        resizey },
-	{ "rioresize",      rioresize },
 	{ "restart",        restart },
 	{ "restartlaunched", restartlaunched },
+	{ "rioresize",      rioresize },
+	{ "setcfact",       setcfact },
 	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },
 	{ "shiftview",      shiftview },
@@ -70,8 +74,8 @@ static Signal signals[] = {
 	{ "togglegaps",     togglegaps },
 	{ "toggletag",      toggletagex },
 	{ "toggleview",     toggleviewex },
-	{ "viewall",        viewall },
 	{ "view",           viewex },
+	{ "viewall",        viewall },
 	{ "xrdb",           xrdb },
 	{ "zoom",           zoom },
 };

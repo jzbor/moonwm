@@ -313,6 +313,7 @@ static void quit(const Arg *arg);
 static Client *recttoclient(int x, int y, int w, int h);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void removesystrayicon(Client *i);
+static void resetfacts(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
@@ -2565,6 +2566,26 @@ removesystrayicon(Client *i)
 	free(i);
 }
 
+void
+resetfacts(const Arg *arg)
+{
+	int i;
+	Client *c;
+
+	if (arg->i) {
+		if (!selmon->sel)
+			return;
+		selmon->sel->cfact = 1.0;
+		for (i = 0, c = nexttiled(selmon->clients); c && i < selmon->nmaster; c = nexttiled(c->next), i++)
+			if ((c == selmon->sel))
+				selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = mfact;
+	} else {
+		for (c = nexttiled(selmon->clients); c; c = nexttiled(c->next))
+			c->cfact = 1.0;
+		selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = mfact;
+	}
+	arrange(selmon);
+}
 
 void
 resize(Client *c, int x, int y, int w, int h, int bw, int interact)

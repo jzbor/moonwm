@@ -1,3 +1,5 @@
+/* vim: set noet: */
+
 /* Key binding functions */
 static void defaultgaps(const Arg *arg);
 static void incrgaps(const Arg *arg);
