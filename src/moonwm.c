@@ -151,6 +151,7 @@ typedef struct Client Client;
 struct Client {
 	char name[256];
 	float mina, maxa;
+	float cfact;
 	int x, y, w, h;
 	int sfx, sfy, sfw, sfh; /* stored float geometry, used on mode revert */
 	int oldx, oldy, oldw, oldh;
@@ -317,6 +318,7 @@ static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
 static void resizefloating(Client *c, int nx, int ny, int nw, int nh);
 static void resizemouse(const Arg *arg);
+static void resizeorxfact(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void resizex(const Arg *arg);
 static void resizey(const Arg *arg);
@@ -338,6 +340,7 @@ static void setdesktopnames(void);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
+static void setcfact(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setmodkey();
 static void setnumdesktops(void);
@@ -1185,6 +1188,76 @@ dirtomon(int dir)
 }
 
 void
+dragcfact(const Arg *arg)
+{
+	int prev_x, prev_y, dist_x, dist_y;
+	float fact;
+	Client *c;
+	XEvent ev;
+	Time lasttime = 0;
+
+	if (!(c = selmon->sel))
+		return;
+	if (c->isfloating) {
+		resizemouse(arg);
+		return;
+	}
+	if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */
+		return;
+	restack(selmon);
+
+	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
+		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
+		return;
+	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
+
+	prev_x = prev_y = -999999;
+
+	do {
+		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
+		switch(ev.type) {
+		case ConfigureRequest:
+		case Expose:
+		case MapRequest:
+			handler[ev.type](&ev);
+			break;
+		case MotionNotify:
+			if ((ev.xmotion.time - lasttime) <= (1000 / framerate))
+				continue;
+			lasttime = ev.xmotion.time;
+			if (prev_x == -999999) {
+				prev_x = ev.xmotion.x_root;
+				prev_y = ev.xmotion.y_root;
+			}
+
+			dist_x = ev.xmotion.x - prev_x;
+			dist_y = ev.xmotion.y - prev_y;
+
+			if (abs(dist_x) > abs(dist_y)) {
+				fact = (float) -4.0 * dist_x / c->mon->ww;
+			} else {
+				fact = (float) 4.0 * dist_y / c->mon->wh;
+			}
+
+			ignorewarp = 1;
+			if (fact)
+				setcfact(&((Arg) { .f = fact }));
+
+			prev_x = ev.xmotion.x;
+			prev_y = ev.xmotion.y;
+			break;
+		}
+	} while (ev.type != ButtonRelease);
+
+
+	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
+	ignorewarp = 0;
+
+	XUngrabPointer(dpy, CurrentTime);
+	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
+}
+
+void
 drawbar(Monitor *m)
 {
 	int x, w, tw = 0, stw = 0;
@@ -1926,6 +1999,7 @@ manage(Window w, XWindowAttributes *wa)
 	c->w = c->oldw = wa->width;
 	c->h = c->oldh = wa->height;
 	c->oldbw = wa->border_width;
+	c->cfact = 1.0;
 
 	updatetitle(c);
 	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
@@ -2592,6 +2666,14 @@ resizemouse(const Arg *arg)
 	}
 }
 
+static
+void resizeorxfact(const Arg *arg) {
+	if (selmon->sel && ISFLOATING(selmon->sel))
+		resizemouse(arg);
+	else
+		dragcfact(arg);
+}
+
 void
 resizerequest(XEvent *e)
 {
@@ -2620,6 +2702,10 @@ void
 resizey(const Arg *arg) {
 	if (ISFLOATING(selmon->sel)) {
 		incheight(arg);
+	} else if (arg->i > 0) {
+		setcfact(&((Arg) { .f = +0.25 }));
+	} else {
+		setcfact(&((Arg) { .f = -0.25 }));
 	}
 }
 
@@ -3024,6 +3110,28 @@ setlayout(const Arg *arg)
 	else
 		drawbar(selmon);
 }
+
+void
+setcfact(const Arg *arg)
+{
+	float f;
+	Client *c;
+
+	c = selmon->sel;
+
+	if(!arg || !c || !selmon->lt[selmon->sellt]->arrange)
+		return;
+	f = arg->f + c->cfact;
+	if(arg->f == 0.0)
+		f = 1.0;
+	else if (f < 0.25)
+		f = 0.25;
+	else if (f > 4.0)
+		f = 4.0;
+	c->cfact = f;
+	arrange(selmon);
+}
+
 
 /* arg > 1.0 will set mfact absolutely */
 void

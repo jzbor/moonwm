@@ -71,6 +71,7 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 /* static const char *tags[] = { "", "", "", "", "", "", "‭ﭮ", "", "" }; */
 
 /* layout(s) */
+#define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 static float mfact           = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static int resizehints       = 0;    /* 1 means respect size hints in tiled resizals */
@@ -297,7 +298,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY|ControlMask, Button1,    moveorplace,    {.i = 1} },
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-    { ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+    { ClkClientWin,         MODKEY,         Button3,        resizeorxfact,  {0} },
     { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-menu context-client") },
     { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu context") },
