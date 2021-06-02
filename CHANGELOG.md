@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [Upcoming](#upcoming)
 - [7.0.4](#704)
 - [7.0.3](#703)
 - [7.0.2](#702)
@@ -11,6 +12,12 @@
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+
+## Upcoming
+* Implementing cfacts
+* Drag mfact/cfacts with mouse
+* Additional Xorg atoms: _MWM_CURRENT_TAGS, _MWM_CLIENT_TAGS and _MWM_CLIENT_MONITOR
+* Using _MWM_* atoms to restore state after reload
 
 ## 7.0.4
 * Help messages for menu
