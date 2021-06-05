@@ -1193,7 +1193,7 @@ dirtomon(int dir)
 void
 dragcfact(const Arg *arg)
 {
-	int prev_x, prev_y, dist_x, dist_y;
+	int prev_x, prev_y, dist_x, dist_y, center_x, center_y, sign;
 	float fact;
 	Client *c;
 	XEvent ev;
@@ -1212,7 +1212,6 @@ dragcfact(const Arg *arg)
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
 		return;
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
 
 	prev_x = prev_y = -999999;
 
@@ -1233,13 +1232,17 @@ dragcfact(const Arg *arg)
 				prev_y = ev.xmotion.y_root;
 			}
 
+			center_x = selmon->mx + c->x + (WIDTH(c) / 2);
+			center_y = selmon->my + c->y + (HEIGHT(c) / 2);
 			dist_x = ev.xmotion.x - prev_x;
 			dist_y = ev.xmotion.y - prev_y;
 
 			if (abs(dist_x) > abs(dist_y)) {
-				fact = (float) -4.0 * dist_x / c->mon->ww;
+				sign = abs(ev.xmotion.x - center_x) < abs(prev_x - center_x) ? -1 : 1;
+				fact = (float) 4.0 * (sign * abs(dist_x)) / c->mon->ww;
 			} else {
-				fact = (float) 4.0 * dist_y / c->mon->wh;
+				sign = abs(ev.xmotion.y - center_y) < abs(prev_y - center_y) ? -1 : 1;
+				fact = (float) 4.0 * (sign * abs(dist_y)) / c->mon->wh;
 			}
 
 			ignorewarp = 1;
@@ -1252,8 +1255,6 @@ dragcfact(const Arg *arg)
 		}
 	} while (ev.type != ButtonRelease);
 
-
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
 	ignorewarp = 0;
 
 	XUngrabPointer(dpy, CurrentTime);
@@ -1263,7 +1264,7 @@ dragcfact(const Arg *arg)
 void
 dragmfact(const Arg *arg)
 {
-	int prev_x, prev_y, dist_x, dist_y;
+	int prev_x, prev_y, dist_x, dist_y, center_x, center_y, sign;
 	float fact;
 	Client *c;
 	XEvent ev;
@@ -1282,7 +1283,6 @@ dragmfact(const Arg *arg)
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
 		return;
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
 
 	prev_x = prev_y = -999999;
 
@@ -1303,13 +1303,17 @@ dragmfact(const Arg *arg)
 				prev_y = ev.xmotion.y_root;
 			}
 
+			center_x = selmon->mx + c->x + (WIDTH(c) / 2);
+			center_y = selmon->my + c->y + (HEIGHT(c) / 2);
 			dist_x = ev.xmotion.x - prev_x;
 			dist_y = ev.xmotion.y - prev_y;
 
 			if (abs(dist_x) > abs(dist_y)) {
-				fact = (float) 1.0 * dist_x / c->mon->ww;
+				sign = abs(ev.xmotion.x - center_x) < abs(prev_x - center_x) ? -1 : 1;
+				fact = (float) 0.75 * (sign * abs(dist_x)) / c->mon->ww;
 			} else {
-				fact = (float) -1.0 * dist_y / c->mon->wh;
+				sign = abs(ev.xmotion.y - center_y) < abs(prev_y - center_y) ? -1 : 1;
+				fact = (float) 0.75 * (sign * abs(dist_y)) / c->mon->wh;
 			}
 
 			ignorewarp = 1;
@@ -1323,7 +1327,6 @@ dragmfact(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 
 
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h/2);
 	ignorewarp = 0;
 
 	XUngrabPointer(dpy, CurrentTime);

@@ -74,6 +74,8 @@ static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 /* layout(s) */
 #define FORCE_VSPLIT 1  /* nrowgrid layout: force two clients to always split vertically */
 static float mfact           = 0.55; /* factor of master area size [0.05..0.95] */
+static const float dmfnuance = 0.75; /* nuance for dragmfact */
+static const float dcfnuance = 4.0;	 /* nuance for dragcfact */
 static const int nmaster     = 1;    /* number of clients in master area */
 static int resizehints       = 0;    /* 1 means respect size hints in tiled resizals */
 static int centeronrh        = 0;    /* 1 means if sizehints are respected center the window */
