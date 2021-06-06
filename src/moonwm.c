@@ -1215,6 +1215,8 @@ dragcfact(const Arg *arg)
 
 	prev_x = prev_y = -999999;
 
+	/* XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w/2, c->h); */
+
 	do {
 		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
 		switch(ev.type) {
@@ -1239,10 +1241,10 @@ dragcfact(const Arg *arg)
 
 			if (abs(dist_x) > abs(dist_y)) {
 				sign = abs(ev.xmotion.x - center_x) < abs(prev_x - center_x) ? -1 : 1;
-				fact = (float) 4.0 * (sign * abs(dist_x)) / c->mon->ww;
+				fact = (float) dcfnuance * (sign * abs(dist_x)) / c->mon->ww;
 			} else {
 				sign = abs(ev.xmotion.y - center_y) < abs(prev_y - center_y) ? -1 : 1;
-				fact = (float) 4.0 * (sign * abs(dist_y)) / c->mon->wh;
+				fact = (float) dcfnuance * (sign * abs(dist_y)) / c->mon->wh;
 			}
 
 			ignorewarp = 1;
@@ -1310,10 +1312,10 @@ dragmfact(const Arg *arg)
 
 			if (abs(dist_x) > abs(dist_y)) {
 				sign = abs(ev.xmotion.x - center_x) < abs(prev_x - center_x) ? -1 : 1;
-				fact = (float) 0.75 * (sign * abs(dist_x)) / c->mon->ww;
+				fact = (float) dmfnuance * (sign * abs(dist_x)) / c->mon->ww;
 			} else {
 				sign = abs(ev.xmotion.y - center_y) < abs(prev_y - center_y) ? -1 : 1;
-				fact = (float) 0.75 * (sign * abs(dist_y)) / c->mon->wh;
+				fact = (float) dmfnuance * (sign * abs(dist_y)) / c->mon->wh;
 			}
 
 			ignorewarp = 1;
