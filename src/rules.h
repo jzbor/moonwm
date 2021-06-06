@@ -23,6 +23,7 @@ static const Rule rules[] = {
     /* Non-Floating */
     { .class = "Gimp",  .monitor = -1,  .isfloating = 0 },
     /* Games */
+    { .class = "Lutris",         .monitor = -1,  .tags = 1 << 5 },
     { .class = "Steam",         .monitor = -1,  .tags = 1 << 5 },
     { .class = "steam_app_",    .monitor = 0,   .tags = 1 << 5 },
     { .gameid = -1,             .monitor = 0,   .tags = 1 << 5 },
