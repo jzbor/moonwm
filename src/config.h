@@ -9,6 +9,7 @@
 static unsigned int borderpx        = 2;        /* border pixel of windows */
 static const unsigned int snap      = 16;       /* snap pixel */
 static unsigned int framerate       = 60;       /* fps to render while moving windows */
+static int swallowdefault			= 1;        /* 1 means swallow windows by default */
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static unsigned int gappih          = 5;        /* horiz inner gap between windows */
 static unsigned int gappiv          = 5;        /* vert inner gap between windows */

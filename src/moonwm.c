@@ -666,9 +666,9 @@ void
 swallow(Client *p, Client *c)
 {
 
-	if (c->noswallow || c->isterminal)
+	if (!swallowdefault || c->noswallow || c->isterminal)
 		return;
-	if (c->noswallow && !swallowfloating && c->isfloating)
+	if (!swallowfloating && c->isfloating)
 		return;
 
 	detach(c);
@@ -1436,17 +1436,18 @@ void
 envsettings() {
 	unsigned int imfact = mfact * 100;
 	setmodkey();
-	loadenvi("MOONWM_CENTERONRH",	&centeronrh,	1);
-	loadenvi("MOONWM_DECORHINTS",	&decorhints,	1);
-	loadenvi("MOONWM_GAPS",			&enablegaps,	1);
-	loadenvi("MOONWM_KEYS",			&managekeys,	1);
-	loadenvi("MOONWM_RESIZEHINTS",	&resizehints,	1);
-	loadenvi("MOONWM_SHOWBAR",		&showbar,		1);
-	loadenvi("MOONWM_SMARTGAPS",	&smartgaps,		1);
-	loadenvi("MOONWM_SYSTRAY",		&showsystray,	1);
-	loadenvi("MOONWM_TOPBAR",		&topbar,		1);
-	loadenvi("MOONWM_TOGGLELAYOUT",	&togglelayout,	1);
-	loadenvi("MOONWM_WORKSPACES",	&workspaces,	1);
+	loadenvi("MOONWM_CENTERONRH",	&centeronrh,		1);
+	loadenvi("MOONWM_DECORHINTS",	&decorhints,		1);
+	loadenvi("MOONWM_GAPS",			&enablegaps,		1);
+	loadenvi("MOONWM_KEYS",			&managekeys,		1);
+	loadenvi("MOONWM_RESIZEHINTS",	&resizehints,		1);
+	loadenvi("MOONWM_SHOWBAR",		&showbar,			1);
+	loadenvi("MOONWM_SMARTGAPS",	&smartgaps,			1);
+	loadenvi("MOONWM_SWALLOW",		&swallowdefault,	1);
+	loadenvi("MOONWM_SYSTRAY",		&showsystray,		1);
+	loadenvi("MOONWM_TOGGLELAYOUT",	&togglelayout,		1);
+	loadenvi("MOONWM_TOPBAR",		&topbar,			1);
+	loadenvi("MOONWM_WORKSPACES",	&workspaces,		1);
 	loadenvui("MOONWM_BORDERWIDTH",	&borderpx,		0);
 	loadenvui("MOONWM_FRAMERATE",	&framerate,		0);
 	loadenvui("MOONWM_GAPS",		&gappih,		0);
@@ -2095,6 +2096,11 @@ manage(Window w, XWindowAttributes *wa)
 	if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
 		XMapWindow(dpy, c->win);
 		XLowerWindow(dpy, c->win);
+		free(c);
+		return;
+	} else if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDock]) {
+		XMapWindow(dpy, c->win);
+		XRaiseWindow(dpy, c->win);
 		free(c);
 		return;
 	}
