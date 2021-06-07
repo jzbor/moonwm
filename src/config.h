@@ -261,10 +261,8 @@ static Button buttons[] = {
     WINBUTTON(MODKEY,       0,              Button5,        focusstack,     {.i = INC(+1) })
     WINBUTTON(MODKEY,       ShiftMask,      Button4,        pushstack,      {.i = INC(-1) })
     WINBUTTON(MODKEY,       ShiftMask,      Button5,        pushstack,      {.i = INC(+1) })
-    WINBUTTON(MODKEY,       ControlMask,    Button4,        resizex,        {.i = -20 })
-    WINBUTTON(MODKEY,       ControlMask,    Button4,        resizey,        {.i = -20 })
-    WINBUTTON(MODKEY,       ControlMask,    Button5,        resizex,        {.i = 20 })
-    WINBUTTON(MODKEY,       ControlMask,    Button5,        resizey,        {.i = 20 })
+    WINBUTTON(MODKEY,       ControlMask,    Button4,        scrollresize,   {.i = -20 })
+    WINBUTTON(MODKEY,       ControlMask,    Button5,        scrollresize,   {.i = 20 })
     WINBUTTON(MODKEY,       0,              Button8,        pushstack,      {.i = INC(+1) })
     WINBUTTON(MODKEY,       0,              Button9,        pushstack,      {.i = INC(-1) })
     { ClkMenu,              0,              Button1,        spawn,          SHCMD("moonwm-menu 1") },

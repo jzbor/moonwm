@@ -336,6 +336,7 @@ static void riospawnsync(const Arg *arg);
 static void run(void);
 static void runautostart(void);
 static void scan(void);
+static void scrollresize(const Arg *arg);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m, int keeptags);
 static void setclientstate(Client *c, long state);
@@ -3087,6 +3088,29 @@ scan(void)
 		}
 		if (wins)
 			XFree(wins);
+	}
+}
+
+void
+scrollresize(const Arg *arg)
+{
+	int i, sign, ismaster = 0;
+	Client *c;
+	if (!selmon->sel)
+		return;
+
+	if (ISFLOATING(selmon->sel)) {
+			incwidth(arg);
+			incheight(arg);
+	} else {
+		for (i = 0, c = nexttiled(selmon->clients); c && i < selmon->nmaster; c = nexttiled(c->next), i++)
+			if ((c == selmon->sel))
+				ismaster = 1;
+		sign = (arg->i) > 0 ? 1 : -1;
+		if (ismaster)
+			setmfact(&((Arg) { .f = sign * 0.05 }));
+		else
+			setcfact(&((Arg) { .f = sign * 0.25 }));
 	}
 }
 
