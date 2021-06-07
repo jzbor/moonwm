@@ -7,8 +7,11 @@ static const Rule rules[] = {
     { .class = "firefox", .monitor = -1,  .noswallow = 1 },
     { .class = "polybar", .monitor = -1,  .noswallow = 1 },
     /* Terminals */
-    { .class = "Alacritty", .monitor = -1,  .isterminal = 1, .noswallow = 1 },
-    { .class = "Uxterm",    .monitor = -1,  .isterminal = 1, .noswallow = 1 },
+    { .class = "Alacritty",         .monitor = -1,  .isterminal = 1 },
+    { .class = "Uxterm",            .monitor = -1,  .isterminal = 1 },
+    { .class = "URxvt",             .monitor = -1,  .isterminal = 1 },
+    { .class = "Gnome-terminal",    .monitor = -1,  .isterminal = 1 },
+    { .class = "Xfce4-terminal",    .monitor = -1,  .isterminal = 1 },
     /* Apps on specific tags */
     { .class = "Spotify",       .monitor = -1,  .tags = 1 << 7 },
     { .class = "TeamSpeak 3",   .monitor = -1,  .tags = 1 << 6 },
