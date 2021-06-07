@@ -34,6 +34,7 @@ contextmenu="  Close			close
    More
 	  Center				center
 	  Close multiple		closemult
+	  Reset size hints		resetfacts
 	  Kill process			kill"
 
 
@@ -50,7 +51,7 @@ important_msg_close () {
 context () {
     selection="$(printf "$contextmenu" | xmenu -i)"
     [ -z "$selection" ] && exit
-    if [ "$1" = select ] && [ "$selection" != closemult ]; then
+    if [ "$1" = select ] && [ "$selection" != closemult ] && [ "$selection" != resetfacts ]; then
         case $selection in
             close)
                 important_msg "Select a window to close." ;;
@@ -78,6 +79,7 @@ context () {
         fullscreen) moonie togglefullscr ;;
         kill) sleep 0.25; kill "$(xdotool getwindowfocus getwindowpid)" ;;
         center) moonie center ;;
+        resetfacts) moonie resetfacts 0 ;;
         closemult)
             while [ 1 = 1 ]; do
                 important_msg "Select multiple windows to close; Exit with <Esc> or right click."
