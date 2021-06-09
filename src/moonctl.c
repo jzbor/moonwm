@@ -6,6 +6,11 @@
 
 #define SIGPREFIX		("fsignal:")
 
+
+typedef struct {
+	char *symbol, *name, *id;
+} Layout;
+
 static const char *icommands[] = {
 	"cyclelayout",
 	"focusmon",
@@ -15,7 +20,6 @@ static const char *icommands[] = {
 	"movey",
 	"resizex",
 	"resizey",
-	"setlayout",
 	"shiftview",
 	"shiftviewclients",
 	"tagmon",
@@ -58,6 +62,19 @@ static const char *ncommands[] = {
 
 static const char *lcommands[] = {
 	"activate",
+	"printlayouts",
+	"setlayout",
+};
+
+static const Layout layouts[] = {
+	{ "[]=", "Tiled Layout",			"tile" },
+	{ "[]D", "Deck Layout",				"deck" },
+	{ "[M]", "Monocle Layout",			"monocle" },
+	{ "><>", "Floating Layout",			"floating" },
+	{ "=[]", "Left Tiled Layout",		"tileleft" },
+	{ "TTT", "Bottom Stack Layout",		"bstack" },
+	{ "HHH", "Grid Layout",				"grid" },
+	{  NULL,  NULL,						NULL, },
 };
 
 static Window root;
@@ -69,6 +86,8 @@ static int activate(Window wid);
 static void closex();
 static void handlelocal(char *command, int argc, char *argv[]);
 static void loadx();
+static void printlayouts();
+static int setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
 
 int
@@ -96,7 +115,7 @@ activate(Window wid)
 			SubstructureNotifyMask | SubstructureRedirectMask,
 			&xev);
 	closex();
-	return ret;
+	return !ret;
 }
 
 void
@@ -108,11 +127,18 @@ closex()
 void
 handlelocal(char *command, int argc, char *argv[])
 {
-	if (strcpy(command, "activate")) {
+	if (strcmp(command, "activate") == 0) {
 		if (argc == 0)
 			exit(2);
 		int wid = strtol(argv[0], (char **)NULL, 0);
 		exit(activate(wid));
+	} else if (strcmp(command, "printlayouts") == 0) {
+		printlayouts();
+		exit(EXIT_SUCCESS);
+	} else if (strcmp(command, "setlayout") == 0) {
+		if (argc == 0)
+			exit(2);
+		exit(setlayout(argv[0]));
 	}
 }
 
@@ -127,6 +153,28 @@ loadx()
 	}
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
+}
+
+void
+printlayouts()
+{
+	for (int i = 0; layouts[i].symbol; i++)
+		printf("%s %s\t\t%s\n", layouts[i].symbol, layouts[i].name, layouts[i].id);
+}
+
+int
+setlayout(char *arg)
+{
+	char buf[12];
+	for (int i = 0; layouts[i].symbol; i++)
+		if (strcmp(arg, layouts[i].symbol) == 0
+				|| strcmp(arg, layouts[i].id) == 0) {
+			sprintf(buf, "%d", i);
+			signal("setlayout", "i", buf);
+			return 0;
+		}
+	signal("setlayout", "i", arg);
+	return 0;
 }
 
 void
