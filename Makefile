@@ -7,7 +7,7 @@ VPATH = src
 SRC = drw.c moonwm.c util.c
 OBJ = ${SRC:.c=.o}
 
-all: options moonwm
+all: options moonwm moonie
 
 options:
 	@echo moonwm build options:
@@ -26,7 +26,7 @@ config.h:
 moonwm: ${OBJ}
 	${CC} -g -o $@ ${OBJ} ${LDFLAGS}
 
-moonie2: moonie.c
+moonie: moonie.c
 	${CC} -g -o $@ src/moonie.c ${LDFLAGS}
 
 clean:
