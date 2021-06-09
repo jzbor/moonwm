@@ -415,7 +415,7 @@ xrdb_set () {
 }
 
 xrdb_refresh () {
-    moonie xrdb
+    moonctl xrdb
     load_xmenu_defaults
 }
 

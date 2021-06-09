@@ -7,7 +7,7 @@ VPATH = src
 SRC = drw.c moonwm.c util.c
 OBJ = ${SRC:.c=.o}
 
-all: options moonwm moonie
+all: options moonwm moonctl
 
 options:
 	@echo moonwm build options:
@@ -26,8 +26,8 @@ config.h:
 moonwm: ${OBJ}
 	${CC} -g -o $@ ${OBJ} ${LDFLAGS}
 
-moonie: moonie.c
-	${CC} -g -o $@ src/moonie.c ${LDFLAGS}
+moonctl: moonctl.c
+	${CC} -g -o $@ src/moonctl.c ${LDFLAGS}
 
 clean:
 	rm -f moonwm ${OBJ} moonwm-${VERSION}.tar.gz
@@ -41,7 +41,7 @@ dist: clean
 	rm -rf moonwm-${VERSION}
 
 install: all
-	install -Dm755 moonwm moonie -t ${DESTDIR}${PREFIX}/bin
+	install -Dm755 moonwm moonctl -t ${DESTDIR}${PREFIX}/bin
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
@@ -53,7 +53,7 @@ install: all
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \
 		${DESTDIR}${MANPREFIX}/man1/moonwm.1 \
-		${DESTDIR}${PREFIX}/bin/moonie
+		${DESTDIR}${PREFIX}/bin/moonctl
 	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop \
 		${DESTDIR}${PREFIX}/share/applications/moonwm-wallpaper.desktop
 

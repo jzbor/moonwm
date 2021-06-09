@@ -7,8 +7,8 @@ $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
   Reboot			reboot || sudo reboot
   Suspend			moonwm-util lock; loginctl suspend || systemctl suspend
 
-  Reload MoonWM	moonie restartlaunched
-  Log out			moonie quit"
+  Reload MoonWM	moonctl restartlaunched
+  Log out			moonctl quit"
 
 appsmenu="  Terminal			$TERMINAL"
 command -v $BROWSER > /dev/null 2>&1    && appsmenu="$appsmenu
@@ -22,7 +22,7 @@ command -v discord > /dev/null 2>&1     && appsmenu="$appsmenu
 command -v discord-canary > /dev/null 2>&1     && appsmenu="$appsmenu
 ﭮ  Discord [c]		discord-canary"
 command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
-  Spotify			if pidof spotify; then moonie toggleview 7; else spotify; fi"
+  Spotify			if pidof spotify; then moonctl toggleview 7; else spotify; fi"
 command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
   Mail				thunderbird"
 
@@ -71,20 +71,16 @@ context () {
         important_msg_close
         [ -z "$wid" ] && exit
         [ "$wid" = "$(xdotool search --maxdepth 0 --name '')" ] && exit
-        xdotool windowactivate "$wid" || exit
-        export ewid="$wid"
-        timeout -k 3s 3s sh -c 'while [ "$(xdotool getactivewindow)" != "$ewid" ]; do sleep 0.1; done'
-        unset ewid
-        [ "$(xdotool getactivewindow)" = "$wid" ] || exit
+        moonctl activate "$wid" || exit
     fi
     case $selection in
-        close) moonie killclient ;;
-        resize) moonie rioresize ;;
-        float) moonie togglefloating ;;
-        fullscreen) moonie togglefullscr ;;
+        close) moonctl killclient ;;
+        resize) moonctl rioresize ;;
+        float) moonctl togglefloating ;;
+        fullscreen) moonctl togglefullscr ;;
         kill) sleep 0.25; kill "$(xdotool getwindowfocus getwindowpid)" ;;
-        center) moonie center ;;
-        resetfacts) moonie resetfacts 0 ;;
+        center) moonctl center ;;
+        resetfacts) moonctl resetfacts 0 ;;
         closemult)
             while [ 1 = 1 ]; do
                 important_msg "Select multiple windows to close; Exit with <Esc> or right click."
@@ -98,11 +94,11 @@ context () {
 }
 
 layouts () {
-    moonie setlayout "$(layouts_classic)"
+    moonctl setlayout "$(layouts_classic)"
 }
 
 layouts_classic () {
-    moonie printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu -i
+    moonctl printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu -i
 }
 
 menupos () {

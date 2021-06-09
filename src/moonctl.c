@@ -106,7 +106,7 @@ handlelocal(char *command, int argc, char *argv[])
 		if (argc == 0)
 			exit(2);
 		int wid = strtol(argv[0], (char **)NULL, 0);
-		activate(wid);
+		exit(activate(wid));
 	}
 }
 
@@ -116,7 +116,7 @@ loadx()
 	dpy = XOpenDisplay(NULL);
 	if (!dpy) {
 		fprintf(stderr, "%s:  unable to open display '%s'\n",
-				"moonie", XDisplayName(NULL));
+				"moonctl", XDisplayName(NULL));
 		exit(3);
 	}
 	screen = DefaultScreen(dpy);
