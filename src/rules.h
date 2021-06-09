@@ -18,6 +18,7 @@ static const Rule rules[] = {
     { .class = "Thunderbird",   .monitor = -1,  .tags = 1 << 8 },
     { .class = "discord",       .monitor = -1,  .tags = 1 << 6 },
     { .class = "jetbrains-idea", .monitor = -1, .tags = 1 << 4 },
+    { .class = "jetbrains-idea", .title = "Welcome to", .monitor = -1, .tags = 1 << 4, .isfloating = 1 },
     { .title = "win0",          .monitor = - 1, .tags = 1 << 4, .isfloating = 1 },
     /* Floating */
     { .class = "XClock",                .monitor = -1, .isfloating = 1, .noswallow = 1 },
