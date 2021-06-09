@@ -79,6 +79,11 @@ activate(Window wid)
 	int ret;
 
 	loadx();
+	if (wid == root) {
+		closex();
+		return 4;
+	}
+
 	xev.type = ClientMessage;
 	xev.xclient.display = dpy;
 	xev.xclient.window = wid;
@@ -91,6 +96,7 @@ activate(Window wid)
 			SubstructureNotifyMask | SubstructureRedirectMask,
 			&xev);
 	closex();
+	return ret;
 }
 
 void

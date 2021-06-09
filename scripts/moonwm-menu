@@ -70,7 +70,6 @@ context () {
         wid="$(slop -b 0 -f %i)"
         important_msg_close
         [ -z "$wid" ] && exit
-        [ "$wid" = "$(xdotool search --maxdepth 0 --name '')" ] && exit
         moonctl activate "$wid" || exit
     fi
     case $selection in
