@@ -66,11 +66,16 @@ context () {
             center)
                 important_msg "Select a window to center" ;;
         esac
+        # select window
         wid="$(slop -b 0 -f %i)"
         important_msg_close
         [ -z "$wid" ] && exit
         [ "$wid" = "$(xdotool search --maxdepth 0 --name '')" ] && exit
-        timeout -k 3s 3s xdotool windowactivate --sync "$wid" || exit
+        xdotool windowactivate "$wid" || exit
+        export ewid="$wid"
+        timeout -k 3s 3s sh -c 'while [ "$(xdotool getactivewindow)" != "$ewid" ]; do sleep 0.1; done'
+        unset ewid
+        [ "$(xdotool getactivewindow)" = "$wid" ] || exit
     fi
     case $selection in
         close) moonie killclient ;;

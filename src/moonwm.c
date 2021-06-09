@@ -479,12 +479,11 @@ activate(Client *c) {
 	for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
 	if (i < LENGTH(tags)) {
 		const Arg a = {.ui = 1 << i};
-		unfocus(selmon->sel, 0);
 		selmon = c->mon;
-		if (!(c->mon->tagset[c->mon->seltags] & 1 << i))
+		if (!ISVISIBLE(c))
 			view(&a);
 		focus(c);
-		restack(selmon);
+		restack(c->mon);
 	}
 }
 
@@ -917,7 +916,8 @@ clientmessage(XEvent *e)
 	}
 	if (cme->message_type == netatom[NetCurrentDesktop]) {
 		desktop = cme->data.l[0];
-		view(&((Arg) { .ui = (1 << desktop) }));
+		if (!((1 << desktop) & selmon->tagset[selmon->seltags] & TAGMASK))
+			view(&((Arg) { .ui = (1 << desktop) }));
 		return;
 	} else if (cme->message_type == mwmatom[MWMCurrentTags]) {
 		view(&((Arg) { .ui = cme->data.l[0] }));
@@ -952,14 +952,7 @@ clientmessage(XEvent *e)
 	} else if (cme->message_type == netatom[NetWMDesktop]) {
 		desktop = cme->data.l[0];
 		if (desktop & TAGMASK) {
-			c->tags = (1 << desktop) & TAGMASK;
-			focus(NULL);
-			arrange(c->mon);
-		}
-		updateclienttags(c);
-	} else if (cme->message_type == netatom[NetWMDesktop]) {
-		if (cme->data.l[0] & TAGMASK) {
-			c->tags = cme->data.l[0] & TAGMASK;
+			c->tags &= (1 << desktop) & TAGMASK;
 			focus(NULL);
 			arrange(c->mon);
 		}
