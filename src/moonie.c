@@ -56,19 +56,58 @@ static const char *ncommands[] = {
 	NULL,
 };
 
+static const char *lcommands[] = {
+	"activate",
+};
+
 static Window root;
 static Display *dpy;
 static int screen;
 
 
+static int activate(Window wid);
 static void closex();
+static void handlelocal(char *command, int argc, char *argv[]);
 static void loadx();
 static void signal(char *commmand, char *type, char *arg);
+
+int
+activate(Window wid)
+{
+	XEvent xev = {0};
+	XWindowAttributes wattr;
+	int ret;
+
+	loadx();
+	xev.type = ClientMessage;
+	xev.xclient.display = dpy;
+	xev.xclient.window = wid;
+	xev.xclient.message_type = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
+	xev.xclient.format = 32;
+	xev.xclient.data.l[0] = 2L; /* 2 == Message from a window pager */
+	xev.xclient.data.l[1] = CurrentTime;
+	XGetWindowAttributes(dpy, wid, &wattr);
+	ret = XSendEvent(dpy, wattr.screen->root, False,
+			SubstructureNotifyMask | SubstructureRedirectMask,
+			&xev);
+	closex();
+}
 
 void
 closex()
 {
 	XCloseDisplay(dpy);
+}
+
+void
+handlelocal(char *command, int argc, char *argv[])
+{
+	if (strcpy(command, "activate")) {
+		if (argc == 0)
+			exit(2);
+		int wid = strtol(argv[0], (char **)NULL, 0);
+		activate(wid);
+	}
 }
 
 void
@@ -155,6 +194,14 @@ main(int argc, char *argv[])
 			signal(argv[1], NULL, NULL);
 			exit(EXIT_SUCCESS);
 		}
+
+	/* check local commands*/
+	for (i = 0; lcommands[i]; i++)
+		if (strcmp(argv[1], lcommands[i]) == 0) {
+			handlelocal(argv[1], argc - 2, &argv[2]);
+			exit(EXIT_SUCCESS);
+		}
+
 
 	fprintf(stderr, "'%s' is not a valid command.\n", argv[1]);
 }
