@@ -26,6 +26,9 @@ config.h:
 moonwm: ${OBJ}
 	${CC} -g -o $@ ${OBJ} ${LDFLAGS}
 
+moonie2: moonie.c
+	${CC} -g -o $@ src/moonie.c ${LDFLAGS}
+
 clean:
 	rm -f moonwm ${OBJ} moonwm-${VERSION}.tar.gz
 
