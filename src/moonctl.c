@@ -1,4 +1,5 @@
 /* vim: set noet: */
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,6 +71,7 @@ static const char *lcommands[] = {
 	"printlayouts",
 	"setlayout",
 	"status",
+	"wmname",
 };
 
 static const Layout layouts[] = {
@@ -98,6 +100,7 @@ static void printlayouts();
 static int setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
 static void status(char *str);
+static void wmname(char *name);
 
 
 int
@@ -144,6 +147,7 @@ activate(Window wid, int timeout)
 			} else {
 				data = *(int *)result;
 				if (wid == data) {
+					XFree(result);
 					ret = 0;
 					break;
 				}
@@ -164,7 +168,7 @@ closex()
 }
 
 int
-getproperty(Window wid, Atom atom, unsigned char **prop) {
+getproperty(Window wid, Atom atom, unsigned char **data) {
 	Atom actual_type;
 	int actual_format;
 	unsigned long _nitems;
@@ -173,7 +177,7 @@ getproperty(Window wid, Atom atom, unsigned char **prop) {
 	status = XGetWindowProperty(dpy, wid, atom, 0, (~0L),
 			False, AnyPropertyType, &actual_type,
 			&actual_format, &_nitems, &bytes_after,
-			prop);
+			data);
 	return status;
 }
 
@@ -186,6 +190,11 @@ handlelocal(char *command, int argc, char *argv[])
 		int wid = strtol(argv[0], (char **)NULL, 0);
 		int timeout = argc > 1 ? strtol(argv[1], (char **)NULL, 0) : 0;
 		exit(activate(wid, timeout));
+	} else if (strcmp(command, "important") == 0) {
+		if (argc == 0)
+			exit(2);
+		important(argv[0]);
+		exit(EXIT_SUCCESS);
 	} else if (strcmp(command, "printlayouts") == 0) {
 		printlayouts();
 		exit(EXIT_SUCCESS);
@@ -198,10 +207,8 @@ handlelocal(char *command, int argc, char *argv[])
 			exit(2);
 		status(argv[0]);
 		exit(EXIT_SUCCESS);
-	} else if (strcmp(command, "important") == 0) {
-		if (argc == 0)
-			exit(2);
-		important(argv[0]);
+	} else if (strcmp(command, "wmname") == 0) {
+		wmname(argc == 0 ? NULL : argv[0]);
 		exit(EXIT_SUCCESS);
 	} else {
 		exit(1);
@@ -279,6 +286,25 @@ void
 status(char *str) {
 	loadx();
 	XStoreName(dpy, root, str);
+	closex();
+}
+
+void
+wmname(char *name) {
+	int status;
+	unsigned char *data = NULL;
+	loadx();
+	if (name) {
+		XChangeProperty(dpy, root, XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False),
+				XA_WINDOW, 32, PropModeReplace, (unsigned char *)&root, 1);
+		XChangeProperty(dpy, root, XInternAtom(dpy, "_NET_WM_NAME", False),
+				XInternAtom(dpy, "UTF8_STRING", False), 8, PropModeReplace, (unsigned char *)name, strlen(name));
+	} else {
+		status = getproperty(root, XInternAtom(dpy, "_NET_WM_NAME", False), &data);
+		if(data && status == Success)
+			fprintf(stdout, "%s\n", data);
+		XFree(data);
+	}
 	closex();
 }
 

@@ -189,7 +189,7 @@ To setup your own status command you should also set the according env variable 
 export MOONWM_STATUSCMD="/path/to/my/statuscmd"
 ```
 This command gets asynchonously on MoonWMs startup with `loop` as the first parameter.
-It should then repeatedly set the status to the WM_NAME (for example with `xsetroot`).
+It should then repeatedly set the status to the WM_NAME (for example with `moonctl status`).
 Make sure to add in a `sleep` so it doesn't unnecessarily wastes resources.
 
 You can also define clickable blocks actions delimited by ascii chars that are smaller than space.
@@ -237,7 +237,6 @@ libxcb
 libxinerama
 slop
 xmenu
-xorg-xsetroot
 ```
 **These are the ones the `moonwm-util` script uses, starts or other programs I deem essential for a working desktop interface:**
 ```
@@ -255,8 +254,6 @@ pamixer         # volume manipulation
 picom           # compositor
 polkit-gnome    # security policy agent
 skippy-xd       # application overview
-wmname          # change wmname for Java compatibility
-xdotool         # wm interaction
 xfce4-power-manager         # power management
 xorg-setxkbmap  # set keyboard layout
 xorg-xrandr     # setup screens

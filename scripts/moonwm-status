@@ -30,7 +30,7 @@ loop () {
 }
 
 set_status () {
-    xsetroot -name "$(get_status)" || exit
+    moonctl status "$(get_status)" || exit
 }
 
 ### BLOCK FUNCTIONS

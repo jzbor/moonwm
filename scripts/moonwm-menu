@@ -38,37 +38,27 @@ contextmenu="  Close			close
 	#   Kill process			kill"
 
 
-important_msg () {
-    xsetroot -name "important:$1 "
-}
-
-important_msg_close () {
-    xsetroot -name "important:close"
-    command -v "$MOONWM_STATUSCMD" 2>/dev/null \
-        && "$MOONWM_STATUSCMD" update
-}
-
 context () {
     selection="$(printf "$contextmenu" | xmenu -i)"
     [ -z "$selection" ] && exit
     if [ "$1" = select ] && [ "$selection" != closemult ] && [ "$selection" != resetfacts ]; then
         case $selection in
             close)
-                important_msg "Select a window to close." ;;
+                moonctl important "Select a window to close." ;;
             resize)
-                important_msg "Select a window to resize." ;;
+                moonctl important "Select a window to resize." ;;
             float)
-                important_msg "Select a window to float/unfloat." ;;
+                moonctl important "Select a window to float/unfloat." ;;
             fullscreen)
-                important_msg "Select a window enter/exit fullscreen." ;;
+                moonctl important "Select a window enter/exit fullscreen." ;;
             # kill)
-            #     important_msg "Select a window to kill its process." ;;
+            #     moonctl important "Select a window to kill its process." ;;
             center)
-                important_msg "Select a window to center" ;;
+                moonctl important "Select a window to center" ;;
         esac
         # select window
         wid="$(slop -b 0 -f %i)"
-        important_msg_close
+        moonctl important close
         [ -z "$wid" ] && exit
         moonctl activate "$wid" 3000 || exit
     fi
@@ -82,9 +72,9 @@ context () {
         resetfacts) moonctl resetfacts 0 ;;
         closemult)
             while [ 1 = 1 ]; do
-                important_msg "Select multiple windows to close; Exit with <Esc> or right click."
+                moonctl important "Select multiple windows to close; Exit with <Esc> or right click."
                 wid="$(slop -b 0 -f %i)"
-                important_msg_close
+                moonctl important close
                 [ -z "$wid" ] && exit
                 moonctl activate "$wid" 3000 || exit
                 moonctl killclient

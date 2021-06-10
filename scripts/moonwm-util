@@ -14,7 +14,7 @@ WALLPAPER="${MOONWM_WALLPAPER:-$WALLPAPER_FILE}"
 
 autostart () {
     # Configure X
-    wmname LG3D
+    moonctl wmname LG3D
     load_wallpaper
     setup_keyboard
 
