@@ -10,22 +10,6 @@ $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
   Reload MoonWM	moonctl restartlaunched
   Log out			moonctl quit"
 
-appsmenu="  Terminal			$TERMINAL"
-command -v $BROWSER > /dev/null 2>&1    && appsmenu="$appsmenu
-  Web				$BROWSER"
-command -v mpv > /dev/null 2>&1         && appsmenu="$appsmenu
-  Media			mpv"
-command -v $FILEMANAGER > /dev/null 2>&1 && appsmenu="$appsmenu
-  Files			$FILEMANAGER"
-command -v discord > /dev/null 2>&1     && appsmenu="$appsmenu
-ﭮ  Discord			discord"
-command -v discord-canary > /dev/null 2>&1     && appsmenu="$appsmenu
-ﭮ  Discord [c]		discord-canary"
-command -v spotify > /dev/null 2>&1     && appsmenu="$appsmenu
-  Spotify			if pidof spotify; then moonctl toggleview 7; else spotify; fi"
-command -v thunderbird > /dev/null 2>&1 && appsmenu="$appsmenu
-  Mail				thunderbird"
-
 contextmenu="  Close			close
 ﭔ  Resize			resize
   Floating			float
@@ -35,14 +19,18 @@ contextmenu="  Close			close
 	  Center				center
 	  Close multiple		closemult
 	  Reset size hints		resetfacts"
-	#   Kill process			kill"
 
+
+favorites () {
+    cat "${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/favorites.xmenu" | \
+        grep -v '^#.*' | xmenu -i $(menupos) | sh
+}
 
 context () {
-    selection="$(printf "$contextmenu" | xmenu -i)"
-    [ -z "$selection" ] && exit
-    if [ "$1" = select ] && [ "$selection" != closemult ] && [ "$selection" != resetfacts ]; then
-        case $selection in
+    action="$(printf "$contextmenu" | xmenu -i)"
+    [ -z "$action" ] && exit
+    if [ "$1" = select ] && [ "$action" != closemult ] && [ "$action" != resetfacts ]; then
+        case $action in
             close)
                 moonctl important "Select a window to close." ;;
             resize)
@@ -51,8 +39,6 @@ context () {
                 moonctl important "Select a window to float/unfloat." ;;
             fullscreen)
                 moonctl important "Select a window enter/exit fullscreen." ;;
-            # kill)
-            #     moonctl important "Select a window to kill its process." ;;
             center)
                 moonctl important "Select a window to center" ;;
         esac
@@ -62,12 +48,11 @@ context () {
         [ -z "$wid" ] && exit
         moonctl activate "$wid" 3000 || exit
     fi
-    case $selection in
+    case $action in
         close) moonctl killclient ;;
         resize) moonctl rioresize ;;
         float) moonctl togglefloating ;;
         fullscreen) moonctl togglefullscr ;;
-        # kill) sleep 0.25; kill "$(xdotool getwindowfocus getwindowpid)" ;;
         center) moonctl center ;;
         resetfacts) moonctl resetfacts 0 ;;
         closemult)
@@ -99,17 +84,12 @@ menupos () {
 
 
 case $1 in
-    # 1) rofi -show drun -config ~/.config/rofi/apps.rasi -fullscreen ;;
-    # 1) moonwm-xdg-xmenu | xmenu -p 0x0 | sh ;;
-    1) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
-    2) echo "$appsmenu" | xmenu -i $(menupos) | sh ;;
-    3) echo "$rightmenu" | xmenu $(menupos) | sh ;;
-    context) context select ;;
-    context-client) context client ;;
-    context-select) context select ;;
-    layouts)
-        layouts ;;
-    layouts-classic)
-        layouts_classic ;;
+    1 | expose) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
+    2 | favorites) favorites ;;
+    3 | main) echo "$rightmenu" | xmenu $(menupos) | sh ;;
+    '' | context) context client ;;
+    select | context-select) context select ;;
+    layouts) layouts ;;
+    layouts-classic) layouts_classic ;;
 esac
 

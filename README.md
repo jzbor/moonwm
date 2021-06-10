@@ -203,6 +203,23 @@ The according mouse button will be set as `$BUTTON` and the block number as `$ST
 The standard MoonWM status interface also includes the `update` parameter, which tells the bar to immediately refresh.
 `status` as first parameter prints out the current statusline to stdout.
 
+### Add favorites menu
+You can put a file in the `xmenu(1)` format in `~/.config/moonwm/favorites`.
+To open this menu middle click the menu button on the bar.
+
+Example:
+```
+# vim: set noet:
+  Terminal			$TERMINAL
+  Web				$BROWSER
+  Media			mpv
+  Files			$FILEMANAGER
+ﭮ  Discord			discord
+ﭮ  Discord [c]		discord-canary
+  Spotify			if pidof spotify; then moonctl toggleview $((1<<7)); else spotify; fi
+  Mail				thunderbird
+```
+
 
 ## Details
 
