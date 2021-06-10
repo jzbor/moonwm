@@ -71,12 +71,16 @@ static const char *lcommands[] = {
 	"--help",
 	"-h",
 	"activate",
+	"active",
+	"clienttags",
+	"currenttags",
 	"help",
 	"important",
 	"printlayouts",
 	"setlayout",
 	"status",
 	"wmname",
+	NULL,
 };
 
 static const Layout layouts[] = {
@@ -92,12 +96,14 @@ static const Layout layouts[] = {
 
 static int screen;
 static char *exename;
-static Display *dpy;
+static Display *dpy = NULL;
 static Window root;
 
 
 static int activate(Window wid, int timeout);
+static void bye();
 static void closex();
+static void die(int exitcode, char *message);
 static int getproperty(Window wid, Atom atom, unsigned char **prop);
 static void handlelocal(char *command, int argc, char *argv[]);
 static void important(char *str);
@@ -105,9 +111,10 @@ static void loadx();
 static void printhelp();
 static void printcmdarr(const char *arr[]);
 static void printlayouts();
-static int setlayout(char *arg);
+static void setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
-static void status(char *str);
+static void setstatus(char *str);
+static Window towid(char *str);
 static void wmname(char *name);
 
 
@@ -121,9 +128,7 @@ activate(Window wid, int timeout)
 	int ret, i, status, data;
 	unsigned long sleeptime;
 
-	loadx();
 	if (wid == root) {
-		closex();
 		return 10;
 	}
 
@@ -137,18 +142,18 @@ activate(Window wid, int timeout)
 	xev.xclient.data.l[0] = 2L; /* 2 == Message from a window pager */
 	xev.xclient.data.l[1] = CurrentTime;
 	XGetWindowAttributes(dpy, wid, &wattr);
-	ret = !XSendEvent(dpy, wattr.screen->root, False,
+	ret = XSendEvent(dpy, wattr.screen->root, False,
 			SubstructureNotifyMask | SubstructureRedirectMask,
 			&xev);
 
-	if (!ret && timeout) {
-		ret = 11;
+	if (ret && timeout) {
+		ret = 0;
 		for (i = 0; i < timeout/SYNCTIME; i++) {
 			status = getproperty(root, atom, &result);
 			if (status == BadWindow) {
 				fprintf(stderr, "window id # 0x%lx does not exists!\n", wid);
 				break;
-				ret = 12;
+				ret = 0;
 			} else if (status != Success) {
 				fprintf(stderr, "XGetWindowProperty failed!\n");
 				ret = 13;
@@ -156,7 +161,7 @@ activate(Window wid, int timeout)
 				data = *(int *)result;
 				if (wid == data) {
 					XFree(result);
-					ret = 0;
+					ret = 1;
 					break;
 				}
 			}
@@ -165,14 +170,29 @@ activate(Window wid, int timeout)
 		}
 	}
 
-	closex();
 	return ret;
+}
+
+void
+bye()
+{
+	closex();
+	exit(EXIT_SUCCESS);
 }
 
 void
 closex()
 {
 	XCloseDisplay(dpy);
+	dpy = NULL;
+}
+
+void
+die(int exitcode, char *message)
+{
+	fprintf(stderr, "%s\n", message);
+	closex();
+	exit(exitcode);
 }
 
 int
@@ -192,39 +212,79 @@ getproperty(Window wid, Atom atom, unsigned char **data) {
 void
 handlelocal(char *command, int argc, char *argv[])
 {
+	int wid, timeout, tags, status;
+	unsigned char *data = NULL;
 	if (strcmp(command, "activate") == 0) {
 		if (argc == 0)
-			exit(2);
-		int wid = strtol(argv[0], (char **)NULL, 0);
-		int timeout = argc > 1 ? strtol(argv[1], (char **)NULL, 0) : 0;
-		exit(activate(wid, timeout));
+			die(2, "Not enough arguments");
+		wid = towid(argv[0]);
+		timeout = argc > 1 ? strtol(argv[1], (char **)NULL, 0) : 0;
+		status = activate(wid, timeout);
+		if (status)
+			bye();
+		else
+			die(5, "Unable to activate");
+	} else if (strcmp(command, "active") == 0) {
+		status = getproperty(root, XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False), &data);
+		if (status == Success && data) {
+			wid = *(int *)data;
+			XFree(data);
+			data = NULL;
+			XFetchName(dpy, wid, (char **) &data);
+			printf("%d\t%s\n", wid, data);
+			XFree(data);
+			bye();
+		}
+		die(3, "Unable to get active window");
+	} else if (strcmp(command, "clienttags") == 0) {
+		if (argc == 0)
+			die(2, "Not enough arguments");
+		wid = towid(argv[0]);
+		status = getproperty(wid, XInternAtom(dpy, "_MWM_CLIENT_TAGS", False), &data);
+		if (status == Success && data) {
+			tags = *(int *)data;
+			printf("%d\n", tags);
+			XFree(data);
+			bye();
+		}
+		die(3, "Unable to get client tags");
+	} else if (strcmp(command, "currenttags") == 0) {
+		status = getproperty(root, XInternAtom(dpy, "_MWM_CURRENT_TAGS", False), &data);
+		if (status == Success && data) {
+			tags = *(int *)data;
+			printf("%d\n", tags);
+			XFree(data);
+			bye();
+		}
+		die(3, "Unable to get current tags");
 	} else if (strcmp(command, "help") == 0
 			|| strcmp(command, "--help") == 0
 			|| strcmp(command, "-h") == 0) {
 		printhelp();
-		exit(EXIT_SUCCESS);
+		bye();
 	} else if (strcmp(command, "important") == 0) {
 		if (argc == 0)
-			exit(2);
+			die(2, "Not enough arguments");
 		important(argv[0]);
-		exit(EXIT_SUCCESS);
+		bye();
 	} else if (strcmp(command, "printlayouts") == 0) {
 		printlayouts();
-		exit(EXIT_SUCCESS);
+		bye();
 	} else if (strcmp(command, "setlayout") == 0) {
 		if (argc == 0)
-			exit(2);
-		exit(setlayout(argv[0]));
+			die(2, "Not enough arguments");
+		setlayout(argv[0]);
+		bye();
 	} else if (strcmp(command, "status") == 0) {
 		if (argc == 0)
-			exit(2);
-		status(argv[0]);
-		exit(EXIT_SUCCESS);
+			die(2, "Not enough arguments");
+		setstatus(argv[0]);
+		bye();
 	} else if (strcmp(command, "wmname") == 0) {
 		wmname(argc == 0 ? NULL : argv[0]);
-		exit(EXIT_SUCCESS);
+		bye();
 	} else {
-		exit(1);
+		die(1, "Please use a valid command (see -h)");
 	}
 
 }
@@ -236,17 +296,19 @@ important(char *str)
 	strcpy(buf, IMPPREFIX);
 	strcpy(&buf[strlen(IMPPREFIX)], str);
 	printf("%s\n", buf);
-	status(buf);
+	setstatus(buf);
 }
 
 void
 loadx()
 {
+	if (dpy)
+		return;
 	dpy = XOpenDisplay(NULL);
 	if (!dpy) {
 		fprintf(stderr, "%s:  unable to open display '%s'\n",
 				exename, XDisplayName(NULL));
-		exit(3);
+		exit(EXIT_FAILURE);
 	}
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
@@ -273,6 +335,7 @@ printhelp()
 	printcmdarr(lcommands);
 	printf("\n\tactivate takes an X window id as first argument and a timeout (ms) as second one.\n");
 	printf("\tIf no timeout is passed there is no check whether the window got focused.\n");
+	printf("\tclienttags also takes an X window id first argument.\n");
 	printf("\timportant, setlayout, status and wmname take strings.\n\n");
 
 	printf("Commands without arguments can take the same arguments as activate.\n");
@@ -299,7 +362,7 @@ printlayouts()
 		printf("%s %s\t\t%s\n", layouts[i].symbol, layouts[i].name, layouts[i].id);
 }
 
-int
+void
 setlayout(char *arg)
 {
 	char buf[12];
@@ -308,10 +371,8 @@ setlayout(char *arg)
 				|| strcmp(arg, layouts[i].id) == 0) {
 			sprintf(buf, "%d", i);
 			signal("setlayout", "i", buf);
-			return 0;
 		}
 	signal("setlayout", "i", arg);
-	return 0;
 }
 
 void
@@ -332,21 +393,34 @@ signal(char *command, char *type, char *arg)
 		strcat(buf, " ");
 		strcat(buf, arg);
 	}
-	status(buf);
+	setstatus(buf);
 }
 
 void
-status(char *str) {
-	loadx();
+setstatus(char *str)
+{
 	XStoreName(dpy, root, str);
-	closex();
+}
+
+Window
+towid(char *str)
+{
+	int status;
+	unsigned char *data;
+	if (strcmp(str, "active") == 0) {
+		status = getproperty(root, XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False), &data);
+		if (status != Success) {
+			die(3, "Unable to get active window");
+		} else
+			return *(Window *) data;
+	}
+	return strtol(str, (char **)NULL, 0);
 }
 
 void
 wmname(char *name) {
 	int status;
 	unsigned char *data = NULL;
-	loadx();
 	if (name) {
 		XChangeProperty(dpy, root, XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False),
 				XA_WINDOW, 32, PropModeReplace, (unsigned char *)&root, 1);
@@ -358,7 +432,6 @@ wmname(char *name) {
 			fprintf(stdout, "%s\n", data);
 		XFree(data);
 	}
-	closex();
 }
 
 int
@@ -372,15 +445,20 @@ main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	if (strcmp(argv[1], "help") != 0
+			&& strcmp(argv[1], "--help") != 0
+			&& strcmp(argv[1], "-h") != 0)
+		loadx();
+
 	/* check int commands */
 	for (i = 0; icommands[i]; i++)
 		if (strcmp(argv[1], icommands[i]) == 0) {
 			if (argc < 3) {
 				fprintf(stderr, "The command '%s' requires an argument of type int.\n", argv[1]);
-				exit(2);
+				die(2, "Not enough arguments");
 			}
 			signal(argv[1], "i", argv[2]);
-			exit(EXIT_SUCCESS);
+			bye();
 		}
 
 	/* check unsigned int commands */
@@ -388,10 +466,10 @@ main(int argc, char *argv[])
 		if (strcmp(argv[1], uicommands[i]) == 0) {
 			if (argc < 3) {
 				fprintf(stderr, "The command '%s' requires an argument of type unsigned int.\n", argv[1]);
-				exit(2);
+				die(2, "Not enough arguments");
 			}
 			signal(argv[1], "ui", argv[2]);
-			exit(EXIT_SUCCESS);
+			bye();
 		}
 
 	/* check float commands */
@@ -399,33 +477,31 @@ main(int argc, char *argv[])
 		if (strcmp(argv[1], fcommands[i]) == 0) {
 			if (argc < 3) {
 				fprintf(stderr, "The command '%s' requires an argument of type float.\n", argv[1]);
-				exit(2);
+				die(2, "Not enough arguments");
 			}
 			signal(argv[1], "f", argv[2]);
-			exit(EXIT_SUCCESS);
+			bye();
 		}
 
 	/* check commands without argument */
 	for (i = 0; ncommands[i]; i++)
 		if (strcmp(argv[1], ncommands[i]) == 0) {
 			if (argc > 2) {
-				wid = strtol(argv[2], (char **)NULL, 0);
+				wid = towid(argv[2]);
 				timeout = argc > 3 ? strtol(argv[3], (char **)NULL, 0) : DEFTIMEOUT;
-				if (activate(wid, timeout) != 0)
-					exit(EXIT_FAILURE);
+				if (!activate(wid, timeout))
+					die(5, "Unable to activate window");
 			}
 			signal(argv[1], NULL, NULL);
-			exit(EXIT_SUCCESS);
+			bye();
 		}
 
 	/* check local commands*/
 	for (i = 0; lcommands[i]; i++)
 		if (strcmp(argv[1], lcommands[i]) == 0) {
 			handlelocal(argv[1], argc - 2, &argv[2]);
-			exit(EXIT_SUCCESS);
+			bye();
 		}
 
-
-	fprintf(stderr, "'%s' is not a valid command.\n", argv[1]);
-	exit(EXIT_FAILURE);
+	die(1, "Please use a valid command (see -h)");
 }
