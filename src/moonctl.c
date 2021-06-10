@@ -11,6 +11,7 @@
 #define IMPPREFIX		("important:")
 #define SYNCTIME		(10)
 #define DEFTIMEOUT		(100)
+#define FCOMMANDHELP	("\t%s\n")
 
 
 typedef struct {
@@ -67,7 +68,10 @@ static const char *ncommands[] = {
 };
 
 static const char *lcommands[] = {
+	"--help",
+	"-h",
 	"activate",
+	"help",
 	"important",
 	"printlayouts",
 	"setlayout",
@@ -86,9 +90,10 @@ static const Layout layouts[] = {
 	{  NULL,  NULL,						NULL, },
 };
 
-static Window root;
-static Display *dpy;
 static int screen;
+static char *exename;
+static Display *dpy;
+static Window root;
 
 
 static int activate(Window wid, int timeout);
@@ -97,6 +102,8 @@ static int getproperty(Window wid, Atom atom, unsigned char **prop);
 static void handlelocal(char *command, int argc, char *argv[]);
 static void important(char *str);
 static void loadx();
+static void printhelp();
+static void printcmdarr(const char *arr[]);
 static void printlayouts();
 static int setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
@@ -191,6 +198,11 @@ handlelocal(char *command, int argc, char *argv[])
 		int wid = strtol(argv[0], (char **)NULL, 0);
 		int timeout = argc > 1 ? strtol(argv[1], (char **)NULL, 0) : 0;
 		exit(activate(wid, timeout));
+	} else if (strcmp(command, "help") == 0
+			|| strcmp(command, "--help") == 0
+			|| strcmp(command, "-h") == 0) {
+		printhelp();
+		exit(EXIT_SUCCESS);
 	} else if (strcmp(command, "important") == 0) {
 		if (argc == 0)
 			exit(2);
@@ -233,11 +245,51 @@ loadx()
 	dpy = XOpenDisplay(NULL);
 	if (!dpy) {
 		fprintf(stderr, "%s:  unable to open display '%s'\n",
-				"moonctl", XDisplayName(NULL));
+				exename, XDisplayName(NULL));
 		exit(3);
 	}
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
+}
+
+void
+printhelp()
+{
+	printf("\n%s - Interface to control MoonWM\n\n", exename);
+
+	printf("\nThese commands take an INTEGER as their argument:\n");
+	printcmdarr(icommands);
+
+	printf("\nThese commands take an UNSIGNED INTEGER as their argument:\n");
+	printcmdarr(uicommands);
+
+	printf("\nThese commands take a FLOATING POINT NUMBER as their argument:\n");
+	printcmdarr(fcommands);
+
+	printf("\nThese are the commands with NO ARGUMENT:\n");
+	printcmdarr(ncommands);
+
+	printf("\nThese are the commands are handled locally:\n");
+	printcmdarr(lcommands);
+	printf("\n\tactivate takes an X window id as first argument and a timeout (ms) as second one.\n");
+	printf("\tIf no timeout is passed there is no check whether the window got focused.\n");
+	printf("\timportant, setlayout, status and wmname take strings.\n\n");
+
+	printf("Commands without arguments can take the same arguments as activate.\n");
+	printf("In this case activate is called first for the according window.\n");
+	printf("If activate fails or times out the action gets aborted. The default timeout is %dms.\n\n", DEFTIMEOUT);
+}
+
+void
+printcmdarr(const char *arr[])
+{
+	printf("\t");
+	for (int i = 0; arr[i]; i++) {
+		if (!(i % 5) && i)
+			printf("\n\t");
+		printf("%s, ", arr[i]);
+	}
+	printf("\n");
 }
 
 void
@@ -314,6 +366,7 @@ main(int argc, char *argv[])
 {
 
 	int i, wid, timeout;
+	exename = argv[0];
 	if (argc == 1) {
 		fprintf(stderr, "Please specify a command.\n");
 		exit(EXIT_FAILURE);
