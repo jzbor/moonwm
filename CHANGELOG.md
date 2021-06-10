@@ -14,9 +14,10 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
+* Replacing moonie with moonctl
 * Implementing cfacts
 * Drag mfact/cfacts with mouse
-* Additional Xorg atoms: _MWM_CURRENT_TAGS, _MWM_CLIENT_TAGS and _MWM_CLIENT_MONITOR
+* Additional Xorg atoms: `_MWM_CURRENT_TAGS`, `_MWM_CLIENT_TAGS` and `_MWM_CLIENT_MONITOR`
 * Using _MWM_* atoms to restore state after reload
 
 ## 7.0.4
