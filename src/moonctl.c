@@ -10,6 +10,7 @@
 #define SIGPREFIX		("fsignal:")
 #define IMPPREFIX		("important:")
 #define SYNCTIME		(10)
+#define DEFTIMEOUT		(100)
 
 
 typedef struct {
@@ -312,7 +313,7 @@ int
 main(int argc, char *argv[])
 {
 
-	int i;
+	int i, wid, timeout;
 	if (argc == 1) {
 		fprintf(stderr, "Please specify a command.\n");
 		exit(EXIT_FAILURE);
@@ -354,6 +355,12 @@ main(int argc, char *argv[])
 	/* check commands without argument */
 	for (i = 0; ncommands[i]; i++)
 		if (strcmp(argv[1], ncommands[i]) == 0) {
+			if (argc > 2) {
+				wid = strtol(argv[2], (char **)NULL, 0);
+				timeout = argc > 3 ? strtol(argv[3], (char **)NULL, 0) : DEFTIMEOUT;
+				if (activate(wid, timeout) != 0)
+					exit(EXIT_FAILURE);
+			}
 			signal(argv[1], NULL, NULL);
 			exit(EXIT_SUCCESS);
 		}
