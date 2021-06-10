@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #define SIGPREFIX		("fsignal:")
+#define IMPPREFIX		("important:")
 #define SYNCTIME		(10)
 
 
@@ -65,8 +66,10 @@ static const char *ncommands[] = {
 
 static const char *lcommands[] = {
 	"activate",
+	"important",
 	"printlayouts",
 	"setlayout",
+	"status",
 };
 
 static const Layout layouts[] = {
@@ -89,10 +92,12 @@ static int activate(Window wid, int timeout);
 static void closex();
 static int getproperty(Window wid, Atom atom, unsigned char **prop);
 static void handlelocal(char *command, int argc, char *argv[]);
+static void important(char *str);
 static void loadx();
 static void printlayouts();
 static int setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
+static void status(char *str);
 
 
 int
@@ -188,7 +193,30 @@ handlelocal(char *command, int argc, char *argv[])
 		if (argc == 0)
 			exit(2);
 		exit(setlayout(argv[0]));
+	} else if (strcmp(command, "status") == 0) {
+		if (argc == 0)
+			exit(2);
+		status(argv[0]);
+		exit(EXIT_SUCCESS);
+	} else if (strcmp(command, "important") == 0) {
+		if (argc == 0)
+			exit(2);
+		important(argv[0]);
+		exit(EXIT_SUCCESS);
+	} else {
+		exit(1);
 	}
+
+}
+
+void
+important(char *str)
+{
+	char buf[strlen(IMPPREFIX) + strlen(str) + 1];
+	strcpy(buf, IMPPREFIX);
+	strcpy(&buf[strlen(IMPPREFIX)], str);
+	printf("%s\n", buf);
+	status(buf);
 }
 
 void
@@ -233,7 +261,6 @@ signal(char *command, char *type, char *arg)
 
 	if (!command)
 		return;
-	loadx();
 
 	strcpy(buf, SIGPREFIX);
 	strcat(buf, command);
@@ -245,7 +272,13 @@ signal(char *command, char *type, char *arg)
 		strcat(buf, " ");
 		strcat(buf, arg);
 	}
-	XStoreName(dpy, root, buf);
+	status(buf);
+}
+
+void
+status(char *str) {
+	loadx();
+	XStoreName(dpy, root, str);
 	closex();
 }
 
@@ -267,6 +300,7 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 			signal(argv[1], "i", argv[2]);
+			exit(EXIT_SUCCESS);
 		}
 
 	/* check unsigned int commands */
@@ -307,4 +341,5 @@ main(int argc, char *argv[])
 
 
 	fprintf(stderr, "'%s' is not a valid command.\n", argv[1]);
+	exit(EXIT_FAILURE);
 }
