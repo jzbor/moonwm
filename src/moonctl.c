@@ -1,10 +1,13 @@
 /* vim: set noet: */
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <X11/Xlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 #define SIGPREFIX		("fsignal:")
+#define SYNCTIME		(10)
 
 
 typedef struct {
@@ -82,46 +85,91 @@ static Display *dpy;
 static int screen;
 
 
-static int activate(Window wid);
+static int activate(Window wid, int timeout);
 static void closex();
+static int getproperty(Window wid, Atom atom, unsigned char **prop);
 static void handlelocal(char *command, int argc, char *argv[]);
 static void loadx();
 static void printlayouts();
 static int setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
 
+
 int
-activate(Window wid)
+activate(Window wid, int timeout)
 {
 	XEvent xev = {0};
 	XWindowAttributes wattr;
-	int ret;
+	Atom atom;
+	unsigned char *result = NULL;
+	int ret, i, status, data;
+	unsigned long sleeptime;
 
 	loadx();
 	if (wid == root) {
 		closex();
-		return 4;
+		return 10;
 	}
+
+	atom = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
 
 	xev.type = ClientMessage;
 	xev.xclient.display = dpy;
 	xev.xclient.window = wid;
-	xev.xclient.message_type = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
+	xev.xclient.message_type = atom;
 	xev.xclient.format = 32;
 	xev.xclient.data.l[0] = 2L; /* 2 == Message from a window pager */
 	xev.xclient.data.l[1] = CurrentTime;
 	XGetWindowAttributes(dpy, wid, &wattr);
-	ret = XSendEvent(dpy, wattr.screen->root, False,
+	ret = !XSendEvent(dpy, wattr.screen->root, False,
 			SubstructureNotifyMask | SubstructureRedirectMask,
 			&xev);
+
+	if (!ret && timeout) {
+		ret = 11;
+		for (i = 0; i < timeout/SYNCTIME; i++) {
+			status = getproperty(root, atom, &result);
+			if (status == BadWindow) {
+				fprintf(stderr, "window id # 0x%lx does not exists!\n", wid);
+				break;
+				ret = 12;
+			} else if (status != Success) {
+				fprintf(stderr, "XGetWindowProperty failed!\n");
+				ret = 13;
+			} else {
+				data = *(int *)result;
+				if (wid == data) {
+					ret = 0;
+					break;
+				}
+			}
+
+			nanosleep(&((struct timespec) { .tv_nsec = (time_t)(1000000L * (SYNCTIME)) }), NULL);
+		}
+	}
+
 	closex();
-	return !ret;
+	return ret;
 }
 
 void
 closex()
 {
 	XCloseDisplay(dpy);
+}
+
+int
+getproperty(Window wid, Atom atom, unsigned char **prop) {
+	Atom actual_type;
+	int actual_format;
+	unsigned long _nitems;
+	unsigned long bytes_after; /* unused */
+	int status;
+	status = XGetWindowProperty(dpy, wid, atom, 0, (~0L),
+			False, AnyPropertyType, &actual_type,
+			&actual_format, &_nitems, &bytes_after,
+			prop);
+	return status;
 }
 
 void
@@ -131,7 +179,8 @@ handlelocal(char *command, int argc, char *argv[])
 		if (argc == 0)
 			exit(2);
 		int wid = strtol(argv[0], (char **)NULL, 0);
-		exit(activate(wid));
+		int timeout = argc > 1 ? strtol(argv[1], (char **)NULL, 0) : 0;
+		exit(activate(wid, timeout));
 	} else if (strcmp(command, "printlayouts") == 0) {
 		printlayouts();
 		exit(EXIT_SUCCESS);

@@ -34,8 +34,8 @@ contextmenu="  Close			close
    More
 	  Center				center
 	  Close multiple		closemult
-	  Reset size hints		resetfacts
-	  Kill process			kill"
+	  Reset size hints		resetfacts"
+	#   Kill process			kill"
 
 
 important_msg () {
@@ -61,8 +61,8 @@ context () {
                 important_msg "Select a window to float/unfloat." ;;
             fullscreen)
                 important_msg "Select a window enter/exit fullscreen." ;;
-            kill)
-                important_msg "Select a window to kill its process." ;;
+            # kill)
+            #     important_msg "Select a window to kill its process." ;;
             center)
                 important_msg "Select a window to center" ;;
         esac
@@ -70,14 +70,14 @@ context () {
         wid="$(slop -b 0 -f %i)"
         important_msg_close
         [ -z "$wid" ] && exit
-        moonctl activate "$wid" || exit
+        moonctl activate "$wid" 3000 || exit
     fi
     case $selection in
         close) moonctl killclient ;;
         resize) moonctl rioresize ;;
         float) moonctl togglefloating ;;
         fullscreen) moonctl togglefullscr ;;
-        kill) sleep 0.25; kill "$(xdotool getwindowfocus getwindowpid)" ;;
+        # kill) sleep 0.25; kill "$(xdotool getwindowfocus getwindowpid)" ;;
         center) moonctl center ;;
         resetfacts) moonctl resetfacts 0 ;;
         closemult)
@@ -86,7 +86,8 @@ context () {
                 wid="$(slop -b 0 -f %i)"
                 important_msg_close
                 [ -z "$wid" ] && exit
-                timeout -k 3s 3s xdotool windowclose "$wid"
+                moonctl activate "$wid" 3000 || exit
+                moonctl killclient
             done
             ;;
     esac
