@@ -80,11 +80,9 @@ brightness () {
     elif [ "$1" -gt 0 ]; then
         light -A "$(echo "$1" | sed 's/-//')"
     fi
-    if command -v dunstify > /dev/null 2>&1; then
-        dunstify -r 225423 -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
-    else
-        notify-send -a Brightness -i "notification-display-brightness" "Set brightness to $(light | sed 's/\..*//g')%"
-    fi
+    notify-send -a Brightness -i "notification-display-brightness" \
+        -h string:x-canonical-private-synchronous:moonwm-brightness \
+        "Set brightness to $(light | sed 's/\..*//g')%"
 }
 
 default_dmenu_run () {
@@ -155,12 +153,12 @@ get_default_dmenucmd () {
 }
 
 get_default_notification_daemon () {
-    if command -v dunst > /dev/null 2>&1; then
+    if command -v /usr/lib/xfce4/notifyd/xfce4-notifyd > /dev/null; then
+        echo /usr/lib/xfce4/notifyd/xfce4-notifyd
+    elif command -v dunst > /dev/null 2>&1; then
         echo dunst
     elif command -v /usr/lib/notification-daemon-1.0/notification-daemon > /dev/null 2>&1; then
         echo /usr/lib/notification-daemon-1.0/notification-daemon
-    elif command -v /usr/lib/xfce4/notifyd/xfce4-notifyd > /dev/null; then
-        echo /usr/lib/xfce4/notifyd/xfce4-notifyd
     elif command -v /usr/lib/notify-osd/notify-osd > /dev/null; then
         echo /usr/lib/notify-osd/notify-osd
     else
@@ -325,10 +323,10 @@ screenshot () {
     if [ "$success" = 0 ]; then
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga > /dev/null 2>&1 &
         if command -v dunstify > /dev/null 2>&1; then
-            dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" \
+            dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename" \
                 --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
         else
-            notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot"
+            notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename"
         fi
     fi
 }
@@ -392,14 +390,47 @@ setup_keyboard () {
 volume () {
     if [ "$1" = "mute" ]; then
         pamixer -t
+        volume_notification mute
     elif [ "$1" -lt 0 ]; then
         pamixer -d "$(echo "$1" | sed 's/-//')"
+        volume_notification
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     elif [ "$1" -gt 0 ]; then
         pamixer -i "$(echo "$1" | sed 's/-//')"
+        volume_notification
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     fi
     [ -n "$MOONWM_STATUSCMD" ] && $MOONWM_STATUSCMD update
+}
+
+volume_notification () {
+    muted="$(pamixer --get-mute)"
+    if [ "$1" = mute ] && [ "$muted" = "true" ]; then
+        notify-send -a Volume -i "notification-audio-volume-muted" \
+            -h string:x-canonical-private-synchronous:moonwm-volume \
+            "Muted"
+    else
+        level="$(pamixer --get-volume)"
+        if [ "$level" -lt 25 ]; then
+            icon="notification-audio-volume-off"
+        elif [ "$level" -lt 50 ]; then
+            icon="notification-audio-volume-low"
+        elif [ "$level" -lt 75 ]; then
+            icon="notification-audio-volume-medium"
+        else
+            icon="notification-audio-volume-high"
+        fi
+
+        if [ "$1" = mute ] && [ "$muted" = "false" ]; then
+            notify-send -a Volume -i "$icon" \
+                -h string:x-canonical-private-synchronous:moonwm-volume \
+                "Unmuted"
+        elif [ "$muted" = "false" ]; then
+            notify-send -a Volume -i "$icon" \
+                -h string:x-canonical-private-synchronous:moonwm-volume \
+                "$(pamixer --get-volume-human)"
+        fi
+    fi
 }
 
 xrdb_get () {

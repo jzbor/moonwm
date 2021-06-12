@@ -271,6 +271,7 @@ pamixer         # volume manipulation
 picom           # compositor
 polkit-gnome    # security policy agent
 skippy-xd       # application overview
+sound-theme-freedesktop     # sounds
 xfce4-power-manager         # power management
 xorg-setxkbmap  # set keyboard layout
 xorg-xrandr     # setup screens
