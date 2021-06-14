@@ -2768,7 +2768,7 @@ resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 		c->isexposed = 0;
 		resizeclient(c, x, y, w, h, bw);
 		for (c = selmon->clients; c; c = c->next)
-			if (c->isfullscreen) {
+			if (ISVISIBLE(c) && c->isfullscreen) {
 				XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 					PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 				resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
