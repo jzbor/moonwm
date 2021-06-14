@@ -55,7 +55,7 @@ static Signal signals[] = {
 	/* signum           function */
 	{ "center",         center },
 	{ "cyclelayout",    cyclelayout },
-	{ "expose",			exposelayout },
+	{ "expose",			exposeview },
 	{ "focusmon",       focusmon },
 	{ "focusstack",     focusstack },
 	{ "incnmaster",     incnmaster },
