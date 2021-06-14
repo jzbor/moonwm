@@ -465,6 +465,84 @@ deck(Monitor *m)
 }
 
 /*
+ * Views all with floating windows tiled
+ * This should NOT be used as regular layout
+ */
+void
+exposelayout(const Arg *arg)
+{
+	unsigned int i, n, bw;
+	int x, y, cols, rows, ch, cw, cn, rn, rrest, crest; // counters
+	int oh, ov, ih, iv;
+	Client *c;
+	Monitor *m = selmon;
+	XWindowChanges wc;
+	XConfigureEvent ce;
+
+	view(&((Arg){.ui = ~0}));
+
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+	for (n = 0, c = m->clients; c; c = c->next, n++);
+	if (n == 0)
+		return;
+
+	/* grid dimensions */
+	for (cols = 0; cols <= n/2; cols++)
+		if (cols*cols >= n)
+			break;
+	if (n == 5) /* set layout against the general calculation: not 1:2:2, but 2:3 */
+		cols = 2;
+	rows = n/cols;
+	cn = rn = 0; // reset column no, row no, client count
+
+	ch = (m->wh - 2*oh - ih * (rows - 1)) / rows;
+	cw = (m->ww - 2*ov - iv * (cols - 1)) / cols;
+	rrest = (m->wh - 2*oh - ih * (rows - 1)) - ch * rows;
+	crest = (m->ww - 2*ov - iv * (cols - 1)) - cw * cols;
+	x = m->wx + ov;
+	y = m->wy + oh;
+    bw = n == 1 ? 0 : borderpx;
+
+	for (i = 0, c = m->clients; c; i++, c = c->next) {
+		if (i/rows + 1 > cols - n%cols) {
+			rows = n/cols + 1;
+			ch = (m->wh - 2*oh - ih * (rows - 1)) / rows;
+			rrest = (m->wh - 2*oh - ih * (rows - 1)) - ch * rows;
+		}
+
+		wc.x = x;
+		wc.y = y + rn*(ch + ih) + MIN(rn, rrest);
+		wc.width = cw + (cn < crest ? 1 : 0) - 2*bw;
+		wc.height = ch + (rn < rrest ? 1 : 0) - 2*bw;
+		wc.border_width = bw;
+		XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
+		/* configure(c); */
+		XSync(dpy, False);
+
+		ce.type = ConfigureNotify;
+		ce.display = dpy;
+		ce.event = c->win;
+		ce.window = c->win;
+		ce.x = wc.x;
+		ce.y = wc.y;
+		ce.width = wc.width;
+		ce.height = wc.height;
+		ce.border_width = wc.border_width;
+		ce.above = None;
+		ce.override_redirect = False;
+		XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
+
+		rn++;
+		if (rn >= rows) {
+			rn = 0;
+			x += cw + ih + (cn < crest ? 1 : 0);
+			cn++;
+		}
+	}
+	isexposed = 1;
+}
+
+/*
  * Fibonacci layout + gaps
  * https://dwm.suckless.org/patches/fibonacci/
  */

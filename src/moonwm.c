@@ -448,6 +448,7 @@ static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], mwmatom[MWMLast], mo
 static int running = 1;
 static int restartwm = 0;
 static int restartlauncher = 0;
+static int isexposed = 0;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -476,6 +477,7 @@ struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 void
 activate(Client *c) {
 	unsigned int i;
+	Client *n;
 	if (!c || c == selmon->sel)
 		return;
 	for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
@@ -484,6 +486,8 @@ activate(Client *c) {
 		selmon = c->mon;
 		if (!ISVISIBLE(c))
 			view(&a);
+		for (n = selmon->stack; n; n = n->snext)
+			losefullscreen(n, c, selmon);
 		focus(c);
 		restack(c->mon);
 	}
@@ -2684,7 +2688,16 @@ resetfacts(const Arg *arg)
 void
 resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 {
-	if (applysizehints(c, &x, &y, &w, &h, &bw, interact))
+	if (isexposed) {
+		resizeclient(c, x, y, w, h, bw);
+		for (c = selmon->clients; c; c = c->next)
+			if (c->isfullscreen) {
+				XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
+					PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
+				resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
+			}
+		isexposed = 0;
+	} else if (applysizehints(c, &x, &y, &w, &h, &bw, interact))
 		resizeclient(c, x, y, w, h, bw);
 }
 

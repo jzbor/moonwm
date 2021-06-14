@@ -1,6 +1,6 @@
 #!/bin/sh
 
-rightmenu="  Applications
+RIGHTMENU="  Applications
 $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
 
   Shutdown			poweroff || sudo poweroff
@@ -10,7 +10,7 @@ $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
   Reload MoonWM	moonctl restartlaunched
   Log out			moonctl quit"
 
-contextmenu="  Close			close
+CONTEXTMENU="  Close			close
 ﭔ  Resize			resize
   Floating			float
   Fullscreen		fullscreen
@@ -20,14 +20,14 @@ contextmenu="  Close			close
 	  Close multiple		closemult
 	  Reset size hints		resetfacts"
 
+# SLOPSTYLE="-b 2 -c 0.92,0.85,0.69 -p -2"
+# SLOPSTYLE="-b 2 -c 0.98,0.28,0.20 -p -2"
+# SLOPSTYLE="-b 2 -c 0.15,0.15,0.15 -p -2"
+SLOPSTYLE="-b 0"
 
-favorites () {
-    cat "${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/favorites.xmenu" | \
-        grep -v '^#.*' | xmenu -i $(menupos) | sh
-}
 
 context () {
-    action="$(printf "$contextmenu" | xmenu -i)"
+    action="$(printf "$CONTEXTMENU" | xmenu -i)"
     [ -z "$action" ] && exit
     if [ "$1" = select ] && [ "$action" != closemult ] && [ "$action" != resetfacts ]; then
         case $action in
@@ -43,7 +43,7 @@ context () {
                 moonctl important "Select a window to center" ;;
         esac
         # select window
-        wid="$(slop -b 0 -f %i)"
+        wid="$(slop $SLOPSTYLE -f %i)"
         moonctl important close
         [ -z "$wid" ] && exit
         moonctl activate "$wid" 3000 || exit
@@ -58,7 +58,7 @@ context () {
         closemult)
             while [ 1 = 1 ]; do
                 moonctl important "Select multiple windows to close; Exit with <Esc> or right click."
-                wid="$(slop -b 0 -f %i)"
+                wid="$(slop $SLOPSTYLE -f %i)"
                 moonctl important close
                 [ -z "$wid" ] && exit
                 moonctl activate "$wid" 3000 || exit
@@ -66,6 +66,22 @@ context () {
             done
             ;;
     esac
+}
+
+expose () {
+    # moonctl viewall
+    # moonctl setlayout grid
+    moonctl expose
+    sleep 0.2
+    wid="$(slop $SLOPSTYLE -f %i)" \
+            || { moonctl view 0; exit 1; }
+    moonctl view 0
+    moonctl activate "$wid"
+}
+
+favorites () {
+    cat "${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/favorites.xmenu" | \
+        grep -v '^#.*' | xmenu -i $(menupos) | sh
 }
 
 layouts () {
@@ -84,9 +100,10 @@ menupos () {
 
 
 case $1 in
-    1 | expose) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
+    # 1 | expose) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
+    1 | expose) expose ;;
     2 | favorites) favorites ;;
-    3 | main) echo "$rightmenu" | xmenu $(menupos) | sh ;;
+    3 | main) echo "$RIGHTMENU" | xmenu $(menupos) | sh ;;
     '' | context) context client ;;
     select | context-select) context select ;;
     layouts) layouts ;;

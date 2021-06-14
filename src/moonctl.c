@@ -51,6 +51,7 @@ static const char *fcommands[] = {
 
 static const char *ncommands[] = {
 	"center",
+	"expose",
 	"killclient",
 	"quit",
 	"restart",

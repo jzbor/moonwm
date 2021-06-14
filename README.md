@@ -108,7 +108,6 @@ MOONWM_PICOM=0        # disables picom
 With these settings you can turn features on or off (with their default values):
 ```sh
 MOONWM_KEYS=1           # enable/disable internal moonwm key handling
-MOONWM_TOGGLELAYOUT=0   # toggle layout when its already set
 MOONWM_WORKSPACES=0     # use workspaces like i3 instead of tags (experimental)
 MOONWM_SWALLOW=1        # enable/disable swallowing
 # bar
