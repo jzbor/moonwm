@@ -100,7 +100,6 @@ menupos () {
 
 
 case $1 in
-    # 1 | expose) pidof skippy-xd || skippy-xd > /dev/null 2>&1 ;;
     1 | expose) expose ;;
     2 | favorites) favorites ;;
     3 | main) echo "$RIGHTMENU" | xmenu $(menupos) | sh ;;

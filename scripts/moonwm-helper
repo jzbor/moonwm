@@ -33,7 +33,7 @@ options="\
   # On floating and tiling:
      Resize window by drawing it                    MOD + r                            :moonctl rioresize
      Reset all tiled sizing hints                   MOD + Shift + r
-     Window overview (skippy-xd)                    MOD + space                        :pidof skippy-xd || skippy-xd > /dev/null 2>&1
+     Toggle focus between floating and tiling       MOD + space
      Close window                                   MOD + Shift + q                    :moonctl killclient
 
 ### LAYOUTS ###
