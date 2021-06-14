@@ -19,6 +19,13 @@ togglelayoutex(const Arg *arg) {
 }
 
 void
+exposeex(const Arg *arg) {
+	view(&((Arg){.ui = ~0}));
+	setlayout(&((Arg) { .v = &layouts[GRIDPOS] }));
+	exposelayout(arg);
+}
+
+void
 viewex(const Arg *arg) {
 	view(&((Arg) { .ui = 1 << arg->ui }));
 }
@@ -55,7 +62,7 @@ static Signal signals[] = {
 	/* signum           function */
 	{ "center",         center },
 	{ "cyclelayout",    cyclelayout },
-	{ "expose",			exposelayout },
+	{ "expose",			exposeex },
 	{ "focusmon",       focusmon },
 	{ "focusstack",     focusstack },
 	{ "incnmaster",     incnmaster },

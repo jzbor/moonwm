@@ -159,7 +159,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen,
-		isterminal, issteam, noswallow, beingmoved;
+		isterminal, issteam, isexposed, noswallow, beingmoved;
 	pid_t pid;
 	Client *next;
 	Client *snext;
@@ -448,7 +448,6 @@ static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], mwmatom[MWMLast], mo
 static int running = 1;
 static int restartwm = 0;
 static int restartlauncher = 0;
-static int isexposed = 0;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -2688,7 +2687,8 @@ resetfacts(const Arg *arg)
 void
 resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 {
-	if (isexposed) {
+	if (c->isexposed) {
+		c->isexposed = 0;
 		resizeclient(c, x, y, w, h, bw);
 		for (c = selmon->clients; c; c = c->next)
 			if (c->isfullscreen) {
@@ -2696,7 +2696,6 @@ resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 					PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 				resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
 			}
-		isexposed = 0;
 	} else if (applysizehints(c, &x, &y, &w, &h, &bw, interact))
 		resizeclient(c, x, y, w, h, bw);
 }

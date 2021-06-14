@@ -479,8 +479,6 @@ exposelayout(const Arg *arg)
 	XWindowChanges wc;
 	XConfigureEvent ce;
 
-	view(&((Arg){.ui = ~0}));
-
 	getgaps(m, &oh, &ov, &ih, &iv, &n);
 	for (n = 0, c = m->clients; c; c = c->next, n++);
 	if (n == 0)
@@ -532,6 +530,8 @@ exposelayout(const Arg *arg)
 		ce.override_redirect = False;
 		XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
 
+		c->isexposed = 1;
+
 		rn++;
 		if (rn >= rows) {
 			rn = 0;
@@ -539,7 +539,6 @@ exposelayout(const Arg *arg)
 			cn++;
 		}
 	}
-	isexposed = 1;
 }
 
 /*
