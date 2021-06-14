@@ -337,10 +337,6 @@ printhelp()
 	printf("\tIf no timeout is passed there is no check whether the window got focused.\n");
 	printf("\tclienttags also takes an X window id first argument.\n");
 	printf("\timportant, setlayout, status and wmname take strings.\n\n");
-
-	printf("Commands without arguments can take the same arguments as activate.\n");
-	printf("In this case activate is called first for the according window.\n");
-	printf("If activate fails or times out the action gets aborted. The default timeout is %dms.\n\n", DEFTIMEOUT);
 }
 
 void
@@ -486,12 +482,6 @@ main(int argc, char *argv[])
 	/* check commands without argument */
 	for (i = 0; ncommands[i]; i++)
 		if (strcmp(argv[1], ncommands[i]) == 0) {
-			if (argc > 2) {
-				wid = towid(argv[2]);
-				timeout = argc > 3 ? strtol(argv[3], (char **)NULL, 0) : DEFTIMEOUT;
-				if (!activate(wid, timeout))
-					die(5, "Unable to activate window");
-			}
 			signal(argv[1], NULL, NULL);
 			bye();
 		}
