@@ -951,11 +951,9 @@ clientmessage(XEvent *e)
 		killclient(NULL);
 	} else if (cme->message_type == netatom[NetWMDesktop]) {
 		desktop = cme->data.l[0];
-		if (desktop & TAGMASK) {
-			c->tags &= (1 << desktop) & TAGMASK;
-			focus(NULL);
-			arrange(c->mon);
-		}
+		c->tags |= (1 << desktop) & TAGMASK;
+		focus(NULL);
+		arrange(c->mon);
 		updateclienttags(c);
 	} else if (cme->message_type == netatom[NetWMMoveResize]) {
 		resizemouse(&((Arg) { .v = c }));
