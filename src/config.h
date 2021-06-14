@@ -40,7 +40,6 @@ static const int placemousemode     = 1;
 	 *    1 - tiled postiion is relative to window center
 	 *    2 - mouse pointer warps to window center
 	 */
-static int togglelayout             = 0;
 static const char *fonts[]          = { "FiraCode Nerd Font:size=10", "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char menulabel[]            = "::::::";
@@ -204,13 +203,13 @@ static Key keys[] = {
     { MODKEY,               XK_space,   focusfloating,   {0} },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     /* LAYOUTS */
-    { MODKEY,               XK_t,       setlayout,       {.v = &layouts[TILEPOS]} },
-    { MODKEY,               XK_c,       setlayout,       {.v = &layouts[DECKPOS]} },
-    { MODKEY,               XK_m,       setlayout,       {.v = &layouts[MONOCLEPOS]} },
-    { MODKEY|ShiftMask,     XK_f,       setlayout,       {.v = &layouts[FLOATPOS]} },
-    { MODKEY|ShiftMask,     XK_t,       setlayout,       {.v = &layouts[TILELEFTPOS]} },
-    { MODKEY|ControlMask,   XK_t,       setlayout,       {.v = &layouts[BSTACKPOS]} },
-    { MODKEY,               XK_g,       setlayout,       {.v = &layouts[GRIDPOS]} },
+    { MODKEY,               XK_t,       togglelayout,    {.v = &layouts[TILEPOS]} },
+    { MODKEY,               XK_c,       togglelayout,    {.v = &layouts[DECKPOS]} },
+    { MODKEY,               XK_m,       togglelayout,    {.v = &layouts[MONOCLEPOS]} },
+    { MODKEY|ShiftMask,     XK_f,       togglelayout,    {.v = &layouts[FLOATPOS]} },
+    { MODKEY|ShiftMask,     XK_t,       togglelayout,    {.v = &layouts[TILELEFTPOS]} },
+    { MODKEY|ControlMask,   XK_t,       togglelayout,    {.v = &layouts[BSTACKPOS]} },
+    { MODKEY,               XK_g,       togglelayout,    {.v = &layouts[GRIDPOS]} },
     { MODKEY|ShiftMask,     XK_space,   togglefloating,  {0} },
     { MODKEY,               XK_f,       togglefullscr,   {0} },
     { MODKEY,               XK_z,       center,          {0} },
@@ -282,8 +281,8 @@ static Button buttons[] = {
     { ClkTagBar,            0,              Button9,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
     { ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
-    { ClkLtSymbol,          0,              Button1,        setlayout,      {.v = &layouts[0]} },
-    { ClkLtSymbol,          0,              Button2,        setlayout,      {.v = &layouts[3]} },
+    { ClkLtSymbol,          0,              Button1,        togglelayout,   {.v = &layouts[0]} },
+    { ClkLtSymbol,          0,              Button2,        togglelayout,   {.v = &layouts[3]} },
     { ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
@@ -304,7 +303,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizeorxfact,  {0} },
     { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-menu context") },
-    { ClkRootWin,           0,              Button2,        setlayout,      {.v = &layouts[3]} },
+    { ClkRootWin,           0,              Button2,        togglelayout,   {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },

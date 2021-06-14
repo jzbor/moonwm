@@ -287,6 +287,7 @@ static void incwidth(const Arg *arg);
 static int isdescprocess(pid_t p, pid_t c);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
+static void layout(const Arg *arg, int togglelayout);
 static void layoutmenu(const Arg *arg);
 static void loadclientprops(Client *c);
 static void loadenv(char *name, long *var, int norm);
@@ -367,6 +368,7 @@ static Client *termforwin(const Client *c);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscr(const Arg *arg);
+static void togglelayout(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -1436,7 +1438,6 @@ envsettings() {
 	loadenvi("MOONWM_SMARTGAPS",	&smartgaps,			1);
 	loadenvi("MOONWM_SWALLOW",		&swallowdefault,	1);
 	loadenvi("MOONWM_SYSTRAY",		&showsystray,		1);
-	loadenvi("MOONWM_TOGGLELAYOUT",	&togglelayout,		1);
 	loadenvi("MOONWM_TOPBAR",		&topbar,			1);
 	loadenvi("MOONWM_WORKSPACES",	&workspaces,		1);
 	loadenvui("MOONWM_BORDERWIDTH",	&borderpx,		0);
@@ -1927,6 +1928,24 @@ killclient(const Arg *arg)
 		XSetErrorHandler(xerror);
 		XUngrabServer(dpy);
 	}
+}
+
+void
+layout(const Arg *arg, int togglelayout)
+{
+	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt]
+			|| (togglelayout && arg->v == selmon->lt[selmon->sellt])) {
+		selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;
+		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
+	}
+	if (arg && arg->v && arg->v && (!togglelayout || arg->v != selmon->lt[selmon->sellt^1]))
+		selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
+	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
+	if (selmon->sel)
+		arrange(selmon);
+	else
+		drawbar(selmon);
 }
 
 void
@@ -3226,19 +3245,7 @@ setfullscreen(Client *c, int fullscreen)
 void
 setlayout(const Arg *arg)
 {
-	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt]
-			|| (togglelayout && arg->v == selmon->lt[selmon->sellt])) {
-		selmon->pertag->sellts[selmon->pertag->curtag] ^= 1;
-		selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
-	}
-	if (arg && arg->v && arg->v && (!togglelayout || arg->v != selmon->lt[selmon->sellt^1]))
-		selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
-	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
-	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
-	if (selmon->sel)
-		arrange(selmon);
-	else
-		drawbar(selmon);
+	layout(arg, 0);
 }
 
 void
@@ -3643,6 +3650,12 @@ togglefullscr(const Arg *arg)
 {
   if(selmon->sel)
 	setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
+}
+
+void
+togglelayout(const Arg *arg)
+{
+	layout(arg, 1);
 }
 
 void

@@ -79,6 +79,7 @@ static const char *lcommands[] = {
 	"printlayouts",
 	"setlayout",
 	"status",
+	"togglelayout",
 	"wmname",
 	NULL,
 };
@@ -367,6 +368,7 @@ setlayout(char *arg)
 				|| strcmp(arg, layouts[i].id) == 0) {
 			sprintf(buf, "%d", i);
 			signal("setlayout", "i", buf);
+			return;
 		}
 	signal("setlayout", "i", arg);
 }

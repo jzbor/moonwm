@@ -10,6 +10,15 @@ setlayoutex(const Arg *arg) {
 }
 
 void
+togglelayoutex(const Arg *arg) {
+	for(int i = 0; layouts[i].symbol && i <= arg->i; i++)
+		if (i == arg->i) {
+			togglelayout(&((Arg) { .v = &layouts[arg->i] }));
+			break;
+		}
+}
+
+void
 viewex(const Arg *arg) {
 	view(&((Arg) { .ui = 1 << arg->ui }));
 }
@@ -72,6 +81,7 @@ static Signal signals[] = {
 	{ "togglefloating", togglefloating },
 	{ "togglefullscr",  togglefullscr },
 	{ "togglegaps",     togglegaps },
+	{ "togglelayout",   togglelayoutex },
 	{ "toggletag",      toggletag },
 	{ "toggleview",     toggleview },
 	{ "view",           view },
