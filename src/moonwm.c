@@ -248,6 +248,7 @@ static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
 static void clientmessage(XEvent *e);
+static int compareclients(const void *a, const void *b);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
@@ -966,6 +967,21 @@ clientmessage(XEvent *e)
 	}
 }
 
+int
+compareclients(const void *a, const void *b)
+{
+	const Client *ca, *cb;
+	ca = *(const Client**) a;
+	cb = *(const Client**) b;
+
+	if (ca->tags < cb->tags)
+		return -1;
+	else if (ca->tags > cb->tags)
+		return 1;
+	else
+		return 0;
+}
+
 void
 configure(Client *c)
 {
@@ -1511,7 +1527,13 @@ exposeview(const Arg *arg)
 	y = m->wy + oh;
     bw = n == 1 ? 0 : borderpx;
 
-	for (i = 0, c = m->clients; c; i++, c = c->next) {
+	Client *clients[n];
+	for (i = 0, c = m->clients; c && i < n; i++, c = c->next)
+		clients[i] = c;
+	qsort(clients, n, sizeof(Client *), compareclients);
+
+	/* UNSORTED: for (i = 0, c = m->clients; c; i++, c = c->next) { */
+	for (i = 0, c = clients[0]; i < n; i++, c = clients[i]) {
 		if (i/rows + 1 > cols - n%cols) {
 			rows = n/cols + 1;
 			ch = (m->wh - 2*oh - ih * (rows - 1)) / rows;

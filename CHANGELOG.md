@@ -14,7 +14,8 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
-* Replacing moonie with moonctl
+* Replacing moonie with moonctl (also replaces some dependencies)
+* Adding an `expose` feature to replace `skippy-xd`
 * Implementing cfacts
 * Drag mfact/cfacts with mouse
 * Additional Xorg atoms: `_MWM_CURRENT_TAGS`, `_MWM_CLIENT_TAGS` and `_MWM_CLIENT_MONITOR`
