@@ -4,7 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [Upcoming](#upcoming)
+- [7.1.0](#710)
 - [7.0.4](#704)
 - [7.0.3](#703)
 - [7.0.2](#702)
@@ -13,7 +13,7 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming
+## 7.1.0
 * Replacing moonie with moonctl (also replaces some dependencies)
 * Adding an `expose` feature to replace `skippy-xd`
 * Implementing cfacts
