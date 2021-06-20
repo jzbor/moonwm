@@ -278,6 +278,8 @@ xwallpaper      # set wallpaper
 ```
 You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 
+The `Fira Code Nerd Font` is available [here](https://github.com/ryanoasis/nerd-fonts/blob/v2.1.0/patched-fonts/FiraCode/Regular/complete/Fira%20Code%20Regular%20Nerd%20Font%20Complete.ttf)
+
 ### Patches implemented
 * actualfullscreen
 * alpha (fixborders)
