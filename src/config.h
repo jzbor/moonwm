@@ -200,7 +200,7 @@ static Key keys[] = {
     /* { MODKEY|ShiftMask,     XK_r,       resetfacts,      { .i = 1 } }, */
     { MODKEY|ShiftMask,     XK_r,       resetfacts,      {0} },
     /* { MODKEY,               XK_space,   spawn,           SHCMD("pidof skippy-xd || skippy-xd > /dev/null 2>&1") }, */
-    { MODKEY,               XK_space,   focusfloating,   {0} },
+    { MODKEY,               XK_space,   focusstack,      {.i = INC(+1) } },
     { MODKEY|ShiftMask,     XK_q,       killclient,      {0} },
     /* LAYOUTS */
     { MODKEY,               XK_t,       togglelayout,    {.v = &layouts[TILEPOS]} },

@@ -33,7 +33,7 @@ options="\
   # On floating and tiling:
      Resize window by drawing it                    MOD + r                            :moonctl rioresize
      Reset all tiled sizing hints                   MOD + Shift + r
-     Toggle focus between floating and tiling       MOD + space
+     Focus next client                              MOD + space                        :moonctl focusnext 2001
      Close window                                   MOD + Shift + q                    :moonctl killclient
 
 ### LAYOUTS ###
