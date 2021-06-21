@@ -216,7 +216,9 @@ static Key keys[] = {
     /* APPS */
     { MODKEY,               XK_Return,  spawn,           {.v = termcmd } },
     { MODKEY,               XK_w,       spawn,           SHCMD("$BROWSER") },
+    { 0,			XF86XK_HomePage,	spawn,           SHCMD("$BROWSER") },
     { MODKEY,               XK_b,       spawn,           SHCMD("$FILEMANAGER") },
+    { 0,			XF86XK_MyComputer,	spawn,           SHCMD("$FILEMANAGER") },
     /* MENUS AND NOTIFICATIONS */
     { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
     { ControlMask|Mod1Mask, XK_Delete,  spawn,           SHCMD("moonwm-menu 3") },
