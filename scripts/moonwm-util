@@ -409,7 +409,7 @@ monitors () {
             echo external > "$TEMPORARYDIR/monitormode"
             ;;
         extend)
-            if  [ -n "$external" ] && grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
+            if  [ -z "$external" ] || grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
                 for display in $internal; do
                     if [ -z "$last" ]; then
                         echo "Setting up first display: $display"
@@ -443,7 +443,7 @@ monitors () {
             echo extend > "$TEMPORARYDIR/monitormode"
             ;;
         mirror)
-            if  [ -n "$external" ] && grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
+            if  [ -z "$external" ] || grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
                 for display in $internal; do
                     if [ -z "$last" ]; then
                         echo "Setting up first display: $display"
