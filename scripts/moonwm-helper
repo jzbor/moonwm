@@ -67,9 +67,8 @@ options="\
      Toggle gaps between windows                    MOD + F2                           :moonctl togglegaps
      Load keyboard settings                         MOD + F3                           :moonwm-util setup-keyboard
      Reload styling from xrdb                       MOD + F5                           :moonwm-util xrdb
-     Setup and save monitor setups                  MOD + F10                          :arandr
-     Load custom monitor setup (arandr)             MOD + Shift + F10                  :moonwm-util screenlayouts
-     Setup monitors automatically                   MOD + Control + F10                :moonwm-util screensetup
+     Load custom monitor setup (arandr)             MOD + Control + M                  :moonwm-util screenlayouts
+     Setup monitors automatically                   MOD + Shift + M                    :moonwm-util monitors cycle
      This menu                                      MOD + F11                          :moonwm-helper
 "
 

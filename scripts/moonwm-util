@@ -9,6 +9,7 @@ MODMAP_FILE="$CONFIG_DIR/modmap"
 WALLPAPER_FILE="$CONFIG_DIR/background"
 WALLPAPER="${MOONWM_WALLPAPER:-$WALLPAPER_FILE}"
 QUICK_NOTIFICATION_TIMEOUT="1500"
+INTERNAL_DISPLAY_PATTERN='LVDS_*[0-9]'
 
 autostart () {
     # Configure X
@@ -53,7 +54,7 @@ autostart_async () {
         ~/.screenlayout/autoload.sh
         load_wallpaper
     else
-        setup_displays
+        monitors extend quiet
     fi
 
 
@@ -350,25 +351,154 @@ set_wallpaper () {
     fi
 }
 
-setup_displays () {
+monitors () {
     connected="$(xrandr | grep " connected " | cut -d " " -f 1)"
     disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
+    internal="$(echo "$connected" | grep "$INTERNAL_DISPLAY_PATTERN")"
+    external="$(echo "$connected" | grep -v "$INTERNAL_DISPLAY_PATTERN")"
+    last=""
 
-    for display in $connected; do
-        if [ "$display" = "$MOONWM_INTERNAL_SCREEN" ] \
-                && grep closed /proc/acpi/button/lid/LID/state > /dev/null ; then
-            echo "Disabling $display (closed lid)"
-            xrandr --output "$display" --off
-        elif [ -z "$last" ]; then
-            echo "Setting up first display: $display"
-            xrandr --output "$display" --auto --primary
-            last="$display"
-        else
-            echo "Setting up $display next to $display"
-            xrandr --output "$display" --auto --right-of "$last"
-            last="$display"
-        fi
-    done
+
+    case $1 in
+        internal)
+            if [ -n "$internal" ]; then
+                for display in $internal; do
+                    if [ -z "$last" ]; then
+                        echo "Setting up first display: $display"
+                        xrandr --output "$display" --auto --primary
+                        last="$display"
+                    else
+                        echo "Setting up $display next to $last"
+                        xrandr --output "$display" --auto --right-of "$last"
+                        last="$display"
+                    fi
+                done
+                for display in $external; do
+                    echo "Disabling $display"
+                    xrandr --output "$display" --off
+                done
+            else
+                echo "No internal display connected"
+            fi
+            [ "$2" = 'quiet' ] \
+                || notify-send -a "MoonWM Monitor Setup" "Enabling only internal displays (if on a laptop)."
+            echo internal > "$TEMPORARYDIR/monitormode"
+            ;;
+        external)
+            if [ -n "$external" ]; then
+                for display in $external; do
+                    if [ -z "$last" ]; then
+                        echo "Setting up first display: $display"
+                        xrandr --output "$display" --auto --primary
+                        last="$display"
+                    else
+                        echo "Setting up $display next to $last"
+                        xrandr --output "$display" --auto --right-of "$last"
+                        last="$display"
+                    fi
+                done
+                for display in $internal; do
+                    echo "Disabling $display"
+                    xrandr --output "$display" --off
+                done
+            else
+                echo "No external display connected"
+            fi
+            [ "$2" = 'quiet' ] \
+                || notify-send -a "MoonWM Monitor Setup" "Enabling only external monitors (if connected)."
+            echo external > "$TEMPORARYDIR/monitormode"
+            ;;
+        extend)
+            if  [ -n "$external" ] && grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
+                for display in $internal; do
+                    if [ -z "$last" ]; then
+                        echo "Setting up first display: $display"
+                        xrandr --output "$display" --auto --primary
+                        last="$display"
+                    else
+                        echo "Setting up $display next to $last"
+                        xrandr --output "$display" --auto --right-of "$last"
+                        last="$display"
+                    fi
+                done
+            else
+                for display in $internal; do
+                    xrandr --output "$display" --off
+                    echo "Disabling internal display: $display (lid closed)"
+                done
+            fi
+            for display in $external; do
+                if [ -z "$last" ]; then
+                    echo "Setting up first display: $display"
+                    xrandr --output "$display" --auto --primary
+                    last="$display"
+                else
+                    echo "Setting up $display next to $last"
+                    xrandr --output "$display" --auto --right-of "$last"
+                    last="$display"
+                fi
+            done
+            [ "$2" = 'quiet' ] \
+                || notify-send -a "MoonWM Monitor Setup" "Arranging monitors from left to right."
+            echo extend > "$TEMPORARYDIR/monitormode"
+            ;;
+        mirror)
+            if  [ -n "$external" ] && grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
+                for display in $internal; do
+                    if [ -z "$last" ]; then
+                        echo "Setting up first display: $display"
+                        xrandr --output "$display" --auto --primary
+                        res="$(xrandr | grep "^$display " | cut -d' ' -f4 |cut -d'+' -f1)"
+                        last="$display"
+                    else
+                        echo "Setting up $display mirroring $last"
+                        xrandr --output "$display" --mode "$res" --same-as "$last" \
+                            || xrandr --output "$display" --same-as "$last"
+                        last="$display"
+                    fi
+                done
+            else
+                for display in $internal; do
+                    xrandr --output "$display" --off
+                    echo "Disabling internal display: $display (lid closed)"
+                done
+            fi
+            for display in $external; do
+                if [ -z "$last" ]; then
+                    echo "Setting up first display: $display"
+                    xrandr --output "$display" --auto --primary
+                    last="$display"
+                else
+                    echo "Setting up $display mirroring $last"
+                    xrandr --output "$display" --mode "$res" --same-as "$last" \
+                        || xrandr --output "$display" --same-as "$last"
+                    last="$display"
+                fi
+            done
+            [ "$2" = 'quiet' ] \
+                || notify-send -a "MoonWM Monitor Setup" "Setting monitors to mirror mode."
+            echo mirror > "$TEMPORARYDIR/monitormode"
+            ;;
+        toggle | cycle)
+            if [ -f "$TEMPORARYDIR/monitormode" ]; then
+                currentmode="$(cat "$TEMPORARYDIR/monitormode")"
+                case $currentmode in
+                    internal) monitors external;;
+                    external) monitors extend;;
+                    extend) monitors mirror;;
+                    mirror) monitors internal;;
+                    *) monitors internal;;
+                esac
+            else
+                echo "Unable to access monitor state file ($TEMPORARYDIR/monitormode) - falling back to 'extend'" > /dev/stderr
+                monitors extend
+            fi
+            return
+            ;;
+        *)
+            echo "Unknown monitor mode: $1"
+            ;;
+    esac
 
     # Preventing initialization of VIRTUAL1 on undock
     for display in $disconnected; do
@@ -376,7 +506,6 @@ setup_displays () {
     done
 
     load_wallpaper
-    setup_keyboard
 }
 
 setup_keyboard () {
@@ -473,9 +602,10 @@ commands:
     help           Prints this help text
     launch         Wrapper to launch MoonWM properly (used in moonwm.desktop, can be used in .xinitrc)
     lock           Locks the screen
+    monitors       Setup monitors (modes: 'internal', 'external', 'extend', 'mirror')
     run            Launcher with all exectutables in \$PATH
     screenlayouts  Select monitor configuration via dmenu
-    screensetup    Set up monitors with default procedure
+    screensetup    Calls 'monitors extend' (deprecated)
     screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
     setwallpaper   Set the wallpaper
     setup-keyboard Initialize keyboard layout
@@ -509,12 +639,13 @@ case $1 in
     launch) launch;;
     launch-valgrind) launch_valgrind;;
     lock) lock;;
+    monitors) monitors "$2" ;;
     run) shift; default_dmenu_run "$@";;
     screenlayouts) layouts;;
-    screensetup) setup_displays;;
+    screensetup) monitors extend;;
     screenshot) screenshot "$2";;
-    setwallpaper) set_wallpaper "$2" ;;
     setup-keyboard) setup_keyboard;;
+    setwallpaper) set_wallpaper "$2" ;;
     start) autostart;;
     volume) volume "$2";;
     xrdb) xrdb_refresh ;;

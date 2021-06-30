@@ -240,14 +240,14 @@ static Key keys[] = {
     /* OTHER */
     { MODKEY,               XK_x,       spawn,           SHCMD("moonwm-util lock") },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
+    { 0,			XF86XK_Display,		spawn,           SHCMD("moonwm-util monitors cycle") },
+    { MODKEY|ShiftMask,     XK_m,		spawn,           SHCMD("moonwm-util monitors cycle") },
+    { MODKEY|ControlMask,   XK_m,		spawn,           SHCMD("moonwm-util screenlayouts") },
     /* FUNCTION KEYS */
     { MODKEY,               XK_F1,      togglebar,       {0} },
     { MODKEY,               XK_F2,      togglegaps,      {0} },
     { MODKEY,               XK_F3,      spawn,           SHCMD("moonwm-util setup-keyboard") },
     { MODKEY,               XK_F5,      spawn,           SHCMD("moonwm-util xrdb") },
-    { MODKEY,               XK_F10,     spawn,           SHCMD("arandr") },
-    { MODKEY|ShiftMask,     XK_F10,     spawn,           SHCMD("moonwm-util screenlayouts") },
-    { MODKEY|ControlMask,   XK_F10,     spawn,           SHCMD("moonwm-util screensetup") },
     { MODKEY,               XK_F11,     spawn,           SHCMD("moonwm-helper") },
 };
 
