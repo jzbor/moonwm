@@ -50,7 +50,10 @@ autostart_async () {
     run touchegg touchegg
 
     # Auto setup displays
-    if [ -x ~/.screenlayout/autoload.sh ]; then
+    if [ -x ~/.screenlayout/default.sh ]; then
+        ~/.screenlayout/default.sh
+        load_wallpaper
+    elif [ -x ~/.screenlayout/autoload.sh ]; then
         ~/.screenlayout/autoload.sh
         load_wallpaper
     else
@@ -357,7 +360,6 @@ monitors () {
     internal="$(echo "$connected" | grep "$INTERNAL_DISPLAY_PATTERN")"
     external="$(echo "$connected" | grep -v "$INTERNAL_DISPLAY_PATTERN")"
     last=""
-
 
     case $1 in
         internal)

@@ -53,13 +53,23 @@ Use **hjkl** or **arrow keys** for `<direction>`:
 You will get a interactive list with shortcuts and their corresponding actions.
 You can also directly select most of the entries to execute their action.**
 
-### Setting up different screen layouts
-To setup your monitors use the graphical tool `arandr` (`MOD+F10`).
-It lets you create and save a layout in `~/.screenlayouts` from where you can load your layouts either with `arandr` or with dmenu/rofi by pressing `Mod+Shift+F10`.
-On startup MoonWM loads the `autoload.sh` setup if it is available.
-If it isn't MoonWM automatically arranges the monitors next to each other with their native resolutions.
-This is done by `moonwm-util` and can be called with `moonwm-util screensetup`.
+### Setting up multiple monitors
+Keep in mind that MoonWM is not able to automatically add newly connected monitors.
+There are two ways to setup your monitors:
 
+1. Manual:
+    * Use `arandr` to configure your screens and save them.
+    * They will be saved in `~/.screenlayouts`
+    * Any layout called `default.sh` will be automatically loaded on startup.
+    * You can use the layout menu `Mod+Control+m` to select a layout.
+2. Automatically:
+    * There are four different modes: `internal`, `external`, `extend` and `mirror`
+    * On startup `external` will be used if `default.sh` is not defined.
+    * You can use `Mod+Shift+m` to cycle through the four different modes.
+    * You can also use `moonwm-util monitors {internal,external,extend,mirror}` to set a mode.
+
+**NOTE**: `moonwm-util screensetup` and the usage of `~/.screenlayouts/autoload.sh` are both deprecated.
+Use `moonwm-util monitors` and `~/.screenlayouts/default.sh` instead.
 
 ## Customizing
 Most of MoonWMs defaults are overwriteable through environment variables, xrdb or similar methods.
