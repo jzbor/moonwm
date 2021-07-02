@@ -285,75 +285,6 @@ lock () {
     fi
 }
 
-run () {
-    # 1: executable to test for
-    # 2: command to execute
-    # 3: '1' to run synchronously
-    if ( [ -z "$1" ] || command -v "$1" > /dev/null 2>&1 ); then
-        if [ "$3" = 1 ]; then
-            echo "$2" | sh
-        else
-            echo "$2" | sh &
-        fi
-    fi
-}
-
-screenshot () {
-    dest="$XDG_PICTURES_DIR"
-    [ -d "$dest" ] || dest="$HOME/Pictures"
-    [ -d "$dest" ] || dest="$HOME/"
-    dest="$dest/Screenshots/"
-    [ -d "$dest" ] || mkdir -p "$dest"
-
-    filename="$(date +'Screenshot_%Y-%m-%d_%H-%M-%S.png')"
-    success="-1"
-
-    case $1 in
-        "")
-            scrot -s -f "$filename" -e "mv -f \$f $dest"
-            success="$?"
-            ;;
-        screen)
-            scrot "$filename" -e "mv -f \$f $dest"
-            success="$?"
-            ;;
-        focused)
-            scrot -u "$filename" -e "mv -f \$f $dest"
-            success="$?"
-            ;;
-    esac
-
-    if [ "$success" = 0 ]; then
-        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga > /dev/null 2>&1 &
-        if command -v dunstify > /dev/null 2>&1; then
-            dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename" \
-                --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
-        else
-            notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename"
-        fi
-    fi
-}
-
-set_wallpaper () {
-    if [ -z "$1" ]; then
-        echo "No file specified." > /dev/stderr
-        return 1
-    elif ! [ -f "$1" ]; then
-        echo "$1 is not a file." > /dev/stderr
-        return 1
-    elif env_is_set MOONWM_WALLPAPER; then
-        echo "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
-        notify-send -a "MoonWM - Wallpaper" "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
-        return 1
-    else
-        [ -d "$CONFIG_DIR" ] || mkdir -vp "$CONFIG_DIR"
-        cp -f "$1" "$WALLPAPER_FILE"
-        load_wallpaper
-        echo "Successfully set new wallpaper."
-        notify-send -a "MoonWM - Wallpaper" -i "$(realpath "$WALLPAPER_FILE")" "Successfully set new wallpaper."
-    fi
-}
-
 monitors () {
     connected="$(xrandr | grep " connected " | cut -d " " -f 1)"
     disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
@@ -508,6 +439,75 @@ monitors () {
     done
 
     load_wallpaper
+}
+
+run () {
+    # 1: executable to test for
+    # 2: command to execute
+    # 3: '1' to run synchronously
+    if ( [ -z "$1" ] || command -v "$1" > /dev/null 2>&1 ); then
+        if [ "$3" = 1 ]; then
+            echo "$2" | sh
+        else
+            echo "$2" | sh &
+        fi
+    fi
+}
+
+screenshot () {
+    dest="$XDG_PICTURES_DIR"
+    [ -d "$dest" ] || dest="$HOME/Pictures"
+    [ -d "$dest" ] || dest="$HOME/"
+    dest="$dest/Screenshots/"
+    [ -d "$dest" ] || mkdir -p "$dest"
+
+    filename="$(date +'Screenshot_%Y-%m-%d_%H-%M-%S.png')"
+    success="-1"
+
+    case $1 in
+        "")
+            scrot -s -f "$filename" -e "mv -f \$f $dest"
+            success="$?"
+            ;;
+        screen)
+            scrot "$filename" -e "mv -f \$f $dest"
+            success="$?"
+            ;;
+        focused)
+            scrot -u "$filename" -e "mv -f \$f $dest"
+            success="$?"
+            ;;
+    esac
+
+    if [ "$success" = 0 ]; then
+        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga > /dev/null 2>&1 &
+        if command -v dunstify > /dev/null 2>&1; then
+            dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename" \
+                --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
+        else
+            notify-send -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename"
+        fi
+    fi
+}
+
+set_wallpaper () {
+    if [ -z "$1" ]; then
+        echo "No file specified." > /dev/stderr
+        return 1
+    elif ! [ -f "$1" ]; then
+        echo "$1 is not a file." > /dev/stderr
+        return 1
+    elif env_is_set MOONWM_WALLPAPER; then
+        echo "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
+        notify-send -a "MoonWM - Wallpaper" "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
+        return 1
+    else
+        [ -d "$CONFIG_DIR" ] || mkdir -vp "$CONFIG_DIR"
+        cp -f "$1" "$WALLPAPER_FILE"
+        load_wallpaper
+        echo "Successfully set new wallpaper."
+        notify-send -a "MoonWM - Wallpaper" -i "$(realpath "$WALLPAPER_FILE")" "Successfully set new wallpaper."
+    fi
 }
 
 setup_keyboard () {
