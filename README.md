@@ -138,6 +138,7 @@ MOONWM_THEMEDXMENU=1    # automatic xmenu theming
 
 You can also customize these settings (these are the defaults), which all take unsigned integer arguments:
 ```sh
+MOONWM_LAYOUT=0         # initial default layout
 MOONWM_BORDERWIDTH=5    # width of the window borders
 MOONWM_FRAMERATE=60     # frame rate when dragging windows; should be >= monitor refresh rate
 MOONWM_GAPS=5           # gaps; 0 to disable gaps

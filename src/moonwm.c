@@ -394,7 +394,7 @@ static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static void view(const Arg *arg);
-static void warp(const Client *c);
+static void warp(const Client *c, int edge);
 static pid_t winpid(Window w);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -1112,9 +1112,9 @@ createmon(void)
 	m->gappiv = gappiv;
 	m->gappoh = gappoh;
 	m->gappov = gappov;
-	m->lt[0] = &layouts[0];
+	m->lt[0] = &layouts[defaultlayout];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
-	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+	strncpy(m->ltsymbol, m->lt[0]->symbol, sizeof m->ltsymbol);
 	if (!(m->pertag = (Pertag *)calloc(1, sizeof(Pertag))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
@@ -1466,6 +1466,7 @@ envsettings() {
 	loadenvui("MOONWM_GAPS",		&gappiv,		0);
 	loadenvui("MOONWM_GAPS",		&gappoh,		0);
 	loadenvui("MOONWM_GAPS",		&gappov,		0);
+	loadenvui("MOONWM_LAYOUT",		&defaultlayout, 0);
 
 	/* sanity checks */
 	if (!framerate)
@@ -1678,7 +1679,7 @@ focusfloating(const Arg *arg)
 	for (c = selmon->clients; c && (c->isfloating == selmon->sel->isfloating); c = c->next) ;
 	if (c && (c->isfloating != selmon->sel->isfloating)) {
 		focus(c);
-		warp(c);
+		warp(c, 0);
 	}
 }
 
@@ -1704,7 +1705,7 @@ focusmon(const Arg *arg)
 	unfocus(selmon->sel, 0);
 	selmon = m;
 	focus(NULL);
-	warp(selmon->sel);
+	warp(selmon->sel, 0);
 }
 
 void
@@ -2890,6 +2891,14 @@ resizemouse(const Arg *arg)
 		selmon = m;
 		focus(NULL);
 	}
+
+	if (arg->i) {
+		int cx = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
+		int cy = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
+
+		resize(c, cx, cy, c->w, c->h, borderpx, 0);
+		warp(c, 1);
+	}
 }
 
 static
@@ -2971,7 +2980,7 @@ restack(Monitor *m)
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 	if (m == selmon && (m->tagset[m->seltags] & m->sel->tags) && selmon->lt[selmon->sellt] != &layouts[2]) {
 		if (!ignorewarp)
-			warp(m->sel);
+			warp(m->sel, 0);
 		ignorewarp = 0;
 	}
 }
@@ -4485,7 +4494,7 @@ swallowingclient(Window w)
 }
 
 void
-warp(const Client *c)
+warp(const Client *c, int edge)
 {
 	int x, y;
 
@@ -4503,7 +4512,10 @@ warp(const Client *c)
 		(c->mon->topbar && !y))
 		return;
 
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w / 2, c->h / 2);
+	if (edge)
+		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w, c->h);
+	else
+		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w / 2, c->h / 2);
 }
 
 Client *

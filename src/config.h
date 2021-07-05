@@ -16,6 +16,7 @@ static unsigned int gappiv          = 5;        /* vert inner gap between window
 static unsigned int gappoh          = 5;        /* horiz outer gap between windows and screen edge */
 static unsigned int gappov          = 5;        /* vert outer gap between windows and screen edge */
 static int smartgaps                = 1;        /* 1 means no outer gap when there is only one window */
+static unsigned int defaultlayout	= 0;        /* index of the default layout */
 static const unsigned int systraypinning = 1;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
@@ -304,6 +305,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
     { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizeorxfact,  {0} },
+    { ClkClientWin,         MODKEY|ControlMask, Button3,    resizeorxfact,	{.i = 1} },
     { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-menu context") },
     { ClkRootWin,           0,              Button2,        togglelayout,   {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
