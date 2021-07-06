@@ -3547,10 +3547,23 @@ setup(void)
 
 void
 setviewport(void){
-	long data[] = { 0, 0 };
-	XChangeProperty(dpy, root, netatom[NetDesktopViewport], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 2);
-}
+	int nmons = 0;
+	for (Monitor *m = mons; m; m = m->next) {
+		nmons++;
+	}
 
+	long data[nmons * 2];
+
+	Monitor *m = mons;
+	for (int i = 0; i < nmons; i++) {
+		data[i*2] = (long)m->mx;
+		data[i*2+1] = (long)m->my;
+		m = m->next;
+	}
+
+	XChangeProperty(dpy, root, netatom[NetDesktopViewport], XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *)data, nmons * 2);
+}
 
 void
 seturgent(Client *c, int urg)
