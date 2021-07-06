@@ -640,7 +640,7 @@ arrangemon(Monitor *m)
 	else
 		/* <>< case; rather than providing an arrange function and upsetting other logic that tests for its presence, simply add borders here */
 		for (c = selmon->clients; c; c = c->next)
-			if (ISVISIBLE(c) && c->bw == 0)
+			if (ISVISIBLE(c) && !c->isfullscreen && c->bw == 0)
 				resize(c, c->x, c->y, c->w - 2*borderpx, c->h - 2*borderpx, borderpx, 0);
 }
 
@@ -2380,10 +2380,13 @@ movemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m, 0);
+		sendmon(c, m, arg->i ? 1 : 0);
 		selmon = m;
 		focus(NULL);
 	}
+
+	if (arg->i)
+		activate(c);
 }
 
 void
