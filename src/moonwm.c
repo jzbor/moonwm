@@ -244,6 +244,7 @@ static void attachstack(Client *c);
 static int fake_signal(void);
 static void buttonpress(XEvent *e);
 static void center(const Arg *arg);
+static void centerclient(Client *c);
 static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
@@ -790,15 +791,19 @@ center(const Arg *arg)
 	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
 		return;
 
-	int cx = selmon->mx + (selmon->mw - WIDTH(selmon->sel)) / 2;
-	int cy = selmon->my + (selmon->mh - HEIGHT(selmon->sel)) / 2;
-
-	resize(selmon->sel, cx, cy,
-		   selmon->sel->w,
-		   selmon->sel->h,
-		   borderpx, 0);
+	centerclient(selmon->sel);
 
 	/* arrange(selmon); */
+}
+
+void
+centerclient(Client *c)
+{
+	int barmod = (c->mon->topbar ? 1 : -1) * (c->mon->showbar && center_relbar ? bh : 0);
+	int cx = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
+	int cy = c->mon->my + barmod + (c->mon->mh - barmod - HEIGHT(c)) / 2;
+
+	resize(c, cx, cy, c->w, c->h, borderpx, 0);
 }
 
 void
@@ -2225,9 +2230,8 @@ manage(Window w, XWindowAttributes *wa)
 	c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
 	c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
 	c->x = MAX(c->x, c->mon->mx);
-	/* only fix client y-offset, if the client center might cover the bar */
-	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
-		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
+	c->y = MAX(c->y, c->mon->my);
+	centerclient(c);
 	c->bw = borderpx;
 
 	wc.border_width = c->bw;
@@ -2893,10 +2897,7 @@ resizemouse(const Arg *arg)
 	}
 
 	if (arg->i) {
-		int cx = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
-		int cy = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
-
-		resize(c, cx, cy, c->w, c->h, borderpx, 0);
+		centerclient(c);
 		warp(c, 1);
 	}
 }
