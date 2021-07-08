@@ -827,8 +827,11 @@ cleanup(void)
 	/* view(&a); */
 	selmon->lt[selmon->sellt] = &foo;
 	for (m = mons; m; m = m->next)
-		while (m->stack)
+		while (m->stack) {
+			XMapWindow(dpy, m->stack->win);
+			setclientstate(m->stack, NormalState);
 			unmanage(m->stack, 0);
+		}
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
@@ -3625,18 +3628,29 @@ shiftviewclients(const Arg *arg)
 void
 showhide(Client *c)
 {
+	static XWindowAttributes ra, ca;
 	if (!c)
 		return;
 	if (ISVISIBLE(c)) {
 		/* show clients top down */
-		XMoveWindow(dpy, c->win, c->x, c->y);
-		if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
-			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
+		XMapWindow(dpy, c->win);
+		setclientstate(c, NormalState);
+		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
 		showhide(c->snext);
 	} else {
 		/* hide clients bottom up */
 		showhide(c->snext);
-		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
+		XGrabServer(dpy);
+		XGetWindowAttributes(dpy, root, &ra);
+		XGetWindowAttributes(dpy, c->win, &ca);
+		// prevent UnmapNotify events
+		XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
+		XSelectInput(dpy, c->win, ca.your_event_mask & ~StructureNotifyMask);
+		XUnmapWindow(dpy, c->win);
+		setclientstate(c, IconicState);
+		XSelectInput(dpy, root, ra.your_event_mask);
+		XSelectInput(dpy, c->win, ca.your_event_mask);
+		XUngrabServer(dpy);
 	}
 }
 
