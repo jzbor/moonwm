@@ -608,6 +608,9 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int *bw, int interact)
 			*w = MIN(*w, c->maxw);
 		if (c->maxh)
 			*h = MIN(*h, c->maxh);
+		/* don't let windows extend beyond their tiled space */
+		*w = MIN(*w, targetw);
+		*h = MIN(*h, targeth);
 		if (resizehints && centeronrh) {
 			*x = (2 * *x + targetw - *w) / 2;
 			*y = (2 * *y + targeth - *h) / 2;
