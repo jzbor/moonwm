@@ -2279,7 +2279,6 @@ manage(Window w, XWindowAttributes *wa)
 		rioposition(c, riodimensions[0], riodimensions[1], riodimensions[2], riodimensions[3]);
 
 	arrange(c->mon);
-	XMapWindow(dpy, c->win);
 	if (term)
 		swallow(term, c);
 	focus(NULL);
