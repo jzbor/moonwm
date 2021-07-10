@@ -1,5 +1,5 @@
 # moonwm version
-VERSION = 7.1.0
+VERSION = 7.1.1
 
 # Customize below to fit your system
 
