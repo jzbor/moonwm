@@ -156,7 +156,9 @@ get_default_dmenucmd () {
 }
 
 get_default_notification_daemon () {
-    if command -v /usr/lib/xfce4/notifyd/xfce4-notifyd > /dev/null; then
+    if command -v /usr/lib/mate-notification-daemon/mate-notification-daemon > /dev/null; then
+        echo /usr/lib/mate-notification-daemon/mate-notification-daemon
+    elif command -v /usr/lib/xfce4/notifyd/xfce4-notifyd > /dev/null; then
         echo /usr/lib/xfce4/notifyd/xfce4-notifyd
     elif command -v dunst > /dev/null 2>&1; then
         echo dunst
