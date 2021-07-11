@@ -4095,6 +4095,8 @@ updategeom(void)
 					c->mon = mons;
 					attachaside(c);
 					attachstack(c);
+					if (ISFLOATING(c))
+						resize(c, mons->wx + (c->x - m->wx), mons->wy + (c->y - m->wy), c->w, c->h, c->bw, 0);
 				}
 				if (m == selmon)
 					selmon = mons;
