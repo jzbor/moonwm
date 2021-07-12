@@ -293,9 +293,7 @@ static void killclient(const Arg *arg);
 static void layout(const Arg *arg, int togglelayout);
 static void layoutmenu(const Arg *arg);
 static void loadclientprops(Client *c);
-static void loadenv(char *name, long *var, int norm);
-static void loadenvi(char *name, int *var, int norm);
-static void loadenvui(char *name, unsigned int *var, int norm);
+static int loadenv(char *name, char **retval, int *retint, unsigned int *retuint);
 static void loadwmprops(void);
 static void loadxrdb(void);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
@@ -1460,24 +1458,24 @@ void
 envsettings() {
 	unsigned int imfact = mfact * 100;
 	setmodkey();
-	loadenvi("MOONWM_CENTERONRH",	&centeronrh,		1);
-	loadenvi("MOONWM_DECORHINTS",	&decorhints,		1);
-	loadenvi("MOONWM_GAPS",			&enablegaps,		1);
-	loadenvi("MOONWM_KEYS",			&managekeys,		1);
-	loadenvi("MOONWM_RESIZEHINTS",	&resizehints,		1);
-	loadenvi("MOONWM_SHOWBAR",		&showbar,			1);
-	loadenvi("MOONWM_SMARTGAPS",	&smartgaps,			1);
-	loadenvi("MOONWM_SWALLOW",		&swallowdefault,	1);
-	loadenvi("MOONWM_SYSTRAY",		&showsystray,		1);
-	loadenvi("MOONWM_TOPBAR",		&topbar,			1);
-	loadenvi("MOONWM_WORKSPACES",	&workspaces,		1);
-	loadenvui("MOONWM_BORDERWIDTH",	&borderpx,		0);
-	loadenvui("MOONWM_FRAMERATE",	&framerate,		0);
-	loadenvui("MOONWM_GAPS",		&gappih,		0);
-	loadenvui("MOONWM_GAPS",		&gappiv,		0);
-	loadenvui("MOONWM_GAPS",		&gappoh,		0);
-	loadenvui("MOONWM_GAPS",		&gappov,		0);
-	loadenvui("MOONWM_LAYOUT",		&defaultlayout, 0);
+	loadenv("MOONWM_CENTERONRH",	NULL,	&centeronrh,		NULL);
+	loadenv("MOONWM_DECORHINTS",	NULL,	&decorhints,		NULL);
+	loadenv("MOONWM_GAPS",			NULL,	&enablegaps,		NULL);
+	loadenv("MOONWM_KEYS",			NULL,	&managekeys,		NULL);
+	loadenv("MOONWM_RESIZEHINTS",	NULL,	&resizehints,		NULL);
+	loadenv("MOONWM_SHOWBAR",		NULL,	&showbar,			NULL);
+	loadenv("MOONWM_SMARTGAPS",		NULL,	&smartgaps,			NULL);
+	loadenv("MOONWM_SWALLOW",		NULL,	&swallowdefault,	NULL);
+	loadenv("MOONWM_SYSTRAY",		NULL,	&showsystray,		NULL);
+	loadenv("MOONWM_TOPBAR",		NULL,	&topbar,			NULL);
+	loadenv("MOONWM_WORKSPACES",	NULL,	&workspaces,		NULL);
+	loadenv("MOONWM_BORDERWIDTH",	NULL,	NULL,	&borderpx);
+	loadenv("MOONWM_FRAMERATE",		NULL,	NULL,	&framerate);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappih);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappiv);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappoh);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappov);
+	loadenv("MOONWM_LAYOUT",		NULL,	NULL,	&defaultlayout);
 
 	/* sanity checks */
 	if (!framerate)
@@ -1485,7 +1483,7 @@ envsettings() {
 	if (borderpx > 100)
 		borderpx = 2;
 
-	loadenvui("MOONWM_MFACT",		&imfact,		0);
+	loadenv("MOONWM_MFACT", NULL, NULL, &imfact);
 	if (imfact >= 5 && imfact <= 95)
 		mfact = (float) imfact / 100;
 }
@@ -2099,34 +2097,29 @@ loadclientprops(Client *c)
 	}
 }
 
-void
-loadenv(char *name, long *var, int norm) {
-    char *val, *dummy;
-    long lval;
-    val = getenv(name);
-    if (val) {
-		errno = 0;
-        lval = strtol(val, &dummy, 10);
-        if (lval || errno == 0) {
-            *var = lval;
-			if (norm && *var)
-				*var = 1;
-		}
+/* load variable from environment variable */
+int
+loadenv(char *name, char **retval, int *retint, unsigned int *retuint)
+{
+    int tempint;
+    char *tempval, *dummy;
+
+    tempval = getenv(name);
+    if (!tempval)
+        return 0;
+    if (retval)
+        (*retval) = tempval;
+    if (retint || retuint) {
+        errno = 0;
+        tempint = strtol(tempval, &dummy, 0);
+        if (!tempint && errno)
+            return 0;
     }
-}
-
-void
-loadenvi(char *name, int *var, int norm) {
-	long ival = *var;
-	loadenv(name, &ival, norm);
-	*var = ival;
-}
-
-void
-loadenvui(char *name, unsigned int *var, int norm) {
-	long ival = *var;
-	loadenv(name, &ival, norm);
-	*var = ival;
+    if (retint)
+        (*retint) = tempint;
+    if (retuint)
+        (*retuint) = tempint;
+    return 1;
 }
 
 void
