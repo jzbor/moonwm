@@ -265,7 +265,6 @@ static void dragmfact(const Arg *arg);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static void enternotify(XEvent *e);
-static void envsettings(void);
 static void expose(XEvent *e);
 static void exposeview(const Arg *arg);
 static void focus(Client *c);
@@ -295,7 +294,9 @@ static void layoutmenu(const Arg *arg);
 static void loadclientprops(Client *c);
 static int loadenv(char *name, char **retval, int *retint, unsigned int *retuint);
 static void loadwmprops(void);
+static int loadxcolor(XrmDatabase db, char *name, char *dest);
 static void loadxrdb(void);
+static int loadxres(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
@@ -350,6 +351,9 @@ static void setcfact(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setmodkey();
 static void setnumdesktops(void);
+static void settings(void);
+static void settingsxrdb(XrmDatabase db);
+static void settingsenv(void);
 static void setup(void);
 static void setviewport(void);
 static void seturgent(Client *c, int urg);
@@ -414,6 +418,8 @@ static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static const char moonwmdir[] = "moonwm";
 static const char localshare[] = ".local/share";
+static const char configfile[] = "config.xres";
+static unsigned int imfact = 0;
 static char stext[256];
 static char rawstext[256];
 static int statuscmdn;
@@ -1455,40 +1461,6 @@ enternotify(XEvent *e)
 }
 
 void
-envsettings() {
-	unsigned int imfact = mfact * 100;
-	setmodkey();
-	loadenv("MOONWM_CENTERONRH",	NULL,	&centeronrh,		NULL);
-	loadenv("MOONWM_DECORHINTS",	NULL,	&decorhints,		NULL);
-	loadenv("MOONWM_GAPS",			NULL,	&enablegaps,		NULL);
-	loadenv("MOONWM_KEYS",			NULL,	&managekeys,		NULL);
-	loadenv("MOONWM_RESIZEHINTS",	NULL,	&resizehints,		NULL);
-	loadenv("MOONWM_SHOWBAR",		NULL,	&showbar,			NULL);
-	loadenv("MOONWM_SMARTGAPS",		NULL,	&smartgaps,			NULL);
-	loadenv("MOONWM_SWALLOW",		NULL,	&swallowdefault,	NULL);
-	loadenv("MOONWM_SYSTRAY",		NULL,	&showsystray,		NULL);
-	loadenv("MOONWM_TOPBAR",		NULL,	&topbar,			NULL);
-	loadenv("MOONWM_WORKSPACES",	NULL,	&workspaces,		NULL);
-	loadenv("MOONWM_BORDERWIDTH",	NULL,	NULL,	&borderpx);
-	loadenv("MOONWM_FRAMERATE",		NULL,	NULL,	&framerate);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappih);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappiv);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappoh);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappov);
-	loadenv("MOONWM_LAYOUT",		NULL,	NULL,	&defaultlayout);
-
-	/* sanity checks */
-	if (!framerate)
-		framerate = 60;
-	if (borderpx > 100)
-		borderpx = 2;
-
-	loadenv("MOONWM_MFACT", NULL, NULL, &imfact);
-	if (imfact >= 5 && imfact <= 95)
-		mfact = (float) imfact / 100;
-}
-
-void
 expose(XEvent *e)
 {
 	Monitor *m;
@@ -2097,6 +2069,43 @@ loadclientprops(Client *c)
 	}
 }
 
+int
+loadxcolor(XrmDatabase db, char *name, char *dest)
+{
+	char *str = NULL;
+	if (!loadxres(db, name, &str, NULL, NULL))
+		return 0;
+	if (strlen(dest) != 7 || strlen(str) != 7)
+		return 0;
+	strncpy(dest, str, 7);
+	return 1;
+}
+
+int
+loadxres(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint)
+{
+	char *tempval, *type, *dummy;
+	int tempint;
+	XrmValue xval;
+	if (XrmGetResource(db, name, "*", &type, &xval) == False)
+		return 0;
+	tempval = xval.addr;
+
+	if (retval)
+		(*retval) = tempval;
+	if (retint || retuint) {
+		errno = 0;
+		tempint = strtol(tempval, &dummy, 0);
+		if (!tempint && errno)
+			return 0;
+	}
+	if (retint)
+		(*retint) = tempint;
+	if (retuint)
+		(*retuint) = tempint;
+	return 1;
+}
+
 /* load variable from environment variable */
 int
 loadenv(char *name, char **retval, int *retint, unsigned int *retuint)
@@ -2148,20 +2157,21 @@ loadxrdb()
 			xrdb = XrmGetStringDatabase(resm);
 
 			if (xrdb != NULL) {
-				XRDB_LOAD_COLOR("moonwm.vacantTagFg", normtagfg);
-				XRDB_LOAD_COLOR("moonwm.vacantTagBg", normtagbg);
-				XRDB_LOAD_COLOR("moonwm.unfocusedTitleFg", normtitlefg);
-				XRDB_LOAD_COLOR("moonwm.unfocusedTitleBg", normtitlebg);
-				XRDB_LOAD_COLOR("moonwm.statusFg", statusfg);
-				XRDB_LOAD_COLOR("moonwm.statusBg", statusbg);
-				XRDB_LOAD_COLOR("moonwm.menuFg", menufg);
-				XRDB_LOAD_COLOR("moonwm.menuBg", menubg);
-				XRDB_LOAD_COLOR("moonwm.unfocusedBorder", normborderfg);
-				XRDB_LOAD_COLOR("moonwm.occupiedTagFg", hightagfg);
-				XRDB_LOAD_COLOR("moonwm.occupiedTagBg", hightagbg);
-				XRDB_LOAD_COLOR("moonwm.focusedTitleFg", hightitlefg);
-				XRDB_LOAD_COLOR("moonwm.focusedTitleBg", hightitlebg);
-				XRDB_LOAD_COLOR("moonwm.focusedBorder", highborderfg);
+				loadxcolor(xrdb, "moonwm.vacantTagFg", normtagfg);
+				loadxcolor(xrdb, "moonwm.vacantTagFg", normtagfg);
+				loadxcolor(xrdb, "moonwm.vacantTagBg", normtagbg);
+				loadxcolor(xrdb, "moonwm.unfocusedTitleFg", normtitlefg);
+				loadxcolor(xrdb, "moonwm.unfocusedTitleBg", normtitlebg);
+				loadxcolor(xrdb, "moonwm.statusFg", statusfg);
+				loadxcolor(xrdb, "moonwm.statusBg", statusbg);
+				loadxcolor(xrdb, "moonwm.menuFg", menufg);
+				loadxcolor(xrdb, "moonwm.menuBg", menubg);
+				loadxcolor(xrdb, "moonwm.unfocusedBorder", normborderfg);
+				loadxcolor(xrdb, "moonwm.occupiedTagFg", hightagfg);
+				loadxcolor(xrdb, "moonwm.occupiedTagBg", hightagbg);
+				loadxcolor(xrdb, "moonwm.focusedTitleFg", hightitlefg);
+				loadxcolor(xrdb, "moonwm.focusedTitleBg", hightitlebg);
+				loadxcolor(xrdb, "moonwm.focusedBorder", highborderfg);
 
 				XrmDestroyDatabase(xrdb);
 			}
@@ -3442,6 +3452,98 @@ setmodkey()
 }
 
 void
+settings(void) {
+	XrmDatabase dpydb, cfiledb;
+	char  *home, *xdgconfighome, *path = NULL;
+	imfact = mfact * 100;
+
+	setmodkey();
+
+	char *temp = XResourceManagerString(dpy);
+	if (temp != NULL) {
+		dpydb = XrmGetStringDatabase(temp);
+		if (dpydb)
+			settingsxrdb(dpydb);
+	}
+
+	/* dpydb = XrmGetDatabase(dpy); */
+	/* if (dpydb) */
+	/* 	settingsxrdb(dpydb); */
+
+	if ((xdgconfighome = getenv("XDG_CONFIG_HOME"))) {
+		path = ecalloc(sizeof(char), strlen(xdgconfighome) + strlen(moonwmdir) + strlen(configfile) + 3);
+		sprintf(path, "%s/%s/%s", xdgconfighome, moonwmdir, configfile);
+	} else if ((home = getenv("HOME"))) {
+		path = ecalloc(sizeof(char), strlen(home) + strlen(moonwmdir) + strlen(configfile) + 11);
+		sprintf(path, "%s/.config/%s/%s", home, moonwmdir, configfile);
+	}
+	if (path) {
+		cfiledb = XrmGetFileDatabase(path);
+		if (cfiledb)
+			settingsxrdb(cfiledb);
+		free(path);
+	}
+
+	settingsenv();
+
+	/* sanity checks */
+	if (!framerate)
+		framerate = 60;
+	if (borderpx > 100)
+		borderpx = 2;
+
+	if (imfact >= 5 && imfact <= 95)
+		mfact = (float) imfact / 100;
+}
+
+void
+settingsenv(void) {
+	unsigned int imfact = mfact * 100;
+	loadenv("MOONWM_CENTERONRH",	NULL,	&centeronrh,		NULL);
+	loadenv("MOONWM_DECORHINTS",	NULL,	&decorhints,		NULL);
+	loadenv("MOONWM_GAPS",			NULL,	&enablegaps,		NULL);
+	loadenv("MOONWM_KEYS",			NULL,	&managekeys,		NULL);
+	loadenv("MOONWM_RESIZEHINTS",	NULL,	&resizehints,		NULL);
+	loadenv("MOONWM_SHOWBAR",		NULL,	&showbar,			NULL);
+	loadenv("MOONWM_SMARTGAPS",		NULL,	&smartgaps,			NULL);
+	loadenv("MOONWM_SWALLOW",		NULL,	&swallowdefault,	NULL);
+	loadenv("MOONWM_SYSTRAY",		NULL,	&showsystray,		NULL);
+	loadenv("MOONWM_TOPBAR",		NULL,	&topbar,			NULL);
+	loadenv("MOONWM_WORKSPACES",	NULL,	&workspaces,		NULL);
+	loadenv("MOONWM_BORDERWIDTH",	NULL,	NULL,	&borderpx);
+	loadenv("MOONWM_FRAMERATE",		NULL,	NULL,	&framerate);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappih);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappiv);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappoh);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappov);
+	loadenv("MOONWM_LAYOUT",		NULL,	NULL,	&defaultlayout);
+	loadenv("MOONWM_MFACT", NULL, NULL, &imfact);
+}
+
+void
+settingsxrdb(XrmDatabase db) {
+	loadxres(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
+	loadxres(db,	"moonwm.decorhints",	NULL,	&decorhints,		NULL);
+	loadxres(db,	"moonwm.gaps",			NULL,	&enablegaps,		NULL);
+	loadxres(db,	"moonwm.keys",			NULL,	&managekeys,		NULL);
+	loadxres(db,	"moonwm.resizehints",	NULL,	&resizehints,		NULL);
+	loadxres(db,	"moonwm.showbar",		NULL,	&showbar,			NULL);
+	loadxres(db,	"moonwm.smartgaps",		NULL,	&smartgaps,			NULL);
+	loadxres(db,	"moonwm.swallow",		NULL,	&swallowdefault,	NULL);
+	loadxres(db,	"moonwm.systray",		NULL,	&showsystray,		NULL);
+	loadxres(db,	"moonwm.topbar",		NULL,	&topbar,			NULL);
+	loadxres(db,	"moonwm.workspaces",	NULL,	&workspaces,		NULL);
+	loadxres(db,	"moonwm.borderwidth",	NULL,	NULL,	&borderpx);
+	loadxres(db,	"moonwm.framerate",		NULL,	NULL,	&framerate);
+	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappih);
+	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappiv);
+	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappoh);
+	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
+	loadxres(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
+	loadxres(db,	"moonwm.mfact",			NULL, NULL, &imfact);
+}
+
+void
 setup(void)
 {
 	int i;
@@ -4677,7 +4779,7 @@ main(int argc, char *argv[])
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("moonwm: cannot get xcb connection\n");
 	checkotherwm();
-	envsettings();
+	settings();
 	XrmInitialize();
 	loadxrdb();
 	setup();
