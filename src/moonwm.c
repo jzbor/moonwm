@@ -298,6 +298,7 @@ static void loadwmprops(void);
 static void loadxrdb(void);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
+static void map(Client *c, int deiconify);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void motionnotify(XEvent *e);
@@ -374,6 +375,7 @@ static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
+static void unmap(Client *c, int iconify);
 static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
@@ -2278,6 +2280,15 @@ manage(Window w, XWindowAttributes *wa)
 }
 
 void
+map(Client *c, int deiconify)
+{
+	XMapWindow(dpy, c->win);
+	if (deiconify)
+		setclientstate(c, NormalState);
+	XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
+}
+
+void
 mappingnotify(XEvent *e)
 {
 	XMappingEvent *ev = &e->xmapping;
@@ -3013,6 +3024,9 @@ riodraw(Client *c, const char slopstyle[])
 	int firstchar = 0;
 	int counter = 0;
 
+	/* if (c && c->win) */
+	/* 	unmap(c, 0); */
+
 	strcat(slopcmd, slopstyle);
 	FILE *fp = popen(slopcmd, "r");
 
@@ -3040,6 +3054,8 @@ riodraw(Client *c, const char slopstyle[])
 		}
 	}
 
+	/* if (c && c->win) */
+	/* 	map(c, 0); */
 
 	if (riodimensions[0] <= -40 || riodimensions[1] <= -40 || riodimensions[2] <= 50 || riodimensions[3] <= 50) {
 		riodimensions[3] = -1;
@@ -3623,29 +3639,16 @@ shiftviewclients(const Arg *arg)
 void
 showhide(Client *c)
 {
-	static XWindowAttributes ra, ca;
 	if (!c)
 		return;
 	if (ISVISIBLE(c)) {
 		/* show clients top down */
-		XMapWindow(dpy, c->win);
-		setclientstate(c, NormalState);
-		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
+		map(c, 1);
 		showhide(c->snext);
 	} else {
 		/* hide clients bottom up */
 		showhide(c->snext);
-		XGrabServer(dpy);
-		XGetWindowAttributes(dpy, root, &ra);
-		XGetWindowAttributes(dpy, c->win, &ca);
-		// prevent UnmapNotify events
-		XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
-		XSelectInput(dpy, c->win, ca.your_event_mask & ~StructureNotifyMask);
-		XUnmapWindow(dpy, c->win);
-		setclientstate(c, IconicState);
-		XSelectInput(dpy, root, ra.your_event_mask);
-		XSelectInput(dpy, c->win, ca.your_event_mask);
-		XUngrabServer(dpy);
+		unmap(c, 1);
 	}
 }
 
@@ -3918,6 +3921,28 @@ unmanage(Client *c, int destroyed)
 			focus(NULL);
 		updateclientlist();
 	}
+}
+
+void
+unmap(Client *c, int iconify)
+{
+	static XWindowAttributes ra, ca;
+
+	if (!c)
+		return;
+
+	XGrabServer(dpy);
+	XGetWindowAttributes(dpy, root, &ra);
+	XGetWindowAttributes(dpy, c->win, &ca);
+	// prevent UnmapNotify events
+	XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
+	XSelectInput(dpy, c->win, ca.your_event_mask & ~StructureNotifyMask);
+	XUnmapWindow(dpy, c->win);
+	if (iconify)
+		setclientstate(c, IconicState);
+	XSelectInput(dpy, root, ra.your_event_mask);
+	XSelectInput(dpy, c->win, ca.your_event_mask);
+	XUngrabServer(dpy);
 }
 
 void
