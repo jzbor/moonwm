@@ -3,8 +3,8 @@
 RIGHTMENU="  Applications
 $(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
 
-  Shutdown			poweroff || sudo poweroff
-  Reboot			reboot || sudo reboot
+  Shutdown			systemctl poweroff || loginctl poweroff
+  Reboot			systemctl reboot || loginctl reboot
   Suspend			moonwm-util lock; loginctl suspend || systemctl suspend
 
   Reload MoonWM	moonctl restartlaunched

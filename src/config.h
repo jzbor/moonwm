@@ -16,6 +16,7 @@ static unsigned int gappiv          = 5;        /* vert inner gap between window
 static unsigned int gappoh          = 5;        /* horiz outer gap between windows and screen edge */
 static unsigned int gappov          = 5;        /* vert outer gap between windows and screen edge */
 static int smartgaps                = 1;        /* 1 means no outer gap when there is only one window */
+static unsigned int defaultlayout	= 0;        /* index of the default layout */
 static const unsigned int systraypinning = 1;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
@@ -32,6 +33,7 @@ static const int riodraw_borders    = 0;        /* 0 or 1, indicates whether the
 static const int riodraw_matchpid   = 0;        /* 0 or 1, indicates whether to match the PID of the client that was spawned with riospawn */
 static const int riodraw_spawnasync = 1;        /* 0 means that the application is only spawned after a successful selection while
 												 * 1 means that the application is being initialised in the background while the selection is made */
+static const int center_relbar		= 1;		/* 1 means centering applications relative to the bar when using center() or spawning new windows */
 static int workspaces               = 0;
 static int managekeys = 1;
 static const int placemousemode     = 1;
@@ -259,6 +261,7 @@ static Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
     /* click                event mask      button          function        argument */
+    WINBUTTON(MODKEY,       0,              Button2,        togglefloating, {0})
     WINBUTTON(MODKEY,       0,              Button4,        focusstack,     {.i = INC(-1) })
     WINBUTTON(MODKEY,       0,              Button5,        focusstack,     {.i = INC(+1) })
     WINBUTTON(MODKEY,       ShiftMask,      Button4,        pushstack,      {.i = INC(-1) })
@@ -289,8 +292,6 @@ static Button buttons[] = {
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
     { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
-    { ClkWinTitle,          0,              Button2,        togglefloating, {0} },
-    { ClkWinTitle,          MODKEY,         Button2,        killclient,     {0} },
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
     { ClkStatusText,        0,              Button1,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button2,        spawn,          {.v = statushandler } },
@@ -302,8 +303,8 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
     { ClkClientWin,         MODKEY|ControlMask, Button1,    moveorplace,    {.i = 1} },
     { ClkClientWin,         MODKEY|ShiftMask, Button1,      rioresize,      {0} },
-    { ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
     { ClkClientWin,         MODKEY,         Button3,        resizeorxfact,  {0} },
+    { ClkClientWin,         MODKEY|ControlMask, Button3,    resizeorxfact,	{.i = 1} },
     { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-menu context") },
     { ClkRootWin,           0,              Button2,        togglelayout,   {.v = &layouts[3]} },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu select") },

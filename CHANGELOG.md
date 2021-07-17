@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [7.1.1](#711)
 - [7.1.0](#710)
 - [7.0.4](#704)
 - [7.0.3](#703)
@@ -12,6 +13,13 @@
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+
+## 7.1.1
+* Better implementation for the hiding of windows
+* Better window centering
+* Config option for a default layout
+* Better multi-monitor support (`moonwm-util monitors`/`MOD+Shift+M`)
+* `MOD + space` now cycles through the open windows
 
 ## 7.1.0
 * Replacing moonie with moonctl (also replaces some dependencies)

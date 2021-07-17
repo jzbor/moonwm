@@ -244,6 +244,7 @@ static void attachstack(Client *c);
 static int fake_signal(void);
 static void buttonpress(XEvent *e);
 static void center(const Arg *arg);
+static void centerclient(Client *c);
 static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
@@ -292,13 +293,12 @@ static void killclient(const Arg *arg);
 static void layout(const Arg *arg, int togglelayout);
 static void layoutmenu(const Arg *arg);
 static void loadclientprops(Client *c);
-static void loadenv(char *name, long *var, int norm);
-static void loadenvi(char *name, int *var, int norm);
-static void loadenvui(char *name, unsigned int *var, int norm);
+static int loadenv(char *name, char **retval, int *retint, unsigned int *retuint);
 static void loadwmprops(void);
 static void loadxrdb(void);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
+static void map(Client *c, int deiconify);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void motionnotify(XEvent *e);
@@ -375,6 +375,7 @@ static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
+static void unmap(Client *c, int iconify);
 static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
@@ -394,7 +395,7 @@ static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static void view(const Arg *arg);
-static void warp(const Client *c);
+static void warp(const Client *c, int edge);
 static pid_t winpid(Window w);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -607,6 +608,9 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int *bw, int interact)
 			*w = MIN(*w, c->maxw);
 		if (c->maxh)
 			*h = MIN(*h, c->maxh);
+		/* don't let windows extend beyond their tiled space */
+		*w = MIN(*w, targetw);
+		*h = MIN(*h, targeth);
 		if (resizehints && centeronrh) {
 			*x = (2 * *x + targetw - *w) / 2;
 			*y = (2 * *y + targeth - *h) / 2;
@@ -639,7 +643,7 @@ arrangemon(Monitor *m)
 	else
 		/* <>< case; rather than providing an arrange function and upsetting other logic that tests for its presence, simply add borders here */
 		for (c = selmon->clients; c; c = c->next)
-			if (ISVISIBLE(c) && c->bw == 0)
+			if (ISVISIBLE(c) && !c->isfullscreen && c->bw == 0)
 				resize(c, c->x, c->y, c->w - 2*borderpx, c->h - 2*borderpx, borderpx, 0);
 }
 
@@ -790,15 +794,19 @@ center(const Arg *arg)
 	if (selmon->lt[selmon->sellt]->arrange && !selmon->sel->isfloating)
 		return;
 
-	int cx = selmon->mx + (selmon->mw - WIDTH(selmon->sel)) / 2;
-	int cy = selmon->my + (selmon->mh - HEIGHT(selmon->sel)) / 2;
-
-	resize(selmon->sel, cx, cy,
-		   selmon->sel->w,
-		   selmon->sel->h,
-		   borderpx, 0);
+	centerclient(selmon->sel);
 
 	/* arrange(selmon); */
+}
+
+void
+centerclient(Client *c)
+{
+	int barmod = (c->mon->topbar ? 1 : -1) * (c->mon->showbar && center_relbar ? bh : 0);
+	int cx = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
+	int cy = c->mon->my + barmod + (c->mon->mh - barmod - HEIGHT(c)) / 2;
+
+	resize(c, cx, cy, c->w, c->h, borderpx, 0);
 }
 
 void
@@ -822,8 +830,11 @@ cleanup(void)
 	/* view(&a); */
 	selmon->lt[selmon->sellt] = &foo;
 	for (m = mons; m; m = m->next)
-		while (m->stack)
+		while (m->stack) {
+			XMapWindow(dpy, m->stack->win);
+			setclientstate(m->stack, NormalState);
 			unmanage(m->stack, 0);
+		}
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
@@ -1112,9 +1123,9 @@ createmon(void)
 	m->gappiv = gappiv;
 	m->gappoh = gappoh;
 	m->gappov = gappov;
-	m->lt[0] = &layouts[0];
+	m->lt[0] = &layouts[defaultlayout];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
-	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+	strncpy(m->ltsymbol, m->lt[0]->symbol, sizeof m->ltsymbol);
 	if (!(m->pertag = (Pertag *)calloc(1, sizeof(Pertag))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
@@ -1449,23 +1460,24 @@ void
 envsettings() {
 	unsigned int imfact = mfact * 100;
 	setmodkey();
-	loadenvi("MOONWM_CENTERONRH",	&centeronrh,		1);
-	loadenvi("MOONWM_DECORHINTS",	&decorhints,		1);
-	loadenvi("MOONWM_GAPS",			&enablegaps,		1);
-	loadenvi("MOONWM_KEYS",			&managekeys,		1);
-	loadenvi("MOONWM_RESIZEHINTS",	&resizehints,		1);
-	loadenvi("MOONWM_SHOWBAR",		&showbar,			1);
-	loadenvi("MOONWM_SMARTGAPS",	&smartgaps,			1);
-	loadenvi("MOONWM_SWALLOW",		&swallowdefault,	1);
-	loadenvi("MOONWM_SYSTRAY",		&showsystray,		1);
-	loadenvi("MOONWM_TOPBAR",		&topbar,			1);
-	loadenvi("MOONWM_WORKSPACES",	&workspaces,		1);
-	loadenvui("MOONWM_BORDERWIDTH",	&borderpx,		0);
-	loadenvui("MOONWM_FRAMERATE",	&framerate,		0);
-	loadenvui("MOONWM_GAPS",		&gappih,		0);
-	loadenvui("MOONWM_GAPS",		&gappiv,		0);
-	loadenvui("MOONWM_GAPS",		&gappoh,		0);
-	loadenvui("MOONWM_GAPS",		&gappov,		0);
+	loadenv("MOONWM_CENTERONRH",	NULL,	&centeronrh,		NULL);
+	loadenv("MOONWM_DECORHINTS",	NULL,	&decorhints,		NULL);
+	loadenv("MOONWM_GAPS",			NULL,	&enablegaps,		NULL);
+	loadenv("MOONWM_KEYS",			NULL,	&managekeys,		NULL);
+	loadenv("MOONWM_RESIZEHINTS",	NULL,	&resizehints,		NULL);
+	loadenv("MOONWM_SHOWBAR",		NULL,	&showbar,			NULL);
+	loadenv("MOONWM_SMARTGAPS",		NULL,	&smartgaps,			NULL);
+	loadenv("MOONWM_SWALLOW",		NULL,	&swallowdefault,	NULL);
+	loadenv("MOONWM_SYSTRAY",		NULL,	&showsystray,		NULL);
+	loadenv("MOONWM_TOPBAR",		NULL,	&topbar,			NULL);
+	loadenv("MOONWM_WORKSPACES",	NULL,	&workspaces,		NULL);
+	loadenv("MOONWM_BORDERWIDTH",	NULL,	NULL,	&borderpx);
+	loadenv("MOONWM_FRAMERATE",		NULL,	NULL,	&framerate);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappih);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappiv);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappoh);
+	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappov);
+	loadenv("MOONWM_LAYOUT",		NULL,	NULL,	&defaultlayout);
 
 	/* sanity checks */
 	if (!framerate)
@@ -1473,7 +1485,7 @@ envsettings() {
 	if (borderpx > 100)
 		borderpx = 2;
 
-	loadenvui("MOONWM_MFACT",		&imfact,		0);
+	loadenv("MOONWM_MFACT", NULL, NULL, &imfact);
 	if (imfact >= 5 && imfact <= 95)
 		mfact = (float) imfact / 100;
 }
@@ -1678,7 +1690,7 @@ focusfloating(const Arg *arg)
 	for (c = selmon->clients; c && (c->isfloating == selmon->sel->isfloating); c = c->next) ;
 	if (c && (c->isfloating != selmon->sel->isfloating)) {
 		focus(c);
-		warp(c);
+		warp(c, 0);
 	}
 }
 
@@ -1704,7 +1716,7 @@ focusmon(const Arg *arg)
 	unfocus(selmon->sel, 0);
 	selmon = m;
 	focus(NULL);
-	warp(selmon->sel);
+	warp(selmon->sel, 0);
 }
 
 void
@@ -2087,34 +2099,29 @@ loadclientprops(Client *c)
 	}
 }
 
-void
-loadenv(char *name, long *var, int norm) {
-    char *val, *dummy;
-    long lval;
-    val = getenv(name);
-    if (val) {
-		errno = 0;
-        lval = strtol(val, &dummy, 10);
-        if (lval || errno == 0) {
-            *var = lval;
-			if (norm && *var)
-				*var = 1;
-		}
+/* load variable from environment variable */
+int
+loadenv(char *name, char **retval, int *retint, unsigned int *retuint)
+{
+    int tempint;
+    char *tempval, *dummy;
+
+    tempval = getenv(name);
+    if (!tempval)
+        return 0;
+    if (retval)
+        (*retval) = tempval;
+    if (retint || retuint) {
+        errno = 0;
+        tempint = strtol(tempval, &dummy, 0);
+        if (!tempint && errno)
+            return 0;
     }
-}
-
-void
-loadenvi(char *name, int *var, int norm) {
-	long ival = *var;
-	loadenv(name, &ival, norm);
-	*var = ival;
-}
-
-void
-loadenvui(char *name, unsigned int *var, int norm) {
-	long ival = *var;
-	loadenv(name, &ival, norm);
-	*var = ival;
+    if (retint)
+        (*retint) = tempint;
+    if (retuint)
+        (*retuint) = tempint;
+    return 1;
 }
 
 void
@@ -2224,9 +2231,8 @@ manage(Window w, XWindowAttributes *wa)
 	c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
 	c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
 	c->x = MAX(c->x, c->mon->mx);
-	/* only fix client y-offset, if the client center might cover the bar */
-	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
-		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
+	c->y = MAX(c->y, c->mon->my);
+	centerclient(c);
 	c->bw = borderpx;
 
 	wc.border_width = c->bw;
@@ -2255,7 +2261,7 @@ manage(Window w, XWindowAttributes *wa)
 		(unsigned char *) &(c->win), 1);
 	XChangeProperty(dpy, root, netatom[NetClientListStacking], XA_WINDOW, 32, PropModePrepend,
 		(unsigned char *) &(c->win), 1);
-	XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h); /* some windows require this */
+	XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h); /* some windows require this */
 	setclientstate(c, NormalState);
 	if (c->mon == selmon) {
 		losefullscreen(selmon->sel, c, c->mon);
@@ -2268,10 +2274,18 @@ manage(Window w, XWindowAttributes *wa)
 		rioposition(c, riodimensions[0], riodimensions[1], riodimensions[2], riodimensions[3]);
 
 	arrange(c->mon);
-	XMapWindow(dpy, c->win);
 	if (term)
 		swallow(term, c);
 	focus(NULL);
+}
+
+void
+map(Client *c, int deiconify)
+{
+	XMapWindow(dpy, c->win);
+	if (deiconify)
+		setclientstate(c, NormalState);
+	XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
 }
 
 void
@@ -2375,10 +2389,13 @@ movemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m, 0);
+		sendmon(c, m, arg->i ? 1 : 0);
 		selmon = m;
 		focus(NULL);
 	}
+
+	if (arg->i)
+		activate(c);
 }
 
 void
@@ -2890,6 +2907,11 @@ resizemouse(const Arg *arg)
 		selmon = m;
 		focus(NULL);
 	}
+
+	if (arg->i) {
+		centerclient(c);
+		warp(c, 1);
+	}
 }
 
 static
@@ -2971,7 +2993,7 @@ restack(Monitor *m)
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 	if (m == selmon && (m->tagset[m->seltags] & m->sel->tags) && selmon->lt[selmon->sellt] != &layouts[2]) {
 		if (!ignorewarp)
-			warp(m->sel);
+			warp(m->sel, 0);
 		ignorewarp = 0;
 	}
 }
@@ -3002,6 +3024,9 @@ riodraw(Client *c, const char slopstyle[])
 	int firstchar = 0;
 	int counter = 0;
 
+	/* if (c && c->win) */
+	/* 	unmap(c, 0); */
+
 	strcat(slopcmd, slopstyle);
 	FILE *fp = popen(slopcmd, "r");
 
@@ -3029,6 +3054,8 @@ riodraw(Client *c, const char slopstyle[])
 		}
 	}
 
+	/* if (c && c->win) */
+	/* 	map(c, 0); */
 
 	if (riodimensions[0] <= -40 || riodimensions[1] <= -40 || riodimensions[2] <= 50 || riodimensions[3] <= 50) {
 		riodimensions[3] = -1;
@@ -3538,10 +3565,23 @@ setup(void)
 
 void
 setviewport(void){
-	long data[] = { 0, 0 };
-	XChangeProperty(dpy, root, netatom[NetDesktopViewport], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 2);
-}
+	int nmons = 0;
+	for (Monitor *m = mons; m; m = m->next) {
+		nmons++;
+	}
 
+	long data[nmons * 2];
+
+	Monitor *m = mons;
+	for (int i = 0; i < nmons; i++) {
+		data[i*2] = (long)m->mx;
+		data[i*2+1] = (long)m->my;
+		m = m->next;
+	}
+
+	XChangeProperty(dpy, root, netatom[NetDesktopViewport], XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *)data, nmons * 2);
+}
 
 void
 seturgent(Client *c, int urg)
@@ -3603,14 +3643,12 @@ showhide(Client *c)
 		return;
 	if (ISVISIBLE(c)) {
 		/* show clients top down */
-		XMoveWindow(dpy, c->win, c->x, c->y);
-		if ((!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) && !c->isfullscreen)
-			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
+		map(c, 1);
 		showhide(c->snext);
 	} else {
 		/* hide clients bottom up */
 		showhide(c->snext);
-		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
+		unmap(c, 1);
 	}
 }
 
@@ -3886,6 +3924,28 @@ unmanage(Client *c, int destroyed)
 }
 
 void
+unmap(Client *c, int iconify)
+{
+	static XWindowAttributes ra, ca;
+
+	if (!c)
+		return;
+
+	XGrabServer(dpy);
+	XGetWindowAttributes(dpy, root, &ra);
+	XGetWindowAttributes(dpy, c->win, &ca);
+	// prevent UnmapNotify events
+	XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
+	XSelectInput(dpy, c->win, ca.your_event_mask & ~StructureNotifyMask);
+	XUnmapWindow(dpy, c->win);
+	if (iconify)
+		setclientstate(c, IconicState);
+	XSelectInput(dpy, root, ra.your_event_mask);
+	XSelectInput(dpy, c->win, ca.your_event_mask);
+	XUngrabServer(dpy);
+}
+
+void
 unmapnotify(XEvent *e)
 {
 	Client *c;
@@ -4053,6 +4113,8 @@ updategeom(void)
 					c->mon = mons;
 					attachaside(c);
 					attachstack(c);
+					if (ISFLOATING(c))
+						resize(c, mons->wx + (c->x - m->wx), mons->wy + (c->y - m->wy), c->w, c->h, c->bw, 0);
 				}
 				if (m == selmon)
 					selmon = mons;
@@ -4485,7 +4547,7 @@ swallowingclient(Window w)
 }
 
 void
-warp(const Client *c)
+warp(const Client *c, int edge)
 {
 	int x, y;
 
@@ -4503,7 +4565,10 @@ warp(const Client *c)
 		(c->mon->topbar && !y))
 		return;
 
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w / 2, c->h / 2);
+	if (edge)
+		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w, c->h);
+	else
+		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w / 2, c->h / 2);
 }
 
 Client *
