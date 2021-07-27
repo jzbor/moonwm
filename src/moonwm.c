@@ -90,21 +90,6 @@
 #define VERSION_MAJOR               0
 #define VERSION_MINOR               0
 #define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
-#define XRDB_LOAD_COLOR(R,V)    if (XrmGetResource(xrdb, R, NULL, &type, &value) == True) { \
-                                  if (value.addr != NULL && strnlen(value.addr, 8) == 7 && value.addr[0] == '#') { \
-                                    int i = 1; \
-                                    for (; i <= 6; i++) { \
-                                      if (value.addr[i] < 48) break; \
-                                      if (value.addr[i] > 57 && value.addr[i] < 65) break; \
-                                      if (value.addr[i] > 70 && value.addr[i] < 97) break; \
-                                      if (value.addr[i] > 102) break; \
-                                    } \
-                                    if (i == 7) { \
-                                      strncpy(V, value.addr, 7); \
-                                      V[7] = '\0'; \
-                                    } \
-                                  } \
-                                }
 
 #define MWM_HINTS_FLAGS_FIELD       0
 #define MWM_HINTS_DECORATIONS_FIELD 2
@@ -295,7 +280,7 @@ static void loadclientprops(Client *c);
 static int loadenv(char *name, char **retval, int *retint, unsigned int *retuint);
 static void loadwmprops(void);
 static int loadxcolor(XrmDatabase db, char *name, char *dest);
-static void loadxrdb(void);
+static void loadxrdb(XrmDatabase db);
 static int loadxres(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
@@ -2140,45 +2125,26 @@ loadwmprops(void) {
 }
 
 void
-loadxrdb()
+loadxrdb(XrmDatabase db)
 {
-	Display *display;
-	char * resm;
-	XrmDatabase xrdb;
-	char *type;
-	XrmValue value;
+	if (!db)
+		return;
 
-	display = XOpenDisplay(NULL);
-
-	if (display != NULL) {
-		resm = XResourceManagerString(display);
-
-		if (resm != NULL) {
-			xrdb = XrmGetStringDatabase(resm);
-
-			if (xrdb != NULL) {
-				loadxcolor(xrdb, "moonwm.vacantTagFg", normtagfg);
-				loadxcolor(xrdb, "moonwm.vacantTagFg", normtagfg);
-				loadxcolor(xrdb, "moonwm.vacantTagBg", normtagbg);
-				loadxcolor(xrdb, "moonwm.unfocusedTitleFg", normtitlefg);
-				loadxcolor(xrdb, "moonwm.unfocusedTitleBg", normtitlebg);
-				loadxcolor(xrdb, "moonwm.statusFg", statusfg);
-				loadxcolor(xrdb, "moonwm.statusBg", statusbg);
-				loadxcolor(xrdb, "moonwm.menuFg", menufg);
-				loadxcolor(xrdb, "moonwm.menuBg", menubg);
-				loadxcolor(xrdb, "moonwm.unfocusedBorder", normborderfg);
-				loadxcolor(xrdb, "moonwm.occupiedTagFg", hightagfg);
-				loadxcolor(xrdb, "moonwm.occupiedTagBg", hightagbg);
-				loadxcolor(xrdb, "moonwm.focusedTitleFg", hightitlefg);
-				loadxcolor(xrdb, "moonwm.focusedTitleBg", hightitlebg);
-				loadxcolor(xrdb, "moonwm.focusedBorder", highborderfg);
-
-				XrmDestroyDatabase(xrdb);
-			}
-		}
-	}
-
-	XCloseDisplay(display);
+	loadxcolor(db, "moonwm.vacantTagFg", normtagfg);
+	loadxcolor(db, "moonwm.vacantTagFg", normtagfg);
+	loadxcolor(db, "moonwm.vacantTagBg", normtagbg);
+	loadxcolor(db, "moonwm.unfocusedTitleFg", normtitlefg);
+	loadxcolor(db, "moonwm.unfocusedTitleBg", normtitlebg);
+	loadxcolor(db, "moonwm.statusFg", statusfg);
+	loadxcolor(db, "moonwm.statusBg", statusbg);
+	loadxcolor(db, "moonwm.menuFg", menufg);
+	loadxcolor(db, "moonwm.menuBg", menubg);
+	loadxcolor(db, "moonwm.unfocusedBorder", normborderfg);
+	loadxcolor(db, "moonwm.occupiedTagFg", hightagfg);
+	loadxcolor(db, "moonwm.occupiedTagBg", hightagbg);
+	loadxcolor(db, "moonwm.focusedTitleFg", hightitlefg);
+	loadxcolor(db, "moonwm.focusedTitleBg", hightitlebg);
+	loadxcolor(db, "moonwm.focusedBorder", highborderfg);
 }
 
 void
@@ -3462,8 +3428,11 @@ settings(void) {
 	char *temp = XResourceManagerString(dpy);
 	if (temp != NULL) {
 		dpydb = XrmGetStringDatabase(temp);
-		if (dpydb)
+		if (dpydb) {
 			settingsxrdb(dpydb);
+			loadxrdb(dpydb);
+		}
+		XrmDestroyDatabase(dpydb);
 	}
 
 	/* dpydb = XrmGetDatabase(dpy); */
@@ -3478,13 +3447,19 @@ settings(void) {
 		sprintf(path, "%s/.config/%s/%s", home, moonwmdir, configfile);
 	}
 	if (path) {
+		printf("Config file path: %s\n", path);
 		cfiledb = XrmGetFileDatabase(path);
-		if (cfiledb)
+		if (cfiledb) {
 			settingsxrdb(cfiledb);
+			loadxrdb(cfiledb);
+		}
+		XrmDestroyDatabase(cfiledb);
 		free(path);
 	}
+	else
+		printf("No config file path available\n");
 
-	settingsenv();
+	/* settingsenv(); */
 
 	/* sanity checks */
 	if (!framerate)
@@ -4743,12 +4718,19 @@ systraytomon(Monitor *m) {
 void
 xrdb(const Arg *arg)
 {
-  loadxrdb();
-  int i;
-  for (i = 0; i < LENGTH(colors); i++)
-				scheme[i] = drw_scm_create(drw, colors[i], 9);
-  focus(NULL);
-  arrange(NULL);
+	XrmDatabase dpydb;
+	char *temp = XResourceManagerString(dpy);
+	if (temp != NULL) {
+		dpydb = XrmGetStringDatabase(temp);
+		if (dpydb)
+			loadxrdb(dpydb);
+		XrmDestroyDatabase(dpydb);
+	}
+	int i;
+	/* for (i = 0; i < LENGTH(colors); i++) */
+	/* 	scheme[i] = drw_scm_create(drw, colors[i], 9); */
+	focus(NULL);
+	arrange(NULL);
 }
 
 void
@@ -4779,9 +4761,8 @@ main(int argc, char *argv[])
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("moonwm: cannot get xcb connection\n");
 	checkotherwm();
-	settings();
 	XrmInitialize();
-	loadxrdb();
+	settings();
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec", NULL) == -1)
