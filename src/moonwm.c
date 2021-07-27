@@ -3284,6 +3284,10 @@ sendmon(Client *c, Monitor *m, int keeptags)
 	}
 	attachaside(c);
 	attachstack(c);
+	if (c->isfullscreen) {
+		setfullscreen(c, 0);
+		setfullscreen(c, 1);
+	}
 	focus(NULL);
 	arrange(NULL);
 }
