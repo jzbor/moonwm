@@ -2013,6 +2013,7 @@ layout(const Arg *arg, int togglelayout)
 	}
 	if (arg && arg->v && arg->v && (!togglelayout || arg->v != selmon->lt[selmon->sellt^1]))
 		selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
+	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	if (sizeof(selmon->ltsymbol) > strlen(selmon->lt[selmon->sellt]->symbol))
 		strcpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol);
 	if (selmon->sel)
