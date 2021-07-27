@@ -21,15 +21,17 @@ static const Rule rules[] = {
     { .class = "jetbrains-idea", .title = "Welcome to", .monitor = -1, .tags = 1 << 4, .isfloating = 1 },
     { .title = "win0",          .monitor = - 1, .tags = 1 << 4, .isfloating = 1 },
     /* Floating */
-    { .class = "XClock",                .monitor = -1, .isfloating = 1, .noswallow = 1 },
-    { .title = "Event Tester",          .monitor = -1, .isfloating = 1, .noswallow = 1 }, /* xev */
-    { .title = "[debug]",               .monitor = -1, .isfloating = 1, .noswallow = 1 }, /* personal debugging */
+    { .class = "XClock",                            .monitor = -1, .isfloating = 1, .noswallow = 1 },
+    { .class = "Pcmanfm", .title = "Execute File",  .monitor = -1, .isfloating = 1, .noswallow = 1 },
+    { .title = "Event Tester",                      .monitor = -1, .isfloating = 1, .noswallow = 1 }, /* xev */
+    { .title = "[debug]",                           .monitor = -1, .isfloating = 1, .noswallow = 1 }, /* personal debugging */
     /* Non-Floating */
     { .class = "Gimp",  .monitor = -1,  .isfloating = 0 },
     /* Games */
-    { .class = "Lutris",         .monitor = -1,  .tags = 1 << 5 },
+    { .class = "Lutris",        .monitor = -1,  .tags = 1 << 5 },
     { .class = "Steam",         .monitor = -1,  .tags = 1 << 5 },
     { .class = "steam_app_",    .monitor = 0,   .tags = 1 << 5 },
+    { .class = "steam_proton",  .monitor = 0,   .tags = 1 << 5 },
     { .gameid = -1,             .monitor = 0,   .tags = 1 << 5 },
     /* window types */
     { .wintype = "_NET_WM_WINDOW_TYPE_DIALOG",    .isfloating = 1},
