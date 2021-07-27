@@ -2404,7 +2404,8 @@ movemouse(const Arg *arg)
 
 void
 moveorplace(const Arg *arg) {
-	if (selmon->sel && ISFLOATING(selmon->sel))
+	if (selmon->sel && ISFLOATING(selmon->sel)
+			&& !(selmon->sel->isfullscreen && !selmon->sel->oldstate))
 		movemouse(arg);
 	else
 		placemouse(arg);
@@ -2508,20 +2509,27 @@ placemouse(const Arg *arg)
 	XEvent ev;
 	XWindowAttributes wa;
 	Time lasttime = 0;
-	int attachmode, prevattachmode;
+	int attachmode, prevattachmode, wasfullscreen = 0;
 	attachmode = prevattachmode = -1;
 
 	if (!(c = selmon->sel) || !c->mon->lt[c->mon->sellt]->arrange) /* no support for placemouse when floating layout is used */
 		return;
-	if (c->isfullscreen) /* no support placing fullscreen windows by mouse */
-		return;
+	if (c->isfullscreen) {
+		wasfullscreen = 1;
+		/* togglefullscr(NULL); */
+		setfullscreen(c, 0);
+	}
+
 	restack(selmon);
 	prevr = c;
 	px = c->x;
 	py = c->y;
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
-		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
+		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess) {
+		if (wasfullscreen)
+			setfullscreen(c, 1);
 		return;
+	}
 
 	c->isfloating = 0;
 	c->beingmoved = 1;
@@ -2533,8 +2541,11 @@ placemouse(const Arg *arg)
 	if (placemousemode == 2) // warp cursor to client center
 		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, WIDTH(c) / 2, HEIGHT(c) / 2);
 
-	if (!getrootptr(&x, &y))
+	if (!getrootptr(&x, &y)) {
+		if (wasfullscreen)
+			setfullscreen(c, 1);
 		return;
+	}
 
 	do {
 		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
@@ -2650,6 +2661,9 @@ placemouse(const Arg *arg)
 		arrange(c->mon);
 		activate(c);
 	}
+
+	if (wasfullscreen)
+		setfullscreen(c, 1);
 }
 
 void
