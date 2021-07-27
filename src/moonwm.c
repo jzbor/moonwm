@@ -249,6 +249,7 @@ static void dragcfact(const Arg *arg);
 static void dragmfact(const Arg *arg);
 static void drawbar(Monitor *m);
 static void drawbars(void);
+static void dropfullscr(Monitor *m, int n, Client *keep);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void exposeview(const Arg *arg);
@@ -1428,6 +1429,20 @@ drawbars(void)
 
 	for (m = mons; m; m = m->next)
 		drawbar(m);
+}
+
+void
+dropfullscr(Monitor *m, int n, Client *keep)
+{
+	int counter = 0;
+	for (Client *c = m->stack; c && ISVISIBLE(c); c = c->snext) {
+		if (c->isfullscreen && c != keep) {
+			if (counter < n)
+				counter++;
+			else
+				setfullscreen(c, 0);
+		}
+	}
 }
 
 void
@@ -2643,6 +2658,7 @@ placemouse(const Arg *arg)
 
 	if (wasfullscreen)
 		setfullscreen(c, 1);
+	dropfullscr(c->mon, 0, c);
 }
 
 void
@@ -3284,6 +3300,7 @@ sendmon(Client *c, Monitor *m, int keeptags)
 	if (c->isfullscreen) {
 		setfullscreen(c, 0);
 		setfullscreen(c, 1);
+		dropfullscr(c->mon, 0, c);
 	}
 	focus(NULL);
 	arrange(NULL);
@@ -3957,6 +3974,7 @@ toggleview(const Arg *arg)
 		focus(NULL);
 		arrange(selmon);
 	}
+	dropfullscr(selmon, 1, NULL);
 	updatecurrenttags();
 }
 
@@ -4546,6 +4564,7 @@ view(const Arg *arg)
 	selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
 	focus(NULL);
 	arrange(selmon);
+	dropfullscr(selmon, 1, NULL);
 	updatecurrenttags();
 }
 
