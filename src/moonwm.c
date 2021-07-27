@@ -3786,7 +3786,7 @@ togglefloating(const Arg *arg)
 	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
 		return;
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
-	if (selmon->sel->isfloating)
+	if (selmon->sel->isfloating && selmon->lt[selmon->sellt]->arrange)
 		/* restore last known float dimensions */
 		resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
 			   selmon->sel->sfw - 2 * (borderpx - selmon->sel->bw),
