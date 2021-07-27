@@ -2224,16 +2224,20 @@ manage(Window w, XWindowAttributes *wa)
 		return;
 	}
 
-	if (c->x + WIDTH(c) > c->mon->mx + c->mon->mw)
-		c->x = c->mon->mx + c->mon->mw - WIDTH(c);
-	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh)
-		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
-	c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
-	c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
-	c->x = MAX(c->x, c->mon->mx);
-	c->y = MAX(c->y, c->mon->my);
-	centerclient(c);
 	c->bw = borderpx;
+	if (centerspawned) {
+		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
+		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
+		centerclient(c);
+	} else {
+		getrootptr(&c->x, &c->y);
+		c->x += spawnedoffset;
+		c->y += spawnedoffset;
+	}
+	c->x = MIN(c->x, c->mon->mx + c->mon->mw - WIDTH(c));
+	c->y = MIN(c->y, c->mon->my + c->mon->mh - HEIGHT(c));
+	c->x = MAX(c->x, c->mon->wx);
+	c->y = MAX(c->y, c->mon->wy);
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
