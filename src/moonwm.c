@@ -628,7 +628,8 @@ void
 arrangemon(Monitor *m)
 {
 	Client *c;
-	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+	if (sizeof(m->ltsymbol) > strlen(m->lt[m->sellt]->symbol))
+		strcpy(m->ltsymbol, m->lt[m->sellt]->symbol);
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
 	else
@@ -1116,7 +1117,8 @@ createmon(void)
 	m->gappov = gappov;
 	m->lt[0] = &layouts[defaultlayout];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
-	strncpy(m->ltsymbol, m->lt[0]->symbol, sizeof m->ltsymbol);
+	if (sizeof(m->ltsymbol) > strlen(m->lt[m->sellt]->symbol))
+		strcpy(m->ltsymbol, m->lt[m->sellt]->symbol);
 	if (!(m->pertag = (Pertag *)calloc(1, sizeof(Pertag))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
@@ -2011,8 +2013,8 @@ layout(const Arg *arg, int togglelayout)
 	}
 	if (arg && arg->v && arg->v && (!togglelayout || arg->v != selmon->lt[selmon->sellt^1]))
 		selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt] = (Layout *)arg->v;
-	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
-	strncpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol, sizeof selmon->ltsymbol);
+	if (sizeof(selmon->ltsymbol) > strlen(selmon->lt[selmon->sellt]->symbol))
+		strcpy(selmon->ltsymbol, selmon->lt[selmon->sellt]->symbol);
 	if (selmon->sel)
 		arrange(selmon);
 	else
@@ -4771,7 +4773,7 @@ xrdb(const Arg *arg)
 			loadxrdb(dpydb);
 		XrmDestroyDatabase(dpydb);
 	}
-	int i;
+	/* int i; */
 	/* for (i = 0; i < LENGTH(colors); i++) */
 	/* 	scheme[i] = drw_scm_create(drw, colors[i], 9); */
 	focus(NULL);
