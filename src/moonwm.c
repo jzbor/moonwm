@@ -162,7 +162,6 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isterminal, issteam, noswallow;
 	int props;
 	pid_t pid;
 	Client *next;
@@ -529,7 +528,7 @@ applyrules(Client *c)
 
 	if (strstr(class, "Steam") || strstr(class, "steam_app_")
 			|| (steamid = getatomprop(c, mwmatom[SteamGame], AnyPropertyType)))
-		c->issteam = 1;
+		CMASKSET(c, M_STEAM);
 
 	for (i = 0; i < LENGTH(rules); i++) {
 		r = &rules[i];
@@ -540,8 +539,8 @@ applyrules(Client *c)
 		&& (!r->wintype || wintype == XInternAtom(dpy, r->wintype, False))
 		&& (!r->gameid || steamid == r->gameid || (steamid && r->gameid == -1) ))
 		{
-			c->isterminal  = r->isterminal;
-			c->noswallow   = r->noswallow;
+			CMASKSETTO(c, M_TERMINAL, r->isterminal);
+			CMASKSETTO(c, M_NOSWALLOW, r->noswallow);
 			CMASKSETTO(c, M_FLOATING, r->isfloating);
 			CMASKSETTO(c, M_CENTER, r->center);
 			c->tags |= r->tags;
@@ -690,7 +689,7 @@ void
 swallow(Client *p, Client *c)
 {
 
-	if (!swallowdefault || c->noswallow || c->isterminal)
+	if (!swallowdefault || CMASKGET(c, M_NOSWALLOW) || CMASKGET(c, M_TERMINAL))
 		return;
 	if (!swallowfloating && CMASKGET(c, M_FLOATING))
 		return;
@@ -1067,7 +1066,7 @@ configurerequest(XEvent *e)
 			c->bw = ev->border_width;
 		else if (CMASKGET(c, M_FLOATING) || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
-			if (!c->issteam) {
+			if (!CMASKGET(c, M_STEAM)) {
 				if (ev->value_mask & CWX) {
 					c->oldx = c->x;
 					c->x = m->mx + ev->x;
@@ -3384,7 +3383,7 @@ setfocus(Client *c)
 			XA_WINDOW, 32, PropModeReplace,
 			(unsigned char *) &(c->win), 1);
 	}
-	if (c->issteam)
+	if (CMASKGET(c, M_STEAM))
 		setclientstate(c, NormalState);
 	sendevent(c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
 }
@@ -4654,12 +4653,12 @@ termforwin(const Client *w)
 	Client *c;
 	Monitor *m;
 
-	if (!w->pid || w->isterminal)
+	if (!w->pid || CMASKGET(w, M_TERMINAL))
 		return NULL;
 
 	for (m = mons; m; m = m->next) {
 		for (c = m->clients; c; c = c->next) {
-			if (c->isterminal && !c->swallowing && c->pid && isdescprocess(c->pid, w->pid))
+			if (CMASKGET(c, M_TERMINAL) && !c->swallowing && c->pid && isdescprocess(c->pid, w->pid))
 				return c;
 		}
 	}
