@@ -162,7 +162,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int neverfocus, oldstate, isfullscreen,
+	int isfullscreen,
 		isterminal, issteam, isexposed, center, noswallow, beingmoved;
 	int props;
 	pid_t pid;
@@ -2270,7 +2270,7 @@ manage(Window w, XWindowAttributes *wa)
 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
 	grabbuttons(c, 0);
 	if (!CMASKGET(c, M_FLOATING))
-		CMASKSETTO(c, M_FLOATING, c->oldstate = trans != None || CMASKGET(c, M_FIXED));
+		CMASKSETTO(c, M_FLOATING|M_OLDSTATE, trans != None || CMASKGET(c, M_FIXED));
 	if (CMASKGET(c, M_FLOATING))
 		XRaiseWindow(dpy, c->win);
 	attachaside(c);
@@ -2419,7 +2419,7 @@ movemouse(const Arg *arg)
 void
 moveorplace(const Arg *arg) {
 	if (selmon->sel && ISFLOATING(selmon->sel)
-			&& !(selmon->sel->isfullscreen && !selmon->sel->oldstate))
+			&& !(selmon->sel->isfullscreen && !CMASKGET(selmon->sel, M_OLDSTATE)))
 		movemouse(arg);
 	else
 		placemouse(arg);
@@ -3397,7 +3397,7 @@ setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 		c->isfullscreen = 1;
-		c->oldstate = CMASKGET(c, M_FLOATING);
+		CMASKSETTO(c, M_OLDSTATE, CMASKGET(c, M_FLOATING));
 		CMASKSET(c, M_FLOATING);
 		unsigned int bw = c->bw;
 		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
@@ -3407,7 +3407,7 @@ setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = 0;
-		CMASKSETTO(c, M_FLOATING, c->oldstate);
+		CMASKSETTO(c, M_FLOATING, CMASKGET(c, M_OLDSTATE));
 		c->bw = c->oldbw;
 		c->x = c->oldx;
 		c->y = c->oldy;
