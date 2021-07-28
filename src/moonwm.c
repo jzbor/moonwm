@@ -163,7 +163,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfullscreen,
-		isterminal, issteam, isexposed, noswallow, beingmoved;
+		isterminal, issteam, noswallow, beingmoved;
 	int props;
 	pid_t pid;
 	Client *next;
@@ -1570,7 +1570,7 @@ exposeview(const Arg *arg)
 		ce.override_redirect = False;
 		XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
 
-		c->isexposed = 1;
+		CMASKSET(c, M_EXPOSED);
 
 		rn++;
 		if (rn >= rows) {
@@ -2836,8 +2836,8 @@ resetfacts(const Arg *arg)
 void
 resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 {
-	if (c->isexposed) {
-		c->isexposed = 0;
+	if (CMASKGET(c, M_EXPOSED)) {
+		CMASKUNSET(c, M_EXPOSED);
 		resizeclient(c, x, y, w, h, bw);
 		for (c = selmon->clients; c; c = c->next)
 			if (ISVISIBLE(c) && c->isfullscreen) {
