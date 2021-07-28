@@ -223,10 +223,7 @@ typedef struct {
 	const char *title;
 	unsigned int tags;
 	int gameid;
-	int isfloating;
-	int isterminal;
-	int center;
-	int noswallow;
+	int props;
 	int monitor;
 } Rule;
 
@@ -539,10 +536,7 @@ applyrules(Client *c)
 		&& (!r->wintype || wintype == XInternAtom(dpy, r->wintype, False))
 		&& (!r->gameid || steamid == r->gameid || (steamid && r->gameid == -1) ))
 		{
-			CMASKSETTO(c, M_TERMINAL, r->isterminal);
-			CMASKSETTO(c, M_NOSWALLOW, r->noswallow);
-			CMASKSETTO(c, M_FLOATING, r->isfloating);
-			CMASKSETTO(c, M_CENTER, r->center);
+			c->props |= r->props;
 			c->tags |= r->tags;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
