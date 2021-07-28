@@ -163,7 +163,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfullscreen,
-		isterminal, issteam, isexposed, center, noswallow, beingmoved;
+		isterminal, issteam, isexposed, noswallow, beingmoved;
 	int props;
 	pid_t pid;
 	Client *next;
@@ -544,7 +544,7 @@ applyrules(Client *c)
 			c->isterminal  = r->isterminal;
 			c->noswallow   = r->noswallow;
 			CMASKSETTO(c, M_FLOATING, r->isfloating);
-			c->center	   = r->center;
+			CMASKSETTO(c, M_CENTER, r->center);
 			c->tags |= r->tags;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
@@ -2239,7 +2239,7 @@ manage(Window w, XWindowAttributes *wa)
 	}
 
 	c->bw = borderpx;
-	if (centerspawned || c->center) {
+	if (centerspawned || CMASKGET(c, M_CENTER)) {
 		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
 		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
 		centerclient(c);
