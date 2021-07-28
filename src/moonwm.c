@@ -162,8 +162,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isfullscreen,
-		isterminal, issteam, noswallow;
+	int isterminal, issteam, noswallow;
 	int props;
 	pid_t pid;
 	Client *next;
@@ -658,7 +657,7 @@ arrangemon(Monitor *m)
 	else
 		/* <>< case; rather than providing an arrange function and upsetting other logic that tests for its presence, simply add borders here */
 		for (c = selmon->clients; c; c = c->next)
-			if (ISVISIBLE(c) && !c->isfullscreen && c->bw == 0)
+			if (ISVISIBLE(c) && !CMASKGET(c, M_FULLSCREEN) && c->bw == 0)
 				resize(c, c->x, c->y, c->w - 2*borderpx, c->h - 2*borderpx, borderpx, 0);
 }
 
@@ -962,7 +961,7 @@ clientmessage(XEvent *e)
 		if (cme->data.l[1] == netatom[NetWMFullscreen]
 		|| cme->data.l[2] == netatom[NetWMFullscreen])
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD */
-				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
+				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !CMASKGET(c, M_FULLSCREEN))));
 		else if(cme->data.l[1] == netatom[NetWMDemandsAttention]) {
 			CMASKSETTO(c, M_URGENT, (cme->data.l[0] == 1 || (cme->data.l[0] == 2 && !CMASKGET(c, M_URGENT))));
 			drawbar(c->mon);
@@ -1045,7 +1044,7 @@ configurenotify(XEvent *e)
 			updatebars();
 			for (m = mons; m; m = m->next) {
 				for (c = m->clients; c; c = c->next)
-					if (c->isfullscreen)
+					if (CMASKGET(c, M_FULLSCREEN))
 						resizeclient(c, m->mx, m->my, m->mw, m->mh, 0);
 				resizebarwin(m);
 			}
@@ -1246,7 +1245,7 @@ dragcfact(const Arg *arg)
 		resizemouse(arg);
 		return;
 	}
-	if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */
+	if (CMASKGET(c, M_FULLSCREEN)) /* no support resizing fullscreen windows by mouse */
 		return;
 	restack(selmon);
 
@@ -1319,7 +1318,7 @@ dragmfact(const Arg *arg)
 		resizemouse(arg);
 		return;
 	}
-	if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */
+	if (CMASKGET(c, M_FULLSCREEN)) /* no support resizing fullscreen windows by mouse */
 		return;
 	restack(selmon);
 
@@ -1458,7 +1457,7 @@ dropfullscr(Monitor *m, int n, Client *keep)
 {
 	int counter = 0;
 	for (Client *c = m->stack; c && ISVISIBLE(c); c = c->snext) {
-		if (c->isfullscreen && c != keep) {
+		if (CMASKGET(c, M_FULLSCREEN) && c != keep) {
 			if (counter < n)
 				counter++;
 			else
@@ -1721,7 +1720,7 @@ focusstack(const Arg *arg)
 	int i = stackpos(arg);
 	Client *c, *p;
 
-	if(i < 0 || selmon->sel->isfullscreen)
+	if(i < 0 || CMASKGET(selmon->sel, M_FULLSCREEN))
 		return;
 
 	for(p = NULL, c = selmon->clients; c && (i || !ISVISIBLE(c));
@@ -1899,7 +1898,7 @@ incnmaster(const Arg *arg)
 void
 incheight(const Arg *arg)
 {
-	if(!selmon->sel || selmon->sel->isfullscreen) {
+	if(!selmon->sel || CMASKGET(selmon->sel, M_FULLSCREEN)) {
 		return;
 	}
 	if (selmon->lt[selmon->sellt]->arrange && !CMASKGET(selmon->sel, M_FLOATING))
@@ -1929,7 +1928,7 @@ incheight(const Arg *arg)
 void
 incwidth(const Arg *arg)
 {
-	if(!selmon->sel || selmon->sel->isfullscreen)
+	if(!selmon->sel || CMASKGET(selmon->sel, M_FULLSCREEN))
 		return;
 	if (selmon->lt[selmon->sellt]->arrange && !CMASKGET(selmon->sel, M_FLOATING))
 		return;
@@ -2194,7 +2193,7 @@ losefullscreen(Client *sel, Client *c, Monitor *m)
 {
 	if (!sel || !c || !m)
 		return;
-	if (sel->isfullscreen && ISVISIBLE(sel) && sel->mon == m && !CMASKGET(c, M_FLOATING))
+	if (CMASKGET(sel, M_FULLSCREEN) && ISVISIBLE(sel) && sel->mon == m && !CMASKGET(c, M_FLOATING))
 		setfullscreen(sel, 0);
 }
 
@@ -2364,7 +2363,7 @@ movemouse(const Arg *arg)
 
 	if (!(c = selmon->sel))
 		return;
-	if (c->isfullscreen) /* no support moving fullscreen windows by mouse */
+	if (CMASKGET(c, M_FULLSCREEN)) /* no support moving fullscreen windows by mouse */
 		return;
 	restack(selmon);
 	ocx = c->x;
@@ -2419,7 +2418,7 @@ movemouse(const Arg *arg)
 void
 moveorplace(const Arg *arg) {
 	if (selmon->sel && ISFLOATING(selmon->sel)
-			&& !(selmon->sel->isfullscreen && !CMASKGET(selmon->sel, M_OLDSTATE)))
+			&& !(CMASKGET(selmon->sel, M_FULLSCREEN) && !CMASKGET(selmon->sel, M_OLDSTATE)))
 		movemouse(arg);
 	else
 		placemouse(arg);
@@ -2449,7 +2448,7 @@ movey(const Arg *arg) {
 void
 movexfloating(const Arg *arg)
 {
-	if(!selmon->sel || selmon->sel->isfullscreen) {
+	if(!selmon->sel || CMASKGET(selmon->sel, M_FULLSCREEN)) {
 		return;
 	}
 	if (selmon->lt[selmon->sellt]->arrange && !CMASKGET(selmon->sel, M_FLOATING))
@@ -2474,7 +2473,7 @@ movexfloating(const Arg *arg)
 void
 moveyfloating(const Arg *arg)
 {
-	if(!selmon->sel || selmon->sel->isfullscreen) {
+	if(!selmon->sel || CMASKGET(selmon->sel, M_FULLSCREEN)) {
 		return;
 	}
 	if (selmon->lt[selmon->sellt]->arrange && !CMASKGET(selmon->sel, M_FLOATING))
@@ -2528,7 +2527,7 @@ placemouse(const Arg *arg)
 
 	if (!(c = selmon->sel) || !c->mon->lt[c->mon->sellt]->arrange) /* no support for placemouse when floating layout is used */
 		return;
-	if (c->isfullscreen) {
+	if (CMASKGET(c, M_FULLSCREEN)) {
 		wasfullscreen = 1;
 		/* togglefullscr(NULL); */
 		setfullscreen(c, 0);
@@ -2840,7 +2839,7 @@ resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 		CMASKUNSET(c, M_EXPOSED);
 		resizeclient(c, x, y, w, h, bw);
 		for (c = selmon->clients; c; c = c->next)
-			if (ISVISIBLE(c) && c->isfullscreen) {
+			if (ISVISIBLE(c) && CMASKGET(c, M_FULLSCREEN)) {
 				XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 					PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 				resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
@@ -2896,7 +2895,7 @@ resizemouse(const Arg *arg)
 
 	if (!(c = selmon->sel))
 		return;
-	if (c->isfullscreen) /* no support resizing fullscreen windows by mouse */
+	if (CMASKGET(c, M_FULLSCREEN)) /* no support resizing fullscreen windows by mouse */
 		return;
 	restack(selmon);
 	ocx = c->x;
@@ -3317,7 +3316,7 @@ sendmon(Client *c, Monitor *m, int keeptags)
 	}
 	attachaside(c);
 	attachstack(c);
-	if (c->isfullscreen) {
+	if (CMASKGET(c, M_FULLSCREEN)) {
 		setfullscreen(c, 0);
 		setfullscreen(c, 1);
 		dropfullscr(c->mon, 0, c);
@@ -3393,20 +3392,19 @@ setfocus(Client *c)
 void
 setfullscreen(Client *c, int fullscreen)
 {
-	if (fullscreen && !c->isfullscreen) {
+	if (fullscreen && !CMASKGET(c, M_FULLSCREEN)) {
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
-		c->isfullscreen = 1;
 		CMASKSETTO(c, M_OLDSTATE, CMASKGET(c, M_FLOATING));
-		CMASKSET(c, M_FLOATING);
+		CMASKSET(c, M_FULLSCREEN|M_FLOATING);
 		unsigned int bw = c->bw;
 		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
 		c->oldbw = bw;
 		XRaiseWindow(dpy, c->win);
-	} else if (!fullscreen && c->isfullscreen){
+	} else if (!fullscreen && CMASKGET(c, M_FULLSCREEN)){
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
-		c->isfullscreen = 0;
+		CMASKUNSET(c, M_FULLSCREEN);
 		CMASKSETTO(c, M_FLOATING, CMASKGET(c, M_OLDSTATE));
 		c->bw = c->oldbw;
 		c->x = c->oldx;
@@ -3914,7 +3912,7 @@ togglefloating(const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
-	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
+	if (CMASKGET(selmon->sel, M_FULLSCREEN)) /* no support for fullscreen windows */
 		return;
 	CMASKSETTO(selmon->sel, M_FLOATING, !CMASKGET(selmon->sel, M_FLOATING) || CMASKGET(selmon->sel, M_FIXED));
 	if (CMASKGET(selmon->sel, M_FLOATING) && selmon->lt[selmon->sellt]->arrange)
@@ -3935,7 +3933,7 @@ void
 togglefullscr(const Arg *arg)
 {
   if(selmon->sel)
-	setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
+	setfullscreen(selmon->sel, !CMASKGET(selmon->sel, M_FULLSCREEN));
 }
 
 void
