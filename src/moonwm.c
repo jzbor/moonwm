@@ -163,7 +163,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfullscreen,
-		isterminal, issteam, noswallow, beingmoved;
+		isterminal, issteam, noswallow;
 	int props;
 	pid_t pid;
 	Client *next;
@@ -2546,7 +2546,7 @@ placemouse(const Arg *arg)
 	}
 
 	CMASKUNSET(c, M_FLOATING);
-	c->beingmoved = 1;
+	CMASKSET(c, M_BEINGMOVED);
 
 	XGetWindowAttributes(dpy, c->win, &wa);
 	ocx = wa.x;
@@ -2665,7 +2665,7 @@ placemouse(const Arg *arg)
 	}
 
 	focus(c);
-	c->beingmoved = 0;
+	CMASKUNSET(c, M_BEINGMOVED);
 
 	if (nx != -9999)
 		resize(c, nx, ny, c->w, c->h, c->bw, 0);
@@ -2868,7 +2868,7 @@ resizeclient(Client *c, int x, int y, int w, int h, int bw)
 	c->oldh = c->h; c->h = wc.height = h;
 	c->oldbw = c->bw = wc.border_width = bw;
 
-	if (c->beingmoved)
+	if (CMASKGET(c, M_BEINGMOVED))
 		return;
 
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
