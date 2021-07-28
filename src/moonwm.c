@@ -3379,7 +3379,7 @@ sendevent(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, lo
 void
 setfocus(Client *c)
 {
-	if (!c->neverfocus) {
+	if (!CMASKGET(c, M_NEVERFOCUS)) {
 		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
 		XChangeProperty(dpy, root, netatom[NetActiveWindow],
 			XA_WINDOW, 32, PropModeReplace,
@@ -4547,9 +4547,9 @@ updatewmhints(Client *c)
 		} else
 			CMASKSETTO(c, M_URGENT, (wmh->flags & XUrgencyHint) ? 1 : 0);
 		if (wmh->flags & InputHint)
-			c->neverfocus = !wmh->input;
+			CMASKSETTO(c, M_NEVERFOCUS, !wmh->input);
 		else
-			c->neverfocus = 0;
+			CMASKUNSET(c, M_NEVERFOCUS);
 		XFree(wmh);
 	}
 }
