@@ -18,8 +18,11 @@ static const Rule rules[] = {
     { .class = "Thunderbird",   .monitor = -1,  .tags = 1 << 8 },
     { .class = "discord",       .monitor = -1,  .tags = 1 << 6 },
     { .class = "jetbrains-idea", .monitor = -1, .tags = 1 << 4 },
-    { .class = "jetbrains-idea", .title = "Welcome to", .monitor = -1, .tags = 1 << 4, .isfloating = 1 },
-    { .title = "win0",          .monitor = - 1, .tags = 1 << 4, .isfloating = 1 },
+    { .class = "discord",           .title = "Discord Updater", .center = 1,
+        .monitor = -1,  .tags = 1 << 6 },
+    { .class = "jetbrains-idea",    .title = "Welcome to",      .center = 1,
+        .monitor = -1, .tags = 1 << 4, .isfloating = 1 },
+    { .title = "win0",  .center = 1, .monitor = -1, .tags = 1 << 4, .isfloating = 1 },
     /* Floating */
     { .class = "XClock",                            .monitor = -1, .isfloating = 1, .noswallow = 1 },
     { .class = "Pcmanfm", .title = "Execute File",  .monitor = -1, .isfloating = 1, .noswallow = 1 },
@@ -34,8 +37,8 @@ static const Rule rules[] = {
     { .class = "steam_proton",  .monitor = 0,   .tags = 1 << 5 },
     { .gameid = -1,             .monitor = 0,   .tags = 1 << 5 },
     /* window types */
-    { .wintype = "_NET_WM_WINDOW_TYPE_DIALOG",    .isfloating = 1},
+    { .wintype = "_NET_WM_WINDOW_TYPE_DIALOG",    .isfloating = 1,  .center = 1 },
+    { .wintype = "_NET_WM_WINDOW_TYPE_SPLASH",    .isfloating = 1,  .center = 1 },
     { .wintype = "_NET_WM_WINDOW_TYPE_UTILITY",   .isfloating = 1},
     { .wintype = "_NET_WM_WINDOW_TYPE_TOOLBAR",   .isfloating = 1},
-    { .wintype = "_NET_WM_WINDOW_TYPE_SPLASH",    .isfloating = 1},
 };

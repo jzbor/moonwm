@@ -144,7 +144,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen,
-		isterminal, issteam, isexposed, noswallow, beingmoved;
+		isterminal, issteam, isexposed, center, noswallow, beingmoved;
 	pid_t pid;
 	Client *next;
 	Client *snext;
@@ -207,6 +207,7 @@ typedef struct {
 	int gameid;
 	int isfloating;
 	int isterminal;
+	int center;
 	int noswallow;
 	int monitor;
 } Rule;
@@ -523,6 +524,7 @@ applyrules(Client *c)
 			c->isterminal  = r->isterminal;
 			c->noswallow   = r->noswallow;
 			c->isfloating  = r->isfloating;
+			c->center	   = r->center;
 			c->tags |= r->tags;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
@@ -2195,15 +2197,13 @@ manage(Window w, XWindowAttributes *wa)
 	c->cfact = 1.0;
 
 	updatetitle(c);
+	c->mon = selmon;
+	applyrules(c);
+	term = termforwin(c);
 	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
 		c->mon = t->mon;
 		c->tags = t->tags;
-	} else {
-		c->mon = selmon;
-		applyrules(c);
-		term = termforwin(c);
 	}
-
 	loadclientprops(c);
 
 	if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
@@ -2219,7 +2219,7 @@ manage(Window w, XWindowAttributes *wa)
 	}
 
 	c->bw = borderpx;
-	if (centerspawned) {
+	if (centerspawned || c->center) {
 		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
 		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
 		centerclient(c);
