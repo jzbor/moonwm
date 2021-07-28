@@ -162,7 +162,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isurgent, neverfocus, oldstate, isfullscreen,
+	int neverfocus, oldstate, isfullscreen,
 		isterminal, issteam, isexposed, center, noswallow, beingmoved;
 	int props;
 	pid_t pid;
@@ -964,7 +964,7 @@ clientmessage(XEvent *e)
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
 		else if(cme->data.l[1] == netatom[NetWMDemandsAttention]) {
-			c->isurgent = (cme->data.l[0] == 1 || (cme->data.l[0] == 2 && !c->isurgent));
+			CMASKSETTO(c, M_URGENT, (cme->data.l[0] == 1 || (cme->data.l[0] == 2 && !CMASKGET(c, M_URGENT))));
 			drawbar(c->mon);
 		}
 
@@ -1394,7 +1394,7 @@ drawbar(Monitor *m)
 	resizebarwin(m);
 	for (c = m->clients; c; c = c->next) {
 		occ |= c->tags;
-		if (c->isurgent)
+		if (CMASKGET(c, M_URGENT))
 			urg |= c->tags;
 	}
 
@@ -1591,7 +1591,7 @@ focus(Client *c)
 	if (c) {
 		if (c->mon != selmon)
 			selmon = c->mon;
-		if (c->isurgent)
+		if (CMASKGET(c, M_URGENT))
 			seturgent(c, 0);
 		detachstack(c);
 		attachstack(c);
@@ -3727,7 +3727,7 @@ seturgent(Client *c, int urg)
 {
 	XWMHints *wmh;
 
-	c->isurgent = urg;
+	CMASKSETTO(c, M_URGENT, urg);
 	if (!(wmh = XGetWMHints(dpy, c->win)))
 		return;
 	wmh->flags = urg ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
@@ -4545,7 +4545,7 @@ updatewmhints(Client *c)
 			wmh->flags &= ~XUrgencyHint;
 			XSetWMHints(dpy, c->win, wmh);
 		} else
-			c->isurgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
+			CMASKSETTO(c, M_URGENT, (wmh->flags & XUrgencyHint) ? 1 : 0);
 		if (wmh->flags & InputHint)
 			c->neverfocus = !wmh->input;
 		else
