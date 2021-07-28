@@ -104,18 +104,18 @@
 #define MWM_DECOR_TITLE             (1 << 3)
 
 /* mask indices */
-#define M_FIXED			(1 << 0)
-#define M_FLOATING		(1 << 1)
-#define M_URGENT		(1 << 2)
-#define	M_NEVERFOCUS	(1 << 3)
-#define	M_OLDSTATE		(1 << 4)
-#define M_FULLSCREEN	(1 << 5)
-#define M_TERMINAL		(1 << 6)
-#define M_STEAM			(1 << 7)
-#define M_EXPOSED		(1 << 8)
-#define M_CENTER		(1 << 9)
-#define M_NOSWALLOW		(1 << 10)
-#define	M_BEINGMOVED	(1 << 11)
+#define	M_BEINGMOVED	(1 << 1)
+#define	M_NEVERFOCUS	(1 << 2)
+#define	M_OLDSTATE		(1 << 3)
+#define M_CENTER		(1 << 4)
+#define M_EXPOSED		(1 << 5)
+#define M_FIXED			(1 << 6)
+#define M_FLOATING		(1 << 7)
+#define M_FULLSCREEN	(1 << 8)
+#define M_NOSWALLOW		(1 << 9)
+#define M_STEAM			(1 << 10)
+#define M_TERMINAL		(1 << 11)
+#define M_URGENT		(1 << 12)
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
@@ -162,7 +162,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isfixed, isurgent, neverfocus, oldstate, isfullscreen,
+	int isurgent, neverfocus, oldstate, isfullscreen,
 		isterminal, issteam, isexposed, center, noswallow, beingmoved;
 	int props;
 	pid_t pid;
@@ -2270,7 +2270,7 @@ manage(Window w, XWindowAttributes *wa)
 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
 	grabbuttons(c, 0);
 	if (!CMASKGET(c, M_FLOATING))
-		CMASKSETTO(c, M_FLOATING, c->oldstate = trans != None || c -> isfixed);
+		CMASKSETTO(c, M_FLOATING, c->oldstate = trans != None || CMASKGET(c, M_FIXED));
 	if (CMASKGET(c, M_FLOATING))
 		XRaiseWindow(dpy, c->win);
 	attachaside(c);
@@ -3916,7 +3916,7 @@ togglefloating(const Arg *arg)
 		return;
 	if (selmon->sel->isfullscreen) /* no support for fullscreen windows */
 		return;
-	CMASKSETTO(selmon->sel, M_FLOATING, !CMASKGET(selmon->sel, M_FLOATING) || selmon->sel->isfixed);
+	CMASKSETTO(selmon->sel, M_FLOATING, !CMASKGET(selmon->sel, M_FLOATING) || CMASKGET(selmon->sel, M_FIXED));
 	if (CMASKGET(selmon->sel, M_FLOATING) && selmon->lt[selmon->sellt]->arrange)
 		/* restore last known float dimensions */
 		resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
@@ -4368,7 +4368,7 @@ updatesizehints(Client *c)
 		c->maxa = (float)size.max_aspect.x / size.max_aspect.y;
 	} else
 		c->maxa = c->mina = 0.0;
-	c->isfixed = (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
+	CMASKSETTO(c, M_FIXED, (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh));
 }
 
 void
