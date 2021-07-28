@@ -743,7 +743,7 @@ monocle(Monitor *m)
 	Client *c;
 
 	for (c = m->clients; c; c = c->next)
-		if (ISVISIBLE(c) && !c->isfloating)
+		if (ISVISIBLE(c) && !CMASKGET(c, M_FLOATING))
 			n++;
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
