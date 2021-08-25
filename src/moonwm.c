@@ -48,120 +48,21 @@
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 
-#include <wmdef.h>
+#include <common.h>
 #include <drw.h>
 #include <util.h>
 #include <xwrappers.h>
 
 /* macros */
-#define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
-#define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
-#define GETINC(X)               ((X) - 2000)
-#define INC(X)                  ((X) + 2000)
-#define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
-                               * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
-#define INTERSECTC(x,y,w,h,z)   (MAX(0, MIN((x)+(w),(z)->x+(z)->w) - MAX((x),(z)->x)) \
-                               * MAX(0, MIN((y)+(h),(z)->y+(z)->h) - MAX((y),(z)->y)))
-#define ISFLOATING(C)           (!(C)->mon->lt[(C)->mon->sellt]->arrange || CMASKGET((C), M_FLOATING))
-#define ISINC(X)                ((X) > 1000 && (X) < 3000)
 #define ISVISIBLEONTAG(C, T)    ((C->tags & T))
 #define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
-#define PREVSEL                 3000
-#define LENGTH(X)               (sizeof X / sizeof X[0])
-#define CMASKGET(C, I)			((C)->props & (I))
-#define CMASKSETTO(C, I, V)		((V) ? ((C)->props |= (I)) : ((C)->props &= ~(I)))
-#define CMASKSET(C, I)			((C)->props |= (I))
-#define CMASKUNSET(C, I)		((C)->props &= ~(I))
-#define CMASKTOGGLE(C, I)		((C)->props ^= (I))
-#define MOD(N,M)                ((N)%(M) < 0 ? (N)%(M) + (M) : (N)%(M))
-#define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
-#define WIDTH(X)                ((X)->w + 2 * (X)->bw)
-#define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TAGSLENGTH              (LENGTH(tags))
-#define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
-#define TRUNC(X,A,B)            (MAX((A), MIN((X), (B))))
-
-#define SYSTEM_TRAY_REQUEST_DOCK    0
-
-/* XEMBED messages */
-#define XEMBED_EMBEDDED_NOTIFY      0
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_FOCUS_IN             4
-#define XEMBED_MODALITY_ON         10
-
-#define XEMBED_MAPPED              (1 << 0)
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_WINDOW_DEACTIVATE    2
-
-#define VERSION_MAJOR               0
-#define VERSION_MINOR               0
-#define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
-
-#define MWM_HINTS_FLAGS_FIELD       0
-#define MWM_HINTS_DECORATIONS_FIELD 2
-#define MWM_HINTS_DECORATIONS       (1 << 1)
-#define MWM_DECOR_ALL               (1 << 0)
-#define MWM_DECOR_BORDER            (1 << 1)
-#define MWM_DECOR_TITLE             (1 << 3)
 
 /* enums */
 enum { SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMLast }; /* MoonWM atoms */
 enum { ClkMenu, ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
-
-typedef union {
-	int i;
-	unsigned int ui;
-	float f;
-	const void *v;
-} Arg;
-
-typedef struct {
-	unsigned int click;
-	unsigned int mask;
-	unsigned int button;
-	void (*func)(const Arg *arg);
-	const Arg arg;
-} Button;
-
-typedef struct Monitor Monitor;
-typedef struct Client Client;
-struct Client {
-	char name[256];
-	float mina, maxa;
-	float cfact;
-	int x, y, w, h;
-	int sfx, sfy, sfw, sfh; /* stored float geometry, used on mode revert */
-	int oldx, oldy, oldw, oldh;
-	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
-	int bw, oldbw;
-	unsigned int tags;
-	int props;
-	pid_t pid;
-	Client *next;
-	Client *snext;
-	Client *swallowing;
-	Monitor *mon;
-	Window win;
-};
-
-typedef struct {
-	unsigned int mod;
-	KeySym keysym;
-	void (*func)(const Arg *);
-	const Arg arg;
-} Key;
-
-typedef struct {
-	const char * sig;
-	void (*func)(const Arg *);
-} Signal;
-
-typedef struct {
-	const char *symbol;
-	void (*arrange)(Monitor *);
-} Layout;
 
 typedef struct Pertag Pertag;
 struct Monitor {
@@ -188,24 +89,6 @@ struct Monitor {
 	Window barwin;
 	const Layout *lt[2];
 	Pertag *pertag;
-};
-
-typedef struct {
-	const char *class;
-	const char *role;
-	const char *instance;
-	const char *wintype;
-	const char *title;
-	unsigned int tags;
-	int gameid;
-	int props;
-	int monitor;
-} Rule;
-
-typedef struct Systray   Systray;
-struct Systray {
-	Window win;
-	Client *icons;
 };
 
 /* function declarations */
@@ -250,7 +133,6 @@ static void focusfloating(const Arg *arg);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
-static Atom getatomprop(Client *c, Atom prop, Atom req);
 static pid_t getparentprocess(pid_t p);
 static unsigned int getsystraywidth();
 static void grabbuttons(Client *c, int focused);
@@ -480,11 +362,11 @@ applyrules(Client *c)
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
-	wintype	 = getatomprop(c, netatom[NetWMWindowType], XA_ATOM);
+	wintype	 = window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM);
 	window_get_textprop(dpy, c->win, wmatom[WMWindowRole], role, sizeof(role));
 
 	if (strstr(class, "Steam") || strstr(class, "steam_app_")
-			|| (steamid = getatomprop(c, mwmatom[SteamGame], AnyPropertyType)))
+			|| (steamid = window_get_atomprop(dpy, c->win, mwmatom[SteamGame], AnyPropertyType)))
 		CMASKSET(c, M_STEAM);
 
 	for (i = 0; i < LENGTH(rules); i++) {
@@ -1682,26 +1564,6 @@ focusstack(const Arg *arg)
 	restack(selmon);
 }
 
-Atom
-getatomprop(Client *c, Atom prop, Atom req)
-{
-	int di;
-	unsigned long dl;
-	unsigned char *p = NULL;
-	Atom da, atom = None;
-
-	/* FIXME getatomprop should return the number of items and a pointer to
-	 * the stored data instead of this workaround */
-	if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, req,
-		&da, &di, &dl, &dl, &p) == Success && p) {
-		atom = *(Atom *)p;
-		if (da == xatom[XembedInfo] && dl == 2)
-			atom = ((Atom *)p)[1];
-		XFree(p);
-	}
-	return atom;
-}
-
 unsigned int
 getsystraywidth()
 {
@@ -2053,12 +1915,12 @@ manage(Window w, XWindowAttributes *wa)
 	}
 	loadclientprops(c);
 
-	if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
+	if (window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
 		XMapWindow(dpy, c->win);
 		XLowerWindow(dpy, c->win);
 		free(c);
 		return;
-	} else if (getatomprop(c, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDock]) {
+	} else if (window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDock]) {
 		XMapWindow(dpy, c->win);
 		XRaiseWindow(dpy, c->win);
 		free(c);
@@ -4184,7 +4046,7 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	int code = 0;
 
 	if (!showsystray || !i || ev->atom != xatom[XembedInfo] ||
-			!(flags = getatomprop(i, xatom[XembedInfo], xatom[XembedInfo])))
+			!(flags = window_get_atomprop(dpy, i->win, xatom[XembedInfo], xatom[XembedInfo])))
 		return;
 
 	if (flags & XEMBED_MAPPED && !i->tags) {
@@ -4282,8 +4144,8 @@ updatetitle(Client *c)
 void
 updatewindowtype(Client *c)
 {
-	Atom state = getatomprop(c, netatom[NetWMState], XA_ATOM);
-	Atom wtype = getatomprop(c, netatom[NetWMWindowType], XA_ATOM);
+	Atom state = window_get_atomprop(dpy, c->win, netatom[NetWMState], XA_ATOM);
+	Atom wtype = window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM);
 
 	if (state == netatom[NetWMFullscreen])
 		setfullscreen(c, 1);

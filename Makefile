@@ -18,7 +18,7 @@ options:
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-${OBJ}: config.h config.mk wmdef.h
+${OBJ}: config.h config.mk common.h
 
 config.h:
 	cp config.def.h $@
