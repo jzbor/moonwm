@@ -30,7 +30,7 @@ moonctl: moonctl.c
 	${CC} -g -o $@ src/moonctl.c ${LDFLAGS}
 
 clean:
-	rm -f moonctl moonwm ${OBJ} moonwm-${VERSION}.tar.gz
+	rm -f moonctl moonwm ${OBJ} moonctl.o moonwm-${VERSION}.tar.gz
 
 dist: clean
 	mkdir -p moonwm-${VERSION}
