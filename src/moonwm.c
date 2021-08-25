@@ -2255,10 +2255,10 @@ manage(Window w, XWindowAttributes *wa)
 	updatemotifhints(c);
 	updateclienttags(c);
 	updateclientmonitor(c);
-	c->sfx = c->x;
-	c->sfy = c->y;
-	c->sfw = c->w;
-	c->sfh = c->h;
+	c->sfx = -1;
+	c->sfy = -1;
+	c->sfw = -1;
+	c->sfh = -1;
 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
 	grabbuttons(c, 0);
 	if (!CMASKGET(c, M_FLOATING))
@@ -3911,9 +3911,12 @@ togglefloating(const Arg *arg)
 		return;
 	CMASKSETTO(selmon->sel, M_FLOATING, !CMASKGET(selmon->sel, M_FLOATING) || CMASKGET(selmon->sel, M_FIXED));
 	if (CMASKGET(selmon->sel, M_FLOATING) && selmon->lt[selmon->sellt]->arrange)
-		/* restore last known float dimensions */
-		resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
-			   selmon->sel->sfw, selmon->sel->sfh, borderpx, 0);
+		if (selmon->sel->sfx == -1 && selmon->sel->sfy == -1)
+            centerclient(selmon->sel);
+        else
+            /* restore last known float dimensions */
+            resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
+                   selmon->sel->sfw, selmon->sel->sfh, borderpx, 0);
 	else {
 		/* save last known float dimensions */
 		selmon->sel->sfx = selmon->sel->x;
