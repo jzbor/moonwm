@@ -3,7 +3,7 @@
 
 include config.mk
 
-VPATH = src
+VPATH = src wmcommons/src
 SRC = drw.c moonwm.c util.c
 OBJ = ${SRC:.c=.o}
 

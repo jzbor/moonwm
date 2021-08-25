@@ -48,8 +48,8 @@
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 
-#include "drw.h"
-#include "util.h"
+#include <drw.h>
+#include <util.h>
 
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
