@@ -251,11 +251,7 @@ static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop, Atom req);
-static int getintprop(Client *c, Atom prop);
-static int getintproproot(Atom prop);
 static pid_t getparentprocess(pid_t p);
-static int getrootptr(int *x, int *y);
-static long getstate(Window w);
 static unsigned int getsystraywidth();
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
@@ -1706,34 +1702,6 @@ getatomprop(Client *c, Atom prop, Atom req)
 	return atom;
 }
 
-int
-getrootptr(int *x, int *y)
-{
-	int di;
-	unsigned int dui;
-	Window dummy;
-
-	return XQueryPointer(dpy, root, &dummy, &dummy, x, y, &di, &di, &dui);
-}
-
-long
-getstate(Window w)
-{
-	int format;
-	long result = -1;
-	unsigned char *p = NULL;
-	unsigned long n, extra;
-	Atom real;
-
-	if (XGetWindowProperty(dpy, w, wmatom[WMState], 0L, 2L, False, wmatom[WMState],
-		&real, &format, &n, &extra, (unsigned char **)&p) != Success)
-		return -1;
-	if (n != 0)
-		result = *p;
-	XFree(p);
-	return result;
-}
-
 unsigned int
 getsystraywidth()
 {
@@ -1742,42 +1710,6 @@ getsystraywidth()
 	if(showsystray)
 		for(i = systray->icons; i; w += i->w + systrayspacing, i = i->next) ;
 	return w ? w + systrayspacing : 1;
-}
-
-int
-getintprop(Client *c, Atom prop)
-{
-	int di, ret = 0;
-	unsigned long dl;
-	unsigned char *p = NULL;
-	Atom da;
-
-	/* FIXME getatomprop should return the number of items and a pointer to
-	 * the stored data instead of this workaround */
-	if (XGetWindowProperty(dpy, c->win, prop, 0L, 1, False, XA_CARDINAL,
-		&da, &di, &dl, &dl, &p) == Success && p) {
-		ret = *(int *)p;
-		XFree(p);
-	}
-	return ret;
-}
-
-int
-getintproproot(Atom prop)
-{
-	int di, ret = 0;
-	unsigned long dl;
-	unsigned char *p = NULL;
-	Atom da;
-
-	/* FIXME getatomprop should return the number of items and a pointer to
-	 * the stored data instead of this workaround */
-	if (XGetWindowProperty(dpy, root, prop, 0L, 1, False, XA_CARDINAL,
-		&da, &di, &dl, &dl, &p) == Success && p) {
-		ret = *(int *)p;
-		XFree(p);
-	}
-	return ret;
 }
 
 void
@@ -2017,10 +1949,10 @@ loadclientprops(Client *c)
 
 	if (!c)
 		return;
-	ui = getintprop(c, mwmatom[MWMClientTags]);
+	ui = window_get_intprop(dpy, c->win, mwmatom[MWMClientTags]);
 	if (ui & TAGMASK)
 		c->tags = ui & TAGMASK;
-	ui = getintprop(c, mwmatom[MWMClientMonitor]);
+	ui = window_get_intprop(dpy, c->win, mwmatom[MWMClientMonitor]);
 	if (ui) {
 		for (m = mons; m && m->num != ui; m = m->next);
 		if (m)
@@ -2056,7 +1988,7 @@ loadenv(char *name, char **retval, int *retint, unsigned int *retuint)
 void
 loadwmprops(void) {
 	unsigned int ui;
-	ui = getintproproot(mwmatom[MWMCurrentTags]);
+	ui = window_get_intprop(dpy, root, mwmatom[MWMCurrentTags]);
 	if (ui)
 		view(&((Arg) { .ui = ui }));
 }
@@ -2139,7 +2071,7 @@ manage(Window w, XWindowAttributes *wa)
 		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
 		centerclient(c);
 	} else {
-		getrootptr(&c->x, &c->y);
+		get_pointer_pos(dpy, root, &c->x, &c->y);
 		c->x += spawnedoffset;
 		c->y += spawnedoffset;
 	}
@@ -2260,7 +2192,7 @@ movemouse(const Arg *arg)
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
 		return;
-	if (!getrootptr(&x, &y))
+	if (!get_pointer_pos(dpy, root, &x, &y))
 		return;
 	do {
 		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
@@ -2443,7 +2375,7 @@ placemouse(const Arg *arg)
 	if (placemousemode == 2) // warp cursor to client center
 		XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, WIDTH(c) / 2, HEIGHT(c) / 2);
 
-	if (!getrootptr(&x, &y)) {
+	if (!get_pointer_pos(dpy, root, &x, &y)) {
 		if (wasfullscreen)
 			setfullscreen(c, 1);
 		return;
@@ -3151,14 +3083,14 @@ scan(void)
 			if (!XGetWindowAttributes(dpy, wins[i], &wa)
 			|| wa.override_redirect || XGetTransientForHint(dpy, wins[i], &d1))
 				continue;
-			if (wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
+			if (wa.map_state == IsViewable || window_get_state(dpy, wins[i]) == IconicState)
 				manage(wins[i], &wa);
 		}
 		for (i = 0; i < num; i++) { /* now the transients */
 			if (!XGetWindowAttributes(dpy, wins[i], &wa))
 				continue;
 			if (XGetTransientForHint(dpy, wins[i], &d1)
-			&& (wa.map_state == IsViewable || getstate(wins[i]) == IconicState))
+			&& (wa.map_state == IsViewable || window_get_state(dpy, wins[i]) == IconicState))
 				manage(wins[i], &wa);
 		}
 		if (wins)
@@ -4519,7 +4451,7 @@ warp(const Client *c, int edge)
 		return;
 	}
 
-	if (!getrootptr(&x, &y) ||
+	if (!get_pointer_pos(dpy, root, &x, &y) ||
 		(x > c->x - c->bw &&
 		 y > c->y - c->bw &&
 		 x < c->x + c->w + c->bw*2 &&
@@ -4564,7 +4496,7 @@ wintomon(Window w)
 	Client *c;
 	Monitor *m;
 
-	if (w == root && getrootptr(&x, &y))
+	if (w == root && get_pointer_pos(dpy, root, &x, &y))
 		return recttomon(x, y, 1, 1);
 	for (m = mons; m; m = m->next)
 		if (w == m->barwin)
