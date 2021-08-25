@@ -270,9 +270,7 @@ static void layoutmenu(const Arg *arg);
 static void loadclientprops(Client *c);
 static int loadenv(char *name, char **retval, int *retint, unsigned int *retuint);
 static void loadwmprops(void);
-static int loadxcolor(XrmDatabase db, char *name, char *dest);
 static void loadxrdb(XrmDatabase db);
-static int loadxres(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
@@ -399,7 +397,6 @@ static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh, blw = 0;      /* bar geometry */
 static int lrpad;            /* sum of left and right padding for text */
-static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static int ignorewarp = 0;
 static int istatustimer = 0;
@@ -488,7 +485,7 @@ applyrules(Client *c)
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
 	wintype	 = getatomprop(c, netatom[NetWMWindowType], XA_ATOM);
-	window_get_textprop(c->win, wmatom[WMWindowRole], role, sizeof(role));
+	window_get_textprop(dpy, c->win, wmatom[WMWindowRole], role, sizeof(role));
 
 	if (strstr(class, "Steam") || strstr(class, "steam_app_")
 			|| (steamid = getatomprop(c, mwmatom[SteamGame], AnyPropertyType)))
@@ -786,7 +783,7 @@ centerclient(Client *c)
 void
 checkotherwm(void)
 {
-	xerrorxlib = XSetErrorHandler(xerror_start);
+	set_xerror_xlib(XSetErrorHandler(xerror_start));
 	/* this causes an error if some other window manager is running */
 	XSelectInput(dpy, DefaultRootWindow(dpy), SubstructureRedirectMask);
 	XSync(dpy, False);
@@ -894,11 +891,11 @@ clientmessage(XEvent *e)
 			/* use parents background color */
 			swa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
-			send_event(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			/* FIXME not sure if I have to send these events, too */
-			send_event(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			send_event(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			send_event(c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			XSync(dpy, False);
 			resizebarwin(selmon);
 			updatesystray();
@@ -1928,7 +1925,7 @@ fake_signal(void)
 	Arg arg;
 
 	// Get root name property
-	if (window_get_textprop(root, XA_WM_NAME, fsignal, sizeof(fsignal))) {
+	if (window_get_textprop(dpy, root, XA_WM_NAME, fsignal, sizeof(fsignal))) {
 		len_fsignal = strlen(fsignal);
 
 		// Check if this is indeed a fake signal
@@ -1964,7 +1961,7 @@ killclient(const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
-	if (!send_event(selmon->sel->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!send_event(dpy, selmon->sel->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerror_dummy);
 		XSetCloseDownMode(dpy, DestroyAll);
@@ -2031,43 +2028,6 @@ loadclientprops(Client *c)
 	}
 }
 
-int
-loadxcolor(XrmDatabase db, char *name, char *dest)
-{
-	char *str = NULL;
-	if (!loadxres(db, name, &str, NULL, NULL))
-		return 0;
-	if (strlen(dest) != 7 || strlen(str) != 7)
-		return 0;
-	strncpy(dest, str, 7);
-	return 1;
-}
-
-int
-loadxres(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint)
-{
-	char *tempval, *type, *dummy;
-	int tempint;
-	XrmValue xval;
-	if (XrmGetResource(db, name, "*", &type, &xval) == False)
-		return 0;
-	tempval = xval.addr;
-
-	if (retval)
-		(*retval) = tempval;
-	if (retint || retuint) {
-		errno = 0;
-		tempint = strtol(tempval, &dummy, 0);
-		if (!tempint && errno)
-			return 0;
-	}
-	if (retint)
-		(*retint) = tempint;
-	if (retuint)
-		(*retuint) = tempint;
-	return 1;
-}
-
 /* load variable from environment variable */
 int
 loadenv(char *name, char **retval, int *retint, unsigned int *retuint)
@@ -2107,21 +2067,21 @@ loadxrdb(XrmDatabase db)
 	if (!db)
 		return;
 
-	loadxcolor(db, "moonwm.vacantTagFg", normtagfg);
-	loadxcolor(db, "moonwm.vacantTagFg", normtagfg);
-	loadxcolor(db, "moonwm.vacantTagBg", normtagbg);
-	loadxcolor(db, "moonwm.unfocusedTitleFg", normtitlefg);
-	loadxcolor(db, "moonwm.unfocusedTitleBg", normtitlebg);
-	loadxcolor(db, "moonwm.statusFg", statusfg);
-	loadxcolor(db, "moonwm.statusBg", statusbg);
-	loadxcolor(db, "moonwm.menuFg", menufg);
-	loadxcolor(db, "moonwm.menuBg", menubg);
-	loadxcolor(db, "moonwm.unfocusedBorder", normborderfg);
-	loadxcolor(db, "moonwm.occupiedTagFg", hightagfg);
-	loadxcolor(db, "moonwm.occupiedTagBg", hightagbg);
-	loadxcolor(db, "moonwm.focusedTitleFg", hightitlefg);
-	loadxcolor(db, "moonwm.focusedTitleBg", hightitlebg);
-	loadxcolor(db, "moonwm.focusedBorder", highborderfg);
+	xrdb_get_color(db, "moonwm.vacantTagFg", normtagfg);
+	xrdb_get_color(db, "moonwm.vacantTagFg", normtagfg);
+	xrdb_get_color(db, "moonwm.vacantTagBg", normtagbg);
+	xrdb_get_color(db, "moonwm.unfocusedTitleFg", normtitlefg);
+	xrdb_get_color(db, "moonwm.unfocusedTitleBg", normtitlebg);
+	xrdb_get_color(db, "moonwm.statusFg", statusfg);
+	xrdb_get_color(db, "moonwm.statusBg", statusbg);
+	xrdb_get_color(db, "moonwm.menuFg", menufg);
+	xrdb_get_color(db, "moonwm.menuBg", menubg);
+	xrdb_get_color(db, "moonwm.unfocusedBorder", normborderfg);
+	xrdb_get_color(db, "moonwm.occupiedTagFg", hightagfg);
+	xrdb_get_color(db, "moonwm.occupiedTagBg", hightagbg);
+	xrdb_get_color(db, "moonwm.focusedTitleFg", hightitlefg);
+	xrdb_get_color(db, "moonwm.focusedTitleBg", hightitlebg);
+	xrdb_get_color(db, "moonwm.focusedBorder", highborderfg);
 }
 
 void
@@ -2249,7 +2209,7 @@ maprequest(XEvent *e)
 	XMapRequestEvent *ev = &e->xmaprequest;
 	Client *i;
 	if ((i = wintosystrayicon(ev->window))) {
-		send_event(i->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
+		send_event(dpy, i->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
 		resizebarwin(selmon);
 		updatesystray();
 	}
@@ -3271,7 +3231,7 @@ setfocus(Client *c)
 	}
 	if (CMASKGET(c, M_STEAM))
 		window_set_state(dpy, c->win, NormalState);
-	send_event(c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
+	send_event(dpy, c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
 }
 
 void
@@ -3458,25 +3418,25 @@ settingsenv(void) {
 
 void
 settingsxrdb(XrmDatabase db) {
-	loadxres(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
-	loadxres(db,	"moonwm.decorhints",	NULL,	&decorhints,		NULL);
-	loadxres(db,	"moonwm.gaps",			NULL,	&enablegaps,		NULL);
-	loadxres(db,	"moonwm.keys",			NULL,	&managekeys,		NULL);
-	loadxres(db,	"moonwm.resizehints",	NULL,	&resizehints,		NULL);
-	loadxres(db,	"moonwm.showbar",		NULL,	&showbar,			NULL);
-	loadxres(db,	"moonwm.smartgaps",		NULL,	&smartgaps,			NULL);
-	loadxres(db,	"moonwm.swallow",		NULL,	&swallowdefault,	NULL);
-	loadxres(db,	"moonwm.systray",		NULL,	&showsystray,		NULL);
-	loadxres(db,	"moonwm.topbar",		NULL,	&topbar,			NULL);
-	loadxres(db,	"moonwm.workspaces",	NULL,	&workspaces,		NULL);
-	loadxres(db,	"moonwm.borderwidth",	NULL,	NULL,	&borderpx);
-	loadxres(db,	"moonwm.framerate",		NULL,	NULL,	&framerate);
-	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappih);
-	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappiv);
-	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappoh);
-	loadxres(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
-	loadxres(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
-	loadxres(db,	"moonwm.mfact",			NULL, NULL, &imfact);
+	xrdb_get(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
+	xrdb_get(db,	"moonwm.decorhints",	NULL,	&decorhints,		NULL);
+	xrdb_get(db,	"moonwm.gaps",			NULL,	&enablegaps,		NULL);
+	xrdb_get(db,	"moonwm.keys",			NULL,	&managekeys,		NULL);
+	xrdb_get(db,	"moonwm.resizehints",	NULL,	&resizehints,		NULL);
+	xrdb_get(db,	"moonwm.showbar",		NULL,	&showbar,			NULL);
+	xrdb_get(db,	"moonwm.smartgaps",		NULL,	&smartgaps,			NULL);
+	xrdb_get(db,	"moonwm.swallow",		NULL,	&swallowdefault,	NULL);
+	xrdb_get(db,	"moonwm.systray",		NULL,	&showsystray,		NULL);
+	xrdb_get(db,	"moonwm.topbar",		NULL,	&topbar,			NULL);
+	xrdb_get(db,	"moonwm.workspaces",	NULL,	&workspaces,		NULL);
+	xrdb_get(db,	"moonwm.borderwidth",	NULL,	NULL,	&borderpx);
+	xrdb_get(db,	"moonwm.framerate",		NULL,	NULL,	&framerate);
+	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappih);
+	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappiv);
+	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappoh);
+	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
+	xrdb_get(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
+	xrdb_get(db,	"moonwm.mfact",			NULL, NULL, &imfact);
 }
 
 void
@@ -4240,7 +4200,7 @@ updatestatus(void)
 {
 	Monitor* m;
 	int now;
-	if (!window_get_textprop(root, XA_WM_NAME, rawstext, sizeof(rawstext)))
+	if (!window_get_textprop(dpy, root, XA_WM_NAME, rawstext, sizeof(rawstext)))
 		strcpy(stext, "moonwm-"VERSION);
 	else {
 		now = time(NULL);
@@ -4309,7 +4269,7 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	}
 	else
 		return;
-	send_event(i->win, xatom[Xembed], StructureNotifyMask, CurrentTime, code, 0,
+	send_event(dpy, i->win, xatom[Xembed], StructureNotifyMask, CurrentTime, code, 0,
 			systray->win, XEMBED_EMBEDDED_VERSION);
 }
 
@@ -4340,7 +4300,7 @@ updatesystray(void)
 		XMapRaised(dpy, systray->win);
 		XSetSelectionOwner(dpy, netatom[NetSystemTray], systray->win, CurrentTime);
 		if (XGetSelectionOwner(dpy, netatom[NetSystemTray]) == systray->win) {
-			send_event(root, xatom[Manager], StructureNotifyMask, CurrentTime, netatom[NetSystemTray], systray->win, 0, 0);
+			send_event(dpy, root, xatom[Manager], StructureNotifyMask, CurrentTime, netatom[NetSystemTray], systray->win, 0, 0);
 			XSync(dpy, False);
 		}
 		else {
@@ -4381,8 +4341,8 @@ updatesystray(void)
 void
 updatetitle(Client *c)
 {
-	if (!window_get_textprop(c->win, netatom[NetWMName], c->name, sizeof c->name))
-		window_get_textprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
+	if (!window_get_textprop(dpy, c->win, netatom[NetWMName], c->name, sizeof c->name))
+		window_get_textprop(dpy, c->win, XA_WM_NAME, c->name, sizeof c->name);
 	if (c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, broken);
 }
