@@ -1,13 +1,22 @@
 /* vim: set noet: */
 
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <X11/Xproto.h>
+#include <X11/Xresource.h>
 #include <X11/Xutil.h>
 
 #include "xwrappers.h"
 #include "wmdef.h"
+#include "util.h"
 
 int
-send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, long d4)
+send_event(Display *dpy, Window w, Atom proto, int mask,
+		long d0, long d1, long d2, long d3, long d4)
 {
 	int n;
 	Atom *protocols, mt;
@@ -41,8 +50,14 @@ send_event(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, l
 	return exists;
 }
 
+void
+set_xerror_xlib(int (*xexlib)(Display *, XErrorEvent *))
+{
+	xerrorxlib = xexlib;
+}
+
 int
-window_get_textprop(Window w, Atom atom, char *text, unsigned int size)
+window_get_textprop(Display *dpy, Window w, Atom atom, char *text, unsigned int size)
 {
 	char **list = NULL;
 	int n;
@@ -142,4 +157,41 @@ xerror_start(Display *dpy, XErrorEvent *ee)
 {
 	die("moonwm: another window manager is already running");
 	return -1;
+}
+
+int
+xrdb_get(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint)
+{
+	char *tempval, *type, *dummy;
+	int tempint;
+	XrmValue xval;
+	if (XrmGetResource(db, name, "*", &type, &xval) == False)
+		return 0;
+	tempval = xval.addr;
+
+	if (retval)
+		(*retval) = tempval;
+	if (retint || retuint) {
+		errno = 0;
+		tempint = strtol(tempval, &dummy, 0);
+		if (!tempint && errno)
+			return 0;
+	}
+	if (retint)
+		(*retint) = tempint;
+	if (retuint)
+		(*retuint) = tempint;
+	return 1;
+}
+
+int
+xrdb_get_color(XrmDatabase db, char *name, char *dest)
+{
+	char *str = NULL;
+	if (!xrdb_get(db, name, &str, NULL, NULL))
+		return 0;
+	if (strlen(dest) != 7 || strlen(str) != 7)
+		return 0;
+	strncpy(dest, str, 7);
+	return 1;
 }
