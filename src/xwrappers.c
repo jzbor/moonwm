@@ -66,6 +66,26 @@ set_xerror_xlib(int (*xexlib)(Display *, XErrorEvent *))
 	xerrorxlib = xexlib;
 }
 
+Atom
+window_get_atomprop(Display *dpy, Window win, Atom prop, Atom req)
+{
+	int di;
+	unsigned long dl;
+	unsigned char *p = NULL;
+	Atom da, atom = None;
+
+	/* FIXME getatomprop should return the number of items and a pointer to
+	 * the stored data instead of this workaround */
+	if (XGetWindowProperty(dpy, win, prop, 0L, sizeof atom, False, req,
+		&da, &di, &dl, &dl, &p) == Success && p) {
+		atom = *(Atom *)p;
+		if (da == xatom[XembedInfo] && dl == 2)
+			atom = ((Atom *)p)[1];
+		XFree(p);
+	}
+	return atom;
+}
+
 int
 window_get_intprop(Display *dpy, Window win, Atom prop)
 {

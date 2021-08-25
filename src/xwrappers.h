@@ -8,6 +8,7 @@ int get_pointer_pos(Display *dpy, Window win, int *x, int *y);
 int send_event(Display *dpy, Window w, Atom proto, int m,
 		long d0, long d1, long d2, long d3, long d4);
 void set_xerror_xlib(int (*xexlib)(Display *, XErrorEvent *));
+Atom window_get_atomprop(Display *dpy, Window win, Atom prop, Atom req);
 int window_get_intprop(Display *dpy, Window w, Atom prop);
 long window_get_state(Display *dpy, Window win);
 int window_get_textprop(Display *dpy, Window w, Atom atom, char *text, unsigned int size);
