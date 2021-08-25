@@ -15,6 +15,16 @@
 #include "util.h"
 
 int
+get_pointer_pos(Display *dpy, Window win, int *x, int *y)
+{
+	int di;
+	unsigned int dui;
+	Window dummy;
+
+	return XQueryPointer(dpy, win, &dummy, &dummy, x, y, &di, &di, &dui);
+}
+
+int
 send_event(Display *dpy, Window w, Atom proto, int mask,
 		long d0, long d1, long d2, long d3, long d4)
 {
@@ -57,6 +67,42 @@ set_xerror_xlib(int (*xexlib)(Display *, XErrorEvent *))
 }
 
 int
+window_get_intprop(Display *dpy, Window win, Atom prop)
+{
+	int di, ret = 0;
+	unsigned long dl;
+	unsigned char *p = NULL;
+	Atom da;
+
+	/* FIXME getatomprop should return the number of items and a pointer to
+	 * the stored data instead of this workaround */
+	if (XGetWindowProperty(dpy, win, prop, 0L, 1, False, XA_CARDINAL,
+		&da, &di, &dl, &dl, &p) == Success && p) {
+		ret = *(int *)p;
+		XFree(p);
+	}
+	return ret;
+}
+
+long
+window_get_state(Display *dpy, Window win)
+{
+	int format;
+	long result = -1;
+	unsigned char *p = NULL;
+	unsigned long n, extra;
+	Atom real;
+
+	if (XGetWindowProperty(dpy, win, wmatom[WMState], 0L, 2L, False, wmatom[WMState],
+		&real, &format, &n, &extra, (unsigned char **)&p) != Success)
+		return -1;
+	if (n != 0)
+		result = *p;
+	XFree(p);
+	return result;
+}
+
+int
 window_get_textprop(Display *dpy, Window w, Atom atom, char *text, unsigned int size)
 {
 	char **list = NULL;
@@ -80,6 +126,7 @@ window_get_textprop(Display *dpy, Window w, Atom atom, char *text, unsigned int 
 	XFree(name.value);
 	return 1;
 }
+
 void
 window_map(Display *dpy, Window win, int deiconify)
 {
