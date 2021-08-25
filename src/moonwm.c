@@ -2322,6 +2322,8 @@ maprequest(XEvent *e)
 
 	if (!XGetWindowAttributes(dpy, ev->window, &wa))
 		return;
+	if (!wa.depth)
+		return;
 	if (wa.override_redirect)
 		return;
 	if (!wintoclient(ev->window))
