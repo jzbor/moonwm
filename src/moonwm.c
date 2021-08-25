@@ -48,8 +48,10 @@
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 
+#include <wmdef.h>
 #include <drw.h>
 #include <util.h>
+#include <xwrappers.h>
 
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
@@ -103,34 +105,7 @@
 #define MWM_DECOR_BORDER            (1 << 1)
 #define MWM_DECOR_TITLE             (1 << 3)
 
-/* mask indices */
-#define	M_BEINGMOVED	(1 << 1)
-#define	M_NEVERFOCUS	(1 << 2)
-#define	M_OLDSTATE		(1 << 3)
-#define M_CENTER		(1 << 4)
-#define M_EXPOSED		(1 << 5)
-#define M_FIXED			(1 << 6)
-#define M_FLOATING		(1 << 7)
-#define M_FULLSCREEN	(1 << 8)
-#define M_NOSWALLOW		(1 << 9)
-#define M_STEAM			(1 << 10)
-#define M_TERMINAL		(1 << 11)
-#define M_URGENT		(1 << 12)
-
 /* enums */
-enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeHigh }; /* color schemes */
-enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
-	   NetWMActionClose, NetWMActionMinimize, NetWMAction, NetWMMoveResize,
-	   NetWMMaximizedVert, NetWMMaximizedHorz,
-	   NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-	   NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock, NetWMDesktop,
-	   NetWMWindowTypeDesktop, NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
-	   NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
-	   NetCurrentDesktop, NetLast, }; /* EWMH atoms */
-enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
-enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
-	   WMWindowRole, WMLast }; /* default atoms */
 enum { SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMLast }; /* MoonWM atoms */
 enum { ClkMenu, ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
@@ -301,7 +276,6 @@ static void loadxrdb(XrmDatabase db);
 static int loadxres(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint);
 static void losefullscreen(Client *sel, Client *c, Monitor *m);
 static void manage(Window w, XWindowAttributes *wa);
-static void map(Client *c, int deiconify);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void motionnotify(XEvent *e);
@@ -345,7 +319,6 @@ static void scan(void);
 static void scrollresize(const Arg *arg);
 static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
 static void sendmon(Client *c, Monitor *m, int keeptags);
-static void setclientstate(Client *c, long state);
 static void setdesktopnames(void);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
@@ -381,7 +354,6 @@ static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
-static void unmap(Client *c, int iconify);
 static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
@@ -455,7 +427,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[ResizeRequest] = resizerequest,
 	[UnmapNotify] = unmapnotify
 };
-static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], mwmatom[MWMLast], motifatom;
+static Atom mwmatom[MWMLast];
 static int running = 1;
 static int restartwm = 0;
 static int restartlauncher = 0;
@@ -691,7 +663,7 @@ swallow(Client *p, Client *c)
 	detach(c);
 	detachstack(c);
 
-	setclientstate(c, WithdrawnState);
+	window_set_state(dpy, c->win, WithdrawnState);
 	XUnmapWindow(dpy, p->win);
 
 	p->swallowing = c;
@@ -722,7 +694,7 @@ unswallow(Client *c)
 	arrange(c->mon);
 	XMapWindow(dpy, c->win);
 	XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
-	setclientstate(c, NormalState);
+	window_set_state(dpy, c->win, NormalState);
 	focus(NULL);
 	arrange(c->mon);
 }
@@ -839,7 +811,7 @@ cleanup(void)
 	for (m = mons; m; m = m->next)
 		while (m->stack) {
 			XMapWindow(dpy, m->stack->win);
-			setclientstate(m->stack, NormalState);
+			window_set_state(dpy, m->stack->win, NormalState);
 			unmanage(m->stack, 0);
 		}
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
@@ -935,7 +907,7 @@ clientmessage(XEvent *e)
 			XSync(dpy, False);
 			resizebarwin(selmon);
 			updatesystray();
-			setclientstate(c, NormalState);
+			window_set_state(dpy, c->win, NormalState);
 		}
 		return;
 	}
@@ -2272,7 +2244,7 @@ manage(Window w, XWindowAttributes *wa)
 	XChangeProperty(dpy, root, netatom[NetClientListStacking], XA_WINDOW, 32, PropModePrepend,
 		(unsigned char *) &(c->win), 1);
 	XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h); /* some windows require this */
-	setclientstate(c, NormalState);
+	window_set_state(dpy, c->win, NormalState);
 	if (c->mon == selmon) {
 		losefullscreen(selmon->sel, c, c->mon);
 		unfocus(selmon->sel, 0);
@@ -2287,15 +2259,6 @@ manage(Window w, XWindowAttributes *wa)
 	if (term)
 		swallow(term, c);
 	focus(NULL);
-}
-
-void
-map(Client *c, int deiconify)
-{
-	XMapWindow(dpy, c->win);
-	if (deiconify)
-		setclientstate(c, NormalState);
-	XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
 }
 
 void
@@ -3320,15 +3283,6 @@ sendmon(Client *c, Monitor *m, int keeptags)
 	arrange(NULL);
 }
 
-void
-setclientstate(Client *c, long state)
-{
-	long data[] = { state, None };
-
-	XChangeProperty(dpy, c->win, wmatom[WMState], wmatom[WMState], 32,
-		PropModeReplace, (unsigned char *)data, 2);
-}
-
 void setdesktopnames(void){
 	XTextProperty text;
 	Xutf8TextListToTextProperty(dpy, (char **) tags, TAGSLENGTH, XUTF8StringStyle, &text);
@@ -3380,7 +3334,7 @@ setfocus(Client *c)
 			(unsigned char *) &(c->win), 1);
 	}
 	if (CMASKGET(c, M_STEAM))
-		setclientstate(c, NormalState);
+		window_set_state(dpy, c->win, NormalState);
 	sendevent(c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
 }
 
@@ -3775,12 +3729,12 @@ showhide(Client *c)
 		return;
 	if (ISVISIBLE(c)) {
 		/* show clients top down */
-		map(c, 1);
+		window_map(dpy, c->win, 1);
 		showhide(c->snext);
 	} else {
 		/* hide clients bottom up */
 		showhide(c->snext);
-		unmap(c, 1);
+		window_unmap(dpy, c->win, root, 1);
 	}
 }
 
@@ -4038,7 +3992,7 @@ unmanage(Client *c, int destroyed)
 		XSetErrorHandler(xerrordummy);
 		XConfigureWindow(dpy, c->win, CWBorderWidth, &wc); /* restore border */
 		XUngrabButton(dpy, AnyButton, AnyModifier, c->win);
-		setclientstate(c, WithdrawnState);
+		window_set_state(dpy, c->win, WithdrawnState);
 		XSync(dpy, False);
 		XSetErrorHandler(xerror);
 		XUngrabServer(dpy);
@@ -4058,28 +4012,6 @@ unmanage(Client *c, int destroyed)
 }
 
 void
-unmap(Client *c, int iconify)
-{
-	static XWindowAttributes ra, ca;
-
-	if (!c)
-		return;
-
-	XGrabServer(dpy);
-	XGetWindowAttributes(dpy, root, &ra);
-	XGetWindowAttributes(dpy, c->win, &ca);
-	// prevent UnmapNotify events
-	XSelectInput(dpy, root, ra.your_event_mask & ~SubstructureNotifyMask);
-	XSelectInput(dpy, c->win, ca.your_event_mask & ~StructureNotifyMask);
-	XUnmapWindow(dpy, c->win);
-	if (iconify)
-		setclientstate(c, IconicState);
-	XSelectInput(dpy, root, ra.your_event_mask);
-	XSelectInput(dpy, c->win, ca.your_event_mask);
-	XUngrabServer(dpy);
-}
-
-void
 unmapnotify(XEvent *e)
 {
 	Client *c;
@@ -4087,7 +4019,7 @@ unmapnotify(XEvent *e)
 
 	if ((c = wintoclient(ev->window))) {
 		if (ev->send_event)
-			setclientstate(c, WithdrawnState);
+			window_set_state(dpy, c->win, WithdrawnState);
 		else
 			unmanage(c, 0);
 	}
@@ -4431,13 +4363,13 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 		i->tags = 1;
 		code = XEMBED_WINDOW_ACTIVATE;
 		XMapRaised(dpy, i->win);
-		setclientstate(i, NormalState);
+		window_set_state(dpy, i->win, NormalState);
 	}
 	else if (!(flags & XEMBED_MAPPED) && i->tags) {
 		i->tags = 0;
 		code = XEMBED_WINDOW_DEACTIVATE;
 		XUnmapWindow(dpy, i->win);
-		setclientstate(i, WithdrawnState);
+		window_set_state(dpy, i->win, WithdrawnState);
 	}
 	else
 		return;
