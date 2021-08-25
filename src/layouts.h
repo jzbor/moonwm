@@ -1,5 +1,8 @@
 /* vim: set noet: */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 /* Key binding functions */
 static void defaultgaps(const Arg *arg);
 static void incrgaps(const Arg *arg);
@@ -896,3 +899,5 @@ tileleft(Monitor *m)
 			sy += height + 2*bw + ih;
 		}
 }
+
+#pragma GCC diagnostic pop
