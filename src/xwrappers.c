@@ -11,7 +11,7 @@
 #include <X11/Xutil.h>
 
 #include "xwrappers.h"
-#include "wmdef.h"
+#include "common.h"
 #include "util.h"
 
 int
