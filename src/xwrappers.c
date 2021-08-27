@@ -20,6 +20,17 @@ static int atoms_intialised = 0;
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 
 
+void
+checkotherwm(void)
+{
+	set_xerror_xlib(XSetErrorHandler(xerror_start));
+	/* this causes an error if some other window manager is running */
+	XSelectInput(dpy, DefaultRootWindow(dpy), SubstructureRedirectMask);
+	XSync(dpy, False);
+	XSetErrorHandler(xerror);
+	XSync(dpy, False);
+}
+
 Atom *
 get_atoms(Display *dpy)
 {
@@ -84,6 +95,18 @@ get_pointer_pos(Display *dpy, Window win, int *x, int *y)
 
 	return XQueryPointer(dpy, win, &dummy, &dummy, x, y, &di, &di, &dui);
 }
+
+#ifdef XINERAMA
+static int
+isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
+{
+	while (n--)
+		if (unique[n].x_org == info->x_org && unique[n].y_org == info->y_org
+		&& unique[n].width == info->width && unique[n].height == info->height)
+			return 0;
+	return 1;
+}
+#endif /* XINERAMA */
 
 int
 send_event(Display *dpy, Window w, Atom proto, int mask,
