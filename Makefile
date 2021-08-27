@@ -4,7 +4,7 @@
 include config.mk
 
 VPATH = src wmcommons/src
-SRC = drw.c moonwm.c util.c xwrappers.c
+SRC = drw.c moonwm.c util.c xwrappers.c common.c
 OBJ = ${SRC:.c=.o}
 
 all: options moonwm moonctl
