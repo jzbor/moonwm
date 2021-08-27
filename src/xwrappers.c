@@ -9,6 +9,9 @@
 #include <X11/Xproto.h>
 #include <X11/Xresource.h>
 #include <X11/Xutil.h>
+#ifdef XINERAMA
+#include <X11/extensions/Xinerama.h>
+#endif /* XINERAMA */
 
 #include "xwrappers.h"
 #include "common.h"
@@ -21,7 +24,7 @@ static int (*xerrorxlib)(Display *, XErrorEvent *);
 
 
 void
-checkotherwm(void)
+checkotherwm(Display *dpy)
 {
 	set_xerror_xlib(XSetErrorHandler(xerror_start));
 	/* this causes an error if some other window manager is running */
@@ -97,7 +100,7 @@ get_pointer_pos(Display *dpy, Window win, int *x, int *y)
 }
 
 #ifdef XINERAMA
-static int
+int
 isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 {
 	while (n--)

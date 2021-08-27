@@ -23,7 +23,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 		Utf8, Motif, LastAtom };
 
 /* function declarations */
-void checkotherwm(void);
+void checkotherwm(Display *dpy);
 int get_pointer_pos(Display *dpy, Window win, int *x, int *y);
 Atom *get_atoms(Display *dpy);
 #ifdef XINERAMA
