@@ -103,7 +103,6 @@ static int fake_signal(void);
 static void buttonpress(XEvent *e);
 static void center(const Arg *arg);
 static void centerclient(Client *c);
-static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
 static void clientmessage(XEvent *e);
@@ -655,17 +654,6 @@ centerclient(Client *c)
 	int cy = c->mon->my + barmod + (c->mon->mh - barmod - HEIGHT(c)) / 2;
 
 	resize(c, cx, cy, c->w, c->h, borderpx, 0);
-}
-
-void
-checkotherwm(void)
-{
-	set_xerror_xlib(XSetErrorHandler(xerror_start));
-	/* this causes an error if some other window manager is running */
-	XSelectInput(dpy, DefaultRootWindow(dpy), SubstructureRedirectMask);
-	XSync(dpy, False);
-	XSetErrorHandler(xerror);
-	XSync(dpy, False);
 }
 
 void
@@ -1677,18 +1665,6 @@ incwidth(const Arg *arg)
 		   width,
 		   selmon->sel->h);
 }
-
-#ifdef XINERAMA
-static int
-isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
-{
-	while (n--)
-		if (unique[n].x_org == info->x_org && unique[n].y_org == info->y_org
-		&& unique[n].width == info->width && unique[n].height == info->height)
-			return 0;
-	return 1;
-}
-#endif /* XINERAMA */
 
 void
 keypress(XEvent *e)
@@ -4387,7 +4363,7 @@ main(int argc, char *argv[])
 		die("moonwm: cannot open display");
 	if (!(xcon = XGetXCBConnection(dpy)))
 		die("moonwm: cannot get xcb connection\n");
-	checkotherwm();
+	checkotherwm(dpy);
 	XrmInitialize();
 	settings();
 	setup();
