@@ -69,17 +69,6 @@
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeHigh }; /* color schemes */
-enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
-	   NetWMActionClose, NetWMActionMinimize, NetWMAction, NetWMMoveResize,
-	   NetWMMaximizedVert, NetWMMaximizedHorz,
-	   NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
-	   NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock, NetWMDesktop,
-	   NetWMWindowTypeDesktop, NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
-	   NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
-	   NetCurrentDesktop, NetLast, }; /* EWMH atoms */
-enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
-enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
-	   WMWindowRole, WMLast }; /* default atoms */
 
 
 /* structs */
@@ -153,8 +142,8 @@ typedef struct {
 	Client *icons;
 } Systray;
 
-/* variables */
-static Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], motifatom;
 
+/* function declarations */
+Atom *get_atoms(void);
 
 #endif

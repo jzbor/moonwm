@@ -3,6 +3,25 @@
 #ifndef WMCOMMONS_XWRAPPERS_H
 #define WMCOMMONS_XWRAPPERS_H
 
+/* enums */
+enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
+		NetWMActionClose, NetWMActionMinimize, NetWMAction, NetWMMoveResize,
+	   	NetWMMaximizedVert, NetWMMaximizedHorz,
+	   	NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
+	   	NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock, NetWMDesktop,
+	   	NetWMWindowTypeDesktop, NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
+	   	NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
+	   	NetCurrentDesktop, NetLast, /* EWMH atoms */
+
+		Manager, Xembed, XembedInfo,  /* Xembed atoms */
+
+		SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMLast, /* MoonWM atoms */
+
+		WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
+		WMWindowRole, /* default atoms */
+
+		Utf8, Motif, LastAtom };
+
 /* function declarations */
 int get_pointer_pos(Display *dpy, Window win, int *x, int *y);
 int send_event(Display *dpy, Window w, Atom proto, int m,
@@ -20,9 +39,6 @@ int xerror_dummy(Display *dpy, XErrorEvent *ee);
 int xerror_start(Display *dpy, XErrorEvent *ee);
 int xrdb_get(XrmDatabase db, char *name, char **retval, int *retint, unsigned int *retuint);
 int xrdb_get_color(XrmDatabase db, char *name, char *dest);
-
-/* variables */
-static int (*xerrorxlib)(Display *, XErrorEvent *);
 
 #endif
 
