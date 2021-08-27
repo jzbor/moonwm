@@ -60,7 +60,6 @@
 #define TAGSLENGTH              (LENGTH(tags))
 
 /* enums */
-enum { SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMLast }; /* MoonWM atoms */
 enum { ClkMenu, ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 	   ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
@@ -297,7 +296,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[ResizeRequest] = resizerequest,
 	[UnmapNotify] = unmapnotify
 };
-static Atom mwmatom[MWMLast];
+static Atom *atoms;
 static int running = 1;
 static int restartwm = 0;
 static int restartlauncher = 0;
@@ -362,11 +361,11 @@ applyrules(Client *c)
 	XGetClassHint(dpy, c->win, &ch);
 	class    = ch.res_class ? ch.res_class : broken;
 	instance = ch.res_name  ? ch.res_name  : broken;
-	wintype	 = window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM);
-	window_get_textprop(dpy, c->win, wmatom[WMWindowRole], role, sizeof(role));
+	wintype	 = window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM);
+	window_get_textprop(dpy, c->win, atoms[WMWindowRole], role, sizeof(role));
 
 	if (strstr(class, "Steam") || strstr(class, "steam_app_")
-			|| (steamid = window_get_atomprop(dpy, c->win, mwmatom[SteamGame], AnyPropertyType)))
+			|| (steamid = window_get_atomprop(dpy, c->win, atoms[SteamGame], AnyPropertyType)))
 		CMASKSET(c, M_STEAM);
 
 	for (i = 0; i < LENGTH(rules); i++) {
@@ -703,7 +702,7 @@ cleanup(void)
 	drw_free(drw);
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
-	XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+	XDeleteProperty(dpy, root, atoms[NetActiveWindow]);
 }
 
 void
@@ -732,7 +731,7 @@ clientmessage(XEvent *e)
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
 
-	if (showsystray && cme->window == systray->win && cme->message_type == netatom[NetSystemTrayOP]) {
+	if (showsystray && cme->window == systray->win && cme->message_type == atoms[NetSystemTrayOP]) {
 		/* add systray icons */
 		if (cme->data.l[1] == SYSTEM_TRAY_REQUEST_DOCK) {
 			if (!(c = (Client *)calloc(1, sizeof(Client))))
@@ -769,11 +768,11 @@ clientmessage(XEvent *e)
 			/* use parents background color */
 			swa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
-			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			/* FIXME not sure if I have to send these events, too */
-			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			send_event(dpy, c->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			XSync(dpy, False);
 			resizebarwin(selmon);
 			updatesystray();
@@ -781,48 +780,48 @@ clientmessage(XEvent *e)
 		}
 		return;
 	}
-	if (cme->message_type == netatom[NetCurrentDesktop]) {
+	if (cme->message_type == atoms[NetCurrentDesktop]) {
 		desktop = cme->data.l[0];
 		if (!((1 << desktop) & selmon->tagset[selmon->seltags] & TAGMASK))
 			view(&((Arg) { .ui = (1 << desktop) }));
 		return;
-	} else if (cme->message_type == mwmatom[MWMCurrentTags]) {
+	} else if (cme->message_type == atoms[MWMCurrentTags]) {
 		view(&((Arg) { .ui = cme->data.l[0] }));
 		return;
 	}
 	if (!c)
 		return;
-	if (cme->message_type == netatom[NetWMState]) {
-		if (cme->data.l[1] == netatom[NetWMFullscreen]
-		|| cme->data.l[2] == netatom[NetWMFullscreen])
+	if (cme->message_type == atoms[NetWMState]) {
+		if (cme->data.l[1] == atoms[NetWMFullscreen]
+		|| cme->data.l[2] == atoms[NetWMFullscreen])
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !CMASKGET(c, M_FULLSCREEN))));
-		else if(cme->data.l[1] == netatom[NetWMDemandsAttention]) {
+		else if(cme->data.l[1] == atoms[NetWMDemandsAttention]) {
 			CMASKSETTO(c, M_URGENT, (cme->data.l[0] == 1 || (cme->data.l[0] == 2 && !CMASKGET(c, M_URGENT))));
 			drawbar(c->mon);
 		}
 
-		/* unsigned int maximize_vert = (cme->data.l[1] == netatom[NetWMMaximizedVert] || cme->data.l[2] == netatom[NetWMMaximizedVert]); */
-		/* unsigned int maximize_horz = (cme->data.l[1] == netatom[NetWMMaximizedHorz] || cme->data.l[2] == netatom[NetWMMaximizedHorz]); */
+		/* unsigned int maximize_vert = (cme->data.l[1] == atoms[NetWMMaximizedVert] || cme->data.l[2] == atoms[NetWMMaximizedVert]); */
+		/* unsigned int maximize_horz = (cme->data.l[1] == atoms[NetWMMaximizedHorz] || cme->data.l[2] == atoms[NetWMMaximizedHorz]); */
 		/* if (c == selmon->sel && (maximize_vert || maximize_horz)) { */
 		/* 	c->isfloating = 0; */
 		/* 	setlayout(&((Arg) {.v = &layouts[MONOCLEPOS]})); */
 		/* } */
-	} else if (cme->message_type == netatom[NetActiveWindow]) {
+	} else if (cme->message_type == atoms[NetActiveWindow]) {
 		activate(c);
-	} else if (cme->message_type == wmatom[WMChangeState]) {
+	} else if (cme->message_type == atoms[WMChangeState]) {
 		if (c == selmon->sel)
 			togglefloating(NULL);
-	} else if (cme->message_type == netatom[NetWMActionClose]) {
+	} else if (cme->message_type == atoms[NetWMActionClose]) {
 		selmon->sel = c;
 		killclient(NULL);
-	} else if (cme->message_type == netatom[NetWMDesktop]) {
+	} else if (cme->message_type == atoms[NetWMDesktop]) {
 		desktop = cme->data.l[0];
 		c->tags |= (1 << desktop) & TAGMASK;
 		focus(NULL);
 		arrange(c->mon);
 		updateclienttags(c);
-	} else if (cme->message_type == netatom[NetWMMoveResize]) {
+	} else if (cme->message_type == atoms[NetWMMoveResize]) {
 		resizemouse(&((Arg) { .v = c }));
 	}
 }
@@ -1434,7 +1433,7 @@ focus(Client *c)
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
-		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+		XDeleteProperty(dpy, root, atoms[NetActiveWindow]);
 	}
 	selmon->sel = c;
 	drawbars();
@@ -1755,7 +1754,7 @@ killclient(const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
-	if (!send_event(dpy, selmon->sel->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!send_event(dpy, selmon->sel->win, atoms[WMDelete], NoEventMask, atoms[WMDelete], CurrentTime, 0 , 0, 0)) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerror_dummy);
 		XSetCloseDownMode(dpy, DestroyAll);
@@ -1811,10 +1810,10 @@ loadclientprops(Client *c)
 
 	if (!c)
 		return;
-	ui = window_get_intprop(dpy, c->win, mwmatom[MWMClientTags]);
+	ui = window_get_intprop(dpy, c->win, atoms[MWMClientTags]);
 	if (ui & TAGMASK)
 		c->tags = ui & TAGMASK;
-	ui = window_get_intprop(dpy, c->win, mwmatom[MWMClientMonitor]);
+	ui = window_get_intprop(dpy, c->win, atoms[MWMClientMonitor]);
 	if (ui) {
 		for (m = mons; m && m->num != ui; m = m->next);
 		if (m)
@@ -1850,7 +1849,7 @@ loadenv(char *name, char **retval, int *retint, unsigned int *retuint)
 void
 loadwmprops(void) {
 	unsigned int ui;
-	ui = window_get_intprop(dpy, root, mwmatom[MWMCurrentTags]);
+	ui = window_get_intprop(dpy, root, atoms[MWMCurrentTags]);
 	if (ui)
 		view(&((Arg) { .ui = ui }));
 }
@@ -1915,12 +1914,12 @@ manage(Window w, XWindowAttributes *wa)
 	}
 	loadclientprops(c);
 
-	if (window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDesktop]) {
+	if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDesktop]) {
 		XMapWindow(dpy, c->win);
 		XLowerWindow(dpy, c->win);
 		free(c);
 		return;
-	} else if (window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM) == netatom[NetWMWindowTypeDock]) {
+	} else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) {
 		XMapWindow(dpy, c->win);
 		XRaiseWindow(dpy, c->win);
 		free(c);
@@ -1964,9 +1963,9 @@ manage(Window w, XWindowAttributes *wa)
 		XRaiseWindow(dpy, c->win);
 	attachaside(c);
 	attachstack(c);
-	XChangeProperty(dpy, root, netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
+	XChangeProperty(dpy, root, atoms[NetClientList], XA_WINDOW, 32, PropModeAppend,
 		(unsigned char *) &(c->win), 1);
-	XChangeProperty(dpy, root, netatom[NetClientListStacking], XA_WINDOW, 32, PropModePrepend,
+	XChangeProperty(dpy, root, atoms[NetClientListStacking], XA_WINDOW, 32, PropModePrepend,
 		(unsigned char *) &(c->win), 1);
 	XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h); /* some windows require this */
 	window_set_state(dpy, c->win, NormalState);
@@ -2003,7 +2002,7 @@ maprequest(XEvent *e)
 	XMapRequestEvent *ev = &e->xmaprequest;
 	Client *i;
 	if ((i = wintosystrayicon(ev->window))) {
-		send_event(dpy, i->win, netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
+		send_event(dpy, i->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
 		resizebarwin(selmon);
 		updatesystray();
 	}
@@ -2411,14 +2410,14 @@ propertynotify(XEvent *e)
 			drawbars();
 			break;
 		}
-		if (ev->atom == XA_WM_NAME || ev->atom == netatom[NetWMName]) {
+		if (ev->atom == XA_WM_NAME || ev->atom == atoms[NetWMName]) {
 			updatetitle(c);
 			if (c == c->mon->sel)
 				drawbar(c->mon);
 		}
-		if (ev->atom == netatom[NetWMWindowType])
+		if (ev->atom == atoms[NetWMWindowType])
 			updatewindowtype(c);
-		if (ev->atom == motifatom)
+		if (ev->atom == atoms[Motif])
 			updatemotifhints(c);
 	}
 }
@@ -2523,8 +2522,8 @@ resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 		resizeclient(c, x, y, w, h, bw);
 		for (c = selmon->clients; c; c = c->next)
 			if (ISVISIBLE(c) && CMASKGET(c, M_FULLSCREEN)) {
-				XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
-					PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
+				XChangeProperty(dpy, c->win, atoms[NetWMState], XA_ATOM, 32,
+					PropModeReplace, (unsigned char*)&atoms[NetWMFullscreen], 1);
 				resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh, 0);
 			}
 	} else if (applysizehints(c, &x, &y, &w, &h, &bw, interact))
@@ -3011,7 +3010,7 @@ sendmon(Client *c, Monitor *m, int keeptags)
 void setdesktopnames(void){
 	XTextProperty text;
 	Xutf8TextListToTextProperty(dpy, (char **) tags, TAGSLENGTH, XUTF8StringStyle, &text);
-	XSetTextProperty(dpy, root, &text, netatom[NetDesktopNames]);
+	XSetTextProperty(dpy, root, &text, atoms[NetDesktopNames]);
 }
 
 void
@@ -3019,21 +3018,21 @@ setfocus(Client *c)
 {
 	if (!CMASKGET(c, M_NEVERFOCUS)) {
 		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
-		XChangeProperty(dpy, root, netatom[NetActiveWindow],
+		XChangeProperty(dpy, root, atoms[NetActiveWindow],
 			XA_WINDOW, 32, PropModeReplace,
 			(unsigned char *) &(c->win), 1);
 	}
 	if (CMASKGET(c, M_STEAM))
 		window_set_state(dpy, c->win, NormalState);
-	send_event(dpy, c->win, wmatom[WMTakeFocus], NoEventMask, wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
+	send_event(dpy, c->win, atoms[WMTakeFocus], NoEventMask, atoms[WMTakeFocus], CurrentTime, 0, 0, 0);
 }
 
 void
 setfullscreen(Client *c, int fullscreen)
 {
 	if (fullscreen && !CMASKGET(c, M_FULLSCREEN)) {
-		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
-			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
+		XChangeProperty(dpy, c->win, atoms[NetWMState], XA_ATOM, 32,
+			PropModeReplace, (unsigned char*)&atoms[NetWMFullscreen], 1);
 		CMASKSETTO(c, M_OLDSTATE, CMASKGET(c, M_FLOATING));
 		CMASKSET(c, M_FULLSCREEN|M_FLOATING);
 		unsigned int bw = c->bw;
@@ -3041,7 +3040,7 @@ setfullscreen(Client *c, int fullscreen)
 		c->oldbw = bw;
 		XRaiseWindow(dpy, c->win);
 	} else if (!fullscreen && CMASKGET(c, M_FULLSCREEN)){
-		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
+		XChangeProperty(dpy, c->win, atoms[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		CMASKUNSET(c, M_FULLSCREEN);
 		CMASKSETTO(c, M_FLOATING, CMASKGET(c, M_OLDSTATE));
@@ -3101,7 +3100,7 @@ setmfact(const Arg *arg)
 void
 setnumdesktops(void){
 	long data[] = { TAGSLENGTH };
-	XChangeProperty(dpy, root, netatom[NetNumberOfDesktops], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
+	XChangeProperty(dpy, root, atoms[NetNumberOfDesktops], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
 
 void
@@ -3238,7 +3237,6 @@ setup(void)
 {
 	int i;
 	XSetWindowAttributes wa;
-	Atom utf8string;
 
 	/* clean up any zombies immediately */
 	sigchld(0);
@@ -3255,47 +3253,7 @@ setup(void)
 	bh = drw->fonts->h + 2;
 	updategeom();
 	/* init atoms */
-	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
-	wmatom[WMProtocols] = XInternAtom(dpy, "WM_PROTOCOLS", False);
-	wmatom[WMDelete] = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-	wmatom[WMState] = XInternAtom(dpy, "WM_STATE", False);
-	wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
-	wmatom[WMChangeState] = XInternAtom(dpy, "WM_CHANGE_STATE", False);
-	wmatom[WMWindowRole] = XInternAtom(dpy, "WM_WINDOW_ROLE", False);
-	netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
-	netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
-	netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
-	netatom[NetSystemTrayOP] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
-	netatom[NetSystemTrayOrientation] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
-	netatom[NetSystemTrayOrientationHorz] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION_HORZ", False);
-	netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
-	netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
-	netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
-	netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
-	netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
-	netatom[NetWMWindowTypeDock] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
-	netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-	netatom[NetWMWindowTypeDesktop] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
-	netatom[NetWMMaximizedVert] = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_VERT", False);
-	netatom[NetWMMaximizedHorz] = XInternAtom(dpy, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
-	netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
-	netatom[NetClientListStacking] = XInternAtom(dpy, "_NET_CLIENT_LIST_STACKING", False);
-	netatom[NetCurrentDesktop] = XInternAtom(dpy, "_NET_CURRENT_DESKTOP", False);
-	netatom[NetDesktopNames] = XInternAtom(dpy, "_NET_DESKTOP_NAMES", False);
-	netatom[NetDesktopViewport] = XInternAtom(dpy, "_NET_DESKTOP_VIEWPORT", False);
-	netatom[NetNumberOfDesktops] = XInternAtom(dpy, "_NET_NUMBER_OF_DESKTOPS", False);
-	netatom[NetWMActionClose] = XInternAtom(dpy, "_NET_WM_ACTION_CLOSE", False);
-	netatom[NetWMDemandsAttention] = XInternAtom(dpy, "_NET_WM_DEMANDS_ATTENTION", False);
-	netatom[NetWMDesktop] = XInternAtom(dpy, "_NET_WM_DESKTOP", False);
-	netatom[NetWMMoveResize] = XInternAtom(dpy, "_NET_WM_MOVE_RESIZE", False);
-	xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
-	xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
-	xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
-	motifatom = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
-	mwmatom[MWMClientTags] = XInternAtom(dpy, "_MWM_CLIENT_TAGS", False);
-	mwmatom[MWMCurrentTags] = XInternAtom(dpy, "_MWM_CURRENT_TAGS", False);
-	mwmatom[MWMClientMonitor] = XInternAtom(dpy, "_MWM_CLIENT_MONITOR", False);
-	mwmatom[SteamGame] = XInternAtom(dpy, "STEAM_GAME", False);
+	atoms = get_atoms(dpy);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
@@ -3311,23 +3269,23 @@ setup(void)
 	updatestatus();
 	/* supporting window for NetWMCheck */
 	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
-	XChangeProperty(dpy, wmcheckwin, netatom[NetWMCheck], XA_WINDOW, 32,
+	XChangeProperty(dpy, wmcheckwin, atoms[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
-	XChangeProperty(dpy, wmcheckwin, netatom[NetWMName], utf8string, 8,
+	XChangeProperty(dpy, wmcheckwin, atoms[NetWMName], atoms[Utf8], 8,
 		PropModeReplace, (unsigned char *) "moonwm", 3);
-	XChangeProperty(dpy, root, netatom[NetWMCheck], XA_WINDOW, 32,
+	XChangeProperty(dpy, root, atoms[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	/* EWMH support per view */
-	XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
-		PropModeReplace, (unsigned char *) netatom, NetLast);
+	XChangeProperty(dpy, root, atoms[NetSupported], XA_ATOM, 32,
+		PropModeReplace, (unsigned char *) atoms, NetLast);
 	/* load properties from last session */
 	loadwmprops();
 	setnumdesktops();
 	updatecurrenttags();
 	setdesktopnames();
 	setviewport();
-	XDeleteProperty(dpy, root, netatom[NetClientList]);
-	XDeleteProperty(dpy, root, netatom[NetClientListStacking]);
+	XDeleteProperty(dpy, root, atoms[NetClientList]);
+	XDeleteProperty(dpy, root, atoms[NetClientListStacking]);
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
 	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
@@ -3355,7 +3313,7 @@ setviewport(void){
 		m = m->next;
 	}
 
-	XChangeProperty(dpy, root, netatom[NetDesktopViewport], XA_CARDINAL, 32,
+	XChangeProperty(dpy, root, atoms[NetDesktopViewport], XA_CARDINAL, 32,
 			PropModeReplace, (unsigned char *)data, nmons * 2);
 }
 
@@ -3647,7 +3605,7 @@ unfocus(Client *c, int setfocus)
 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
 	if (setfocus) {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
-		XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+		XDeleteProperty(dpy, root, atoms[NetActiveWindow]);
 	}
 }
 
@@ -3741,8 +3699,8 @@ updatebars(void)
 		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, w, bh, 0, DefaultDepth(dpy, screen),
 				CopyFromParent, DefaultVisual(dpy, screen),
 				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
-	   	XChangeProperty(dpy, m->barwin, netatom[NetWMWindowType], XA_ATOM, 32,
-				PropModeReplace, (unsigned char *) & netatom[NetWMWindowTypeDock], 1);
+	   	XChangeProperty(dpy, m->barwin, atoms[NetWMWindowType], XA_ATOM, 32,
+				PropModeReplace, (unsigned char *) & atoms[NetWMWindowTypeDock], 1);
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
 		if (showsystray && m == systraytomon(m))
 			XMapRaised(dpy, systray->win);
@@ -3770,17 +3728,17 @@ updateclientlist()
 	Client *c;
 	Monitor *m;
 
-	XDeleteProperty(dpy, root, netatom[NetClientList]);
+	XDeleteProperty(dpy, root, atoms[NetClientList]);
 	for (m = mons; m; m = m->next)
 		for (c = m->clients; c; c = c->next)
-			XChangeProperty(dpy, root, netatom[NetClientList],
+			XChangeProperty(dpy, root, atoms[NetClientList],
 				XA_WINDOW, 32, PropModeAppend,
 				(unsigned char *) &(c->win), 1);
 
-	XDeleteProperty(dpy, root, netatom[NetClientListStacking]);
+	XDeleteProperty(dpy, root, atoms[NetClientListStacking]);
 	for (m = mons; m; m = m->next)
 		for (c = m->stack; c; c = c->snext)
-			XChangeProperty(dpy, root, netatom[NetClientListStacking],
+			XChangeProperty(dpy, root, atoms[NetClientListStacking],
 					XA_WINDOW, 32, PropModeAppend,
 					(unsigned char *) &(c->win), 1);
 }
@@ -3789,7 +3747,7 @@ void
 updateclientmonitor(Client *c) {
     unsigned long data[1];
     data[0] = c->mon->num;
-    XChangeProperty(dpy, c->win, mwmatom[MWMClientMonitor],
+    XChangeProperty(dpy, c->win, atoms[MWMClientMonitor],
             XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
 }
 
@@ -3799,10 +3757,10 @@ updateclienttags(Client *c) {
 	int i;
 	for(i = 0; !(c->tags & (1 << i)); i++);
     data[0] = i;
-    XChangeProperty(dpy, c->win, netatom[NetWMDesktop],
+    XChangeProperty(dpy, c->win, atoms[NetWMDesktop],
             XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
 	data[0] = c->tags;
-    XChangeProperty(dpy, c->win, mwmatom[MWMClientTags],
+    XChangeProperty(dpy, c->win, atoms[MWMClientTags],
             XA_CARDINAL, 32, PropModeReplace, (unsigned char *) data, 1);
 }
 
@@ -3812,9 +3770,9 @@ updatecurrenttags(void){
 	int i;
 	for(i = 0; !(selmon->tagset[selmon->seltags] & (1 << i)); i++);
     data[0] = i;
-	XChangeProperty(dpy, root, netatom[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
+	XChangeProperty(dpy, root, atoms[NetCurrentDesktop], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 	data[0] = selmon->tagset[selmon->seltags];
-	XChangeProperty(dpy, root, mwmatom[MWMCurrentTags], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
+	XChangeProperty(dpy, root, atoms[MWMCurrentTags], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
 
 int
@@ -3910,7 +3868,7 @@ updatemotifhints(Client *c)
 	if (!decorhints)
 		return;
 
-	if (XGetWindowProperty(dpy, c->win, motifatom, 0L, 5L, False, motifatom,
+	if (XGetWindowProperty(dpy, c->win, atoms[Motif], 0L, 5L, False, atoms[Motif],
 						   &real, &format, &n, &extra, &p) == Success && p != NULL) {
 		motif = (unsigned long*)p;
 		if (motif[MWM_HINTS_FLAGS_FIELD] & MWM_HINTS_DECORATIONS) {
@@ -4045,8 +4003,8 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	long flags;
 	int code = 0;
 
-	if (!showsystray || !i || ev->atom != xatom[XembedInfo] ||
-			!(flags = window_get_atomprop(dpy, i->win, xatom[XembedInfo], xatom[XembedInfo])))
+	if (!showsystray || !i || ev->atom != atoms[XembedInfo] ||
+			!(flags = window_get_atomprop(dpy, i->win, atoms[XembedInfo], atoms[XembedInfo])))
 		return;
 
 	if (flags & XEMBED_MAPPED && !i->tags) {
@@ -4063,7 +4021,7 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	}
 	else
 		return;
-	send_event(dpy, i->win, xatom[Xembed], StructureNotifyMask, CurrentTime, code, 0,
+	send_event(dpy, i->win, atoms[Xembed], StructureNotifyMask, CurrentTime, code, 0,
 			systray->win, XEMBED_EMBEDDED_VERSION);
 }
 
@@ -4088,13 +4046,13 @@ updatesystray(void)
 		wa.override_redirect = True;
 		wa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
-		XChangeProperty(dpy, systray->win, netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
-				PropModeReplace, (unsigned char *)&netatom[NetSystemTrayOrientationHorz], 1);
+		XChangeProperty(dpy, systray->win, atoms[NetSystemTrayOrientation], XA_CARDINAL, 32,
+				PropModeReplace, (unsigned char *)&atoms[NetSystemTrayOrientationHorz], 1);
 		XChangeWindowAttributes(dpy, systray->win, CWEventMask|CWOverrideRedirect|CWBackPixel, &wa);
 		XMapRaised(dpy, systray->win);
-		XSetSelectionOwner(dpy, netatom[NetSystemTray], systray->win, CurrentTime);
-		if (XGetSelectionOwner(dpy, netatom[NetSystemTray]) == systray->win) {
-			send_event(dpy, root, xatom[Manager], StructureNotifyMask, CurrentTime, netatom[NetSystemTray], systray->win, 0, 0);
+		XSetSelectionOwner(dpy, atoms[NetSystemTray], systray->win, CurrentTime);
+		if (XGetSelectionOwner(dpy, atoms[NetSystemTray]) == systray->win) {
+			send_event(dpy, root, atoms[Manager], StructureNotifyMask, CurrentTime, atoms[NetSystemTray], systray->win, 0, 0);
 			XSync(dpy, False);
 		}
 		else {
@@ -4135,7 +4093,7 @@ updatesystray(void)
 void
 updatetitle(Client *c)
 {
-	if (!window_get_textprop(dpy, c->win, netatom[NetWMName], c->name, sizeof c->name))
+	if (!window_get_textprop(dpy, c->win, atoms[NetWMName], c->name, sizeof c->name))
 		window_get_textprop(dpy, c->win, XA_WM_NAME, c->name, sizeof c->name);
 	if (c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, broken);
@@ -4144,12 +4102,12 @@ updatetitle(Client *c)
 void
 updatewindowtype(Client *c)
 {
-	Atom state = window_get_atomprop(dpy, c->win, netatom[NetWMState], XA_ATOM);
-	Atom wtype = window_get_atomprop(dpy, c->win, netatom[NetWMWindowType], XA_ATOM);
+	Atom state = window_get_atomprop(dpy, c->win, atoms[NetWMState], XA_ATOM);
+	Atom wtype = window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM);
 
-	if (state == netatom[NetWMFullscreen])
+	if (state == atoms[NetWMFullscreen])
 		setfullscreen(c, 1);
-	if (wtype == netatom[NetWMWindowTypeDialog])
+	if (wtype == atoms[NetWMWindowTypeDialog])
 		CMASKSET(c, M_FLOATING);
 }
 
