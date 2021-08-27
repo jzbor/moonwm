@@ -21,7 +21,7 @@ static int (*xerrorxlib)(Display *, XErrorEvent *);
 
 
 Atom *
-get_atoms(void)
+get_atoms(Display *dpy)
 {
 	if (!atoms_intialised) {
 		atoms[WMProtocols] = XInternAtom(dpy, "WM_PROTOCOLS", False);
@@ -90,10 +90,10 @@ send_event(Display *dpy, Window w, Atom proto, int mask,
 		long d0, long d1, long d2, long d3, long d4)
 {
 	int n;
-	Atom *protocols, *atoms, mt;
+	Atom *protocols, mt;
 	int exists = 0;
 	XEvent ev;
-	atoms = get_atoms();
+	get_atoms(dpy);
 
 	if (proto == atoms[WMTakeFocus] || proto == atoms[WMDelete]) {
 		mt = atoms[WMProtocols];
@@ -134,9 +134,8 @@ window_get_atomprop(Display *dpy, Window win, Atom prop, Atom req)
 	int di;
 	unsigned long dl;
 	unsigned char *p = NULL;
-	Atom da, atom = None, *atoms;
-	atoms = get_atoms();
-
+	Atom da, atom = None;
+	get_atoms(dpy);
 
 	/* FIXME getatomprop should return the number of items and a pointer to
 	 * the stored data instead of this workaround */
@@ -175,8 +174,8 @@ window_get_state(Display *dpy, Window win)
 	long result = -1;
 	unsigned char *p = NULL;
 	unsigned long n, extra;
-	Atom real, *atoms;
-	atoms = get_atoms();
+	Atom real;
+	get_atoms(dpy);
 
 	if (XGetWindowProperty(dpy, win, atoms[WMState], 0L, 2L, False, atoms[WMState],
 		&real, &format, &n, &extra, (unsigned char **)&p) != Success)
@@ -228,7 +227,7 @@ void
 window_set_state(Display *dpy, Window win, long state)
 {
 	long data[] = { state, None };
-	Atom *atoms = get_atoms();
+	get_atoms(dpy);
 
 	XChangeProperty(dpy, win, atoms[WMState], atoms[WMState], 32,
 		PropModeReplace, (unsigned char *)data, 2);

@@ -24,6 +24,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 
 /* function declarations */
 int get_pointer_pos(Display *dpy, Window win, int *x, int *y);
+Atom *get_atoms(Display *dpy);
 int send_event(Display *dpy, Window w, Atom proto, int m,
 		long d0, long d1, long d2, long d3, long d4);
 void set_xerror_xlib(int (*xexlib)(Display *, XErrorEvent *));

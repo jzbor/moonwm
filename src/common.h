@@ -143,7 +143,4 @@ typedef struct {
 } Systray;
 
 
-/* function declarations */
-Atom *get_atoms(void);
-
 #endif
