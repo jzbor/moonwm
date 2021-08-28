@@ -117,6 +117,7 @@ static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
+static void dmenu(const Arg *arg);
 static void dragcfact(const Arg *arg);
 static void dragmfact(const Arg *arg);
 static void drawbar(Monitor *m);
@@ -1050,6 +1051,19 @@ dirtomon(int dir)
 	else
 		for (m = mons; m->next != selmon; m = m->next);
 	return m;
+}
+
+void
+dmenu(const Arg *arg)
+{
+	char *dmenucmd = getenv("DMENUCMD");
+	if (!dmenucmd)
+		dmenucmd = "wmc-utils drun";
+	char temp[strlen(dmenucmd) + 4];
+	strcpy(temp, dmenucmd);
+	if (!topbar && strcmp(dmenucmd, "wmc-utils drun") == 0)
+		strcat(temp, " -b");
+	spawn(&((Arg) { .v = (const char*[]){ "/bin/sh", "-c", temp, NULL } }));
 }
 
 void
@@ -2739,7 +2753,7 @@ rioresize(const Arg *arg)
 void
 riospawn(const Arg *arg)
 {
-	if (riodraw_spawnasync && arg->v != dmenucmd) {
+	if (riodraw_spawnasync) {
 		riopid = spawncmd(arg);
 		riodraw(NULL, slopspawnstyle);
 	} else
@@ -3318,9 +3332,7 @@ spawncmd(const Arg *arg)
 {
 	pid_t pid;
 	int now = time(NULL);
-	if (arg->v == dmenucmd)
-		dmenumon[0] = '0' + selmon->num;
-	else if (arg->v == statushandler) {
+	if (arg->v == statushandler) {
 		if (now != -1 && now - istatustimer <= istatustimeout)
 			return ~0;
 		char strstatuscmdn[8];
@@ -3336,6 +3348,10 @@ spawncmd(const Arg *arg)
 		fprintf(stderr, "moonwm: execvp %s", ((char **)arg->v)[0]);
 		perror(" failed");
 		exit(EXIT_SUCCESS);
+	}
+	if (arg->v == statushandler) {
+		unsetenv("BUTTON");
+		unsetenv("STATUSCMDN");
 	}
 	return pid;
 }

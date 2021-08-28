@@ -152,8 +152,6 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {  "/bin/sh", "-c", "$DMENUCMD", NULL };
 static const char *termcmd[]  = { "/bin/sh", "-c", "$TERMINAL", NULL };
 static const char *layoutmenu_cmd = "moonwm-menu layouts-classic";
 
@@ -224,7 +222,7 @@ static Key keys[] = {
     { MODKEY,               XK_b,       spawn,           SHCMD("$FILEMANAGER") },
     { 0,			XF86XK_MyComputer,	spawn,           SHCMD("$FILEMANAGER") },
     /* MENUS AND NOTIFICATIONS */
-    { MODKEY,               XK_d,       spawn,           {.v = dmenucmd } },
+    { MODKEY,               XK_d,       dmenu,           {0} },
     { ControlMask|Mod1Mask, XK_Delete,  spawn,           SHCMD("moonwm-menu 3") },
     { ControlMask|Mod4Mask, XK_Delete,  spawn,           SHCMD("moonwm-menu 3") },
     /* MEDIA AND BRIGHTNESS CONTROL */
@@ -312,6 +310,6 @@ static Button buttons[] = {
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },
-    { ClkRootWin,           MODKEY,         Button9,        spawn,          {.v = dmenucmd} },
+    { ClkRootWin,           MODKEY,         Button9,        dmenu,          {0} },
 };
 
