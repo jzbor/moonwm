@@ -46,7 +46,7 @@ options="\
      Grid layout                                    MOD + Shift + t                    :moonctl setlayout 6
      Toggle floating for window                     MOD + Shift + space                :moonctl togglefloating
      Center floating window                         MOD + z                            :moonctl center
-     Load saved screen setup                        MOD + Shift + r                    :moonwm-util screen-layouts
+     Load saved screen setup                        MOD + Shift + r                    :wmc-utils screen-layouts
 
 ### APPS AND MENUS ###
      Open terminal                                  MOD + Return                       :\$TERMINAL
@@ -56,20 +56,20 @@ options="\
      Open menu                                      Control + Alt + Delete             :moonwm-menu 3
 
 ### OTHER ###
-     Screenshot (select area)                       MOD + Print                        :moonwm-util screenshot
-     Screenshot whole screen                        MOD + Print                        :moonwm-util screenshot screen
-     Screenshot focused window                      MOD + Print                        :moonwm-util screenshot focused
-     Lock screen                                    MOD + x                            :moonwm-util lock
+     Screenshot (select area)                       MOD + Print                        :wmc-utils screenshot
+     Screenshot whole screen                        MOD + Print                        :wmc-utils screenshot screen
+     Screenshot focused window                      MOD + Print                        :wmc-utils screenshot focused
+     Lock screen                                    MOD + x                            :wmc-utils lock
      Log out                                        Control + MOD + BackSpace          :moonctl quit
 
 ### FUNCTION KEYS ###
      Toggle top bar                                 MOD + F1                           :moonctl togglebar
      Toggle gaps between windows                    MOD + F2                           :moonctl togglegaps
-     Load keyboard settings                         MOD + F3                           :moonwm-util setup-keyboard
-     Reload styling from xrdb                       MOD + F5                           :moonwm-util xrdb
-     Load custom monitor setup (arandr)             MOD + Control + M                  :moonwm-util screenlayouts
-     Setup monitors automatically                   MOD + Shift + M                    :moonwm-util monitors cycle
+     Load keyboard settings                         MOD + F3                           :wmc-utils setup-keyboard
+     Reload styling from xrdb                       MOD + F5                           :wmc-utils xrdb
+     Load custom monitor setup (arandr)             MOD + Control + M                  :wmc-utils screenlayouts
+     Setup monitors automatically                   MOD + Shift + M                    :wmc-utils monitors cycle
      This menu                                      MOD + F11                          :moonwm-helper
 "
 
-echo "$options" | moonwm-util dmenu -p Help: -l 30 | grep ':' | sed 's/.*://'| sh
+echo "$options" | wmc-utils dmenu -p Help: -l 30 | grep ':' | sed 's/.*://'| sh

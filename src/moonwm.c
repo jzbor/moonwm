@@ -257,8 +257,8 @@ static void zoom(const Arg *arg);
 /* variables */
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
-static const char providedautostart[] = "moonwm-util start";
-static char *launcherargs[] = { "moonwm-util", "launch" };
+static const char providedautostart[] = "wmc-utils start";
+static char *launcherargs[] = { "wmc-utils", "launch" };
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static const char moonwmdir[] = "moonwm";
@@ -2840,7 +2840,7 @@ runautostart(void)
 		/* this is almost impossible */
 		return;
 
-	/* run moonwm-util if available */
+	/* run wmc-utils if available */
 	system(providedautostart);
 
 	/* run statuscmd if available */

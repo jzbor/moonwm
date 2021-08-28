@@ -60,9 +60,9 @@ action () {
     case "$STATUSCMDN" in
         0)
             case $BUTTON in
-                1) moonwm-util volume mute;;
-                4) moonwm-util volume +5;;
-                5) moonwm-util volume -5;;
+                1) wmc-utils volume mute;;
+                4) wmc-utils volume +5;;
+                5) wmc-utils volume -5;;
             esac;;
         1)
             case $BUTTON in
