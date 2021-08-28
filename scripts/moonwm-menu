@@ -69,14 +69,15 @@ context () {
 }
 
 expose () {
-    moonctl expose
+    moonctl viewall
+    moonctl setlayout grid
     moonctl important "Select a window to activate."
     sleep 0.2
     wid="$(slop $SLOPSTYLE -f %i)" \
             || { moonctl important close; moonctl view 0; exit 1; }
     moonctl important close
-    moonctl view 0
     moonctl activate "$wid"
+    moonctl winview
 }
 
 favorites () {

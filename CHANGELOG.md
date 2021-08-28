@@ -15,6 +15,7 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
+* Improving the 'expose' feature
 * Move windows with your mouse even when they are fullscreen
 * Configuration is now done in the xres format
 * Compiler optimizations enabled by default

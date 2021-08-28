@@ -124,7 +124,7 @@ static void drawbars(void);
 static void dropfullscr(Monitor *m, int n, Client *keep);
 static void enternotify(XEvent *e);
 static void expose(XEvent *e);
-static void exposeview(const Arg *arg);
+static void winview(const Arg *arg);
 static void focus(Client *c);
 static void focusdir(const Arg *arg);
 static void focusfloating(const Arg *arg);
@@ -1321,85 +1321,22 @@ expose(XEvent *e)
 }
 
 void
-exposeview(const Arg *arg)
+winview(const Arg *arg)
 {
-	unsigned int i, n, bw;
-	int x, y, cols, rows, ch, cw, cn, rn, rrest, crest; // counters
-	int oh, ov, ih, iv;
-	Client *c;
-	Monitor *m = selmon;
-	XWindowChanges wc;
-	XConfigureEvent ce;
+	Window win, win_r, win_p, *win_c;
+	unsigned nc;
+	int unused;
+	Client* c;
+	Arg a;
 
-	view(&((Arg){.ui = ~0}));
-	setlayout(&((Arg) { .v = &layouts[GRIDPOS] }));
+	if (!XGetInputFocus(dpy, &win, &unused)) return;
+	while(XQueryTree(dpy, win, &win_r, &win_p, &win_c, &nc)
+	      && win_p != win_r) win = win_p;
 
-	getgaps(m, &oh, &ov, &ih, &iv, &n);
-	for (n = 0, c = m->clients; c; c = c->next, n++);
-	if (n == 0)
-		return;
+	if (!(c = wintoclient(win))) return;
 
-	/* grid dimensions */
-	for (cols = 0; cols <= n/2; cols++)
-		if (cols*cols >= n)
-			break;
-	if (n == 5) /* set layout against the general calculation: not 1:2:2, but 2:3 */
-		cols = 2;
-	rows = n/cols;
-	cn = rn = 0; // reset column no, row no, client count
-
-	ch = (m->wh - 2*oh - ih * (rows - 1)) / rows;
-	cw = (m->ww - 2*ov - iv * (cols - 1)) / cols;
-	rrest = (m->wh - 2*oh - ih * (rows - 1)) - ch * rows;
-	crest = (m->ww - 2*ov - iv * (cols - 1)) - cw * cols;
-	x = m->wx + ov;
-	y = m->wy + oh;
-    bw = n == 1 ? 0 : borderpx;
-
-	Client *clients[n];
-	for (i = 0, c = m->clients; c && i < n; i++, c = c->next)
-		clients[i] = c;
-	qsort(clients, n, sizeof(Client *), compareclients);
-
-	/* UNSORTED: for (i = 0, c = m->clients; c; i++, c = c->next) { */
-	for (i = 0, c = clients[0]; i < n; i++, c = clients[i]) {
-		if (i/rows + 1 > cols - n%cols) {
-			rows = n/cols + 1;
-			ch = (m->wh - 2*oh - ih * (rows - 1)) / rows;
-			rrest = (m->wh - 2*oh - ih * (rows - 1)) - ch * rows;
-		}
-
-		wc.x = x;
-		wc.y = y + rn*(ch + ih) + MIN(rn, rrest);
-		wc.width = cw + (cn < crest ? 1 : 0) - 2*bw;
-		wc.height = ch + (rn < rrest ? 1 : 0) - 2*bw;
-		wc.border_width = bw;
-		XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
-		/* configure(c); */
-		XSync(dpy, False);
-
-		ce.type = ConfigureNotify;
-		ce.display = dpy;
-		ce.event = c->win;
-		ce.window = c->win;
-		ce.x = wc.x;
-		ce.y = wc.y;
-		ce.width = wc.width;
-		ce.height = wc.height;
-		ce.border_width = wc.border_width;
-		ce.above = None;
-		ce.override_redirect = False;
-		XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
-
-		CMASKSET(c, M_EXPOSED);
-
-		rn++;
-		if (rn >= rows) {
-			rn = 0;
-			x += cw + ih + (cn < crest ? 1 : 0);
-			cn++;
-		}
-	}
+	a.ui = c->tags;
+	view(&a);
 }
 
 void

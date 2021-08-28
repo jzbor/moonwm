@@ -51,7 +51,6 @@ static const char *fcommands[] = {
 
 static const char *ncommands[] = {
 	"center",
-	"expose",
 	"killclient",
 	"quit",
 	"restart",
@@ -63,6 +62,7 @@ static const char *ncommands[] = {
 	"togglefullscr",
 	"togglegaps",
 	"viewall",
+	"winview",
 	"xrdb",
 	"zoom",
 	NULL,
