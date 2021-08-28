@@ -1789,7 +1789,6 @@ loadxrdb(XrmDatabase db)
 		return;
 
 	xrdb_get_color(db, "moonwm.vacantTagFg", normtagfg);
-	xrdb_get_color(db, "moonwm.vacantTagFg", normtagfg);
 	xrdb_get_color(db, "moonwm.vacantTagBg", normtagbg);
 	xrdb_get_color(db, "moonwm.unfocusedTitleFg", normtitlefg);
 	xrdb_get_color(db, "moonwm.unfocusedTitleBg", normtitlebg);
@@ -3089,21 +3088,26 @@ setmodkey()
 
 void
 settings(void) {
+	Display *xrmdisplay;
 	XrmDatabase dpydb, cfiledb;
 	char  *home, *xdgconfighome, *path = NULL;
 	imfact = mfact * 100;
 
 	setmodkey();
 
-	char *temp = XResourceManagerString(dpy);
-	if (temp != NULL) {
-		dpydb = XrmGetStringDatabase(temp);
-		if (dpydb) {
-			settingsxrdb(dpydb);
-			loadxrdb(dpydb);
+	xrmdisplay = XOpenDisplay(NULL);
+	if (xrmdisplay) {
+		char *temp = XResourceManagerString(xrmdisplay);
+		if (temp != NULL) {
+			dpydb = XrmGetStringDatabase(temp);
+			if (dpydb) {
+				settingsxrdb(dpydb);
+				loadxrdb(dpydb);
+			}
+			XrmDestroyDatabase(dpydb);
 		}
-		XrmDestroyDatabase(dpydb);
 	}
+	XCloseDisplay(xrmdisplay);
 
 	/* dpydb = XrmGetDatabase(dpy); */
 	/* if (dpydb) */
@@ -4305,17 +4309,10 @@ systraytomon(Monitor *m) {
 void
 xrdb(const Arg *arg)
 {
-	XrmDatabase dpydb;
-	char *temp = XResourceManagerString(dpy);
-	if (temp != NULL) {
-		dpydb = XrmGetStringDatabase(temp);
-		if (dpydb)
-			loadxrdb(dpydb);
-		XrmDestroyDatabase(dpydb);
-	}
-	/* int i; */
-	/* for (i = 0; i < LENGTH(colors); i++) */
-	/* 	scheme[i] = drw_scm_create(drw, colors[i], 9); */
+	settings();
+	for (int i = 0; i < LENGTH(colors); i++)
+		scheme[i] = drw_scm_create(drw, colors[i], 9);
+	printf("xrdb 'colors[0][0]' (result) %s (%p)\n", colors[0][0], colors[0][0]);
 	focus(NULL);
 	arrange(NULL);
 }
