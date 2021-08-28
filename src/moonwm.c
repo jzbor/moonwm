@@ -3148,25 +3148,6 @@ settings(void) {
 void
 settingsenv(void) {
 	unsigned int imfact = mfact * 100;
-	loadenv("MOONWM_CENTERONRH",	NULL,	&centeronrh,		NULL);
-	loadenv("MOONWM_DECORHINTS",	NULL,	&decorhints,		NULL);
-	loadenv("MOONWM_GAPS",			NULL,	&enablegaps,		NULL);
-	loadenv("MOONWM_KEYS",			NULL,	&managekeys,		NULL);
-	loadenv("MOONWM_RESIZEHINTS",	NULL,	&resizehints,		NULL);
-	loadenv("MOONWM_SHOWBAR",		NULL,	&showbar,			NULL);
-	loadenv("MOONWM_SMARTGAPS",		NULL,	&smartgaps,			NULL);
-	loadenv("MOONWM_SWALLOW",		NULL,	&swallowdefault,	NULL);
-	loadenv("MOONWM_SYSTRAY",		NULL,	&showsystray,		NULL);
-	loadenv("MOONWM_TOPBAR",		NULL,	&topbar,			NULL);
-	loadenv("MOONWM_WORKSPACES",	NULL,	&workspaces,		NULL);
-	loadenv("MOONWM_BORDERWIDTH",	NULL,	NULL,	&borderpx);
-	loadenv("MOONWM_FRAMERATE",		NULL,	NULL,	&framerate);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappih);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappiv);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappoh);
-	loadenv("MOONWM_GAPS",			NULL,	NULL,	&gappov);
-	loadenv("MOONWM_LAYOUT",		NULL,	NULL,	&defaultlayout);
-	loadenv("MOONWM_MFACT", NULL, NULL, &imfact);
 }
 
 void
