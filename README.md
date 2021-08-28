@@ -10,9 +10,10 @@
   - [Quick help](#quick-help)
   - [Setting up multiple monitors](#setting-up-multiple-monitors)
 - [Customizing](#customizing)
-  - [Setup personal defaults](#setup-personal-defaults)
-  - [Customize WM settings](#customize-wm-settings)
-  - [Set custom colours with xrdb](#set-custom-colours-with-xrdb)
+  - [Environment Variables](#environment-variables)
+  - [Configuration File (X Resources)](#configuration-file-x-resources)
+    - [Window Manager Settings](#window-manager-settings)
+    - [Colors](#colors)
   - [Autostart](#autostart)
   - [Creating your own status script](#creating-your-own-status-script)
   - [Add favorites menu](#add-favorites-menu)
@@ -120,7 +121,7 @@ Their format is the same as the one used by the `.Xresources` file.
 
 #### Window Manager Settings
 With these settings you can turn features on or off (listed with their default values):
-```sh
+```yaml
 moonwm.keys:        1   # enable/disable internal moonwm key handling
 moonwm.workspaces:  0   # use workspaces like i3 instead of tags (experimental)
 moonwm.swallow:     1   # enable/disable swallowing
@@ -136,12 +137,12 @@ moonwm.decorhints:  1   # decoration hints (MOTIF)
 ```
 
 You can also customize these settings (also listed with their defaults), which all take unsigned integer arguments:
-```sh
-MOONWM_LAYOUT=0         # initial default layout
-MOONWM_BORDERWIDTH=5    # width of the window borders
-MOONWM_FRAMERATE=60     # frame rate when dragging windows; should be >= monitor refresh rate
-MOONWM_GAPS=5           # gaps; 0 to disable gaps
-MOONWM_MFACT=55         # master size ratio; must be between 5 and 95
+```yaml
+moonwm.layout:      0   # initial default layout
+moonwm.borderwidth: 5   # width of the window borders
+moonwm.framerate:   60  # frame rate when dragging windows; should be >= monitor refresh rate
+moonwm.gaps:        5   # gaps; 0 to disable gaps
+moonwm.mfact:       55  # master size ratio; must be between 5 and 95
 ```
 
 #### Colors
