@@ -14,6 +14,14 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
+## Upcoming
+* Move windows with your mouse even when they are fullscreen
+* Configuration is now done in the xres format
+* Compiler optimizations enabled by default
+* Spawn floating windows where the mouse is
+* Pulling windows to first monitor if theirs got disconnected
+* Splitting stuff of to [wmcommons](https://github.com/jzbor/wmcommons)
+
 ## 7.1.1
 * Better implementation for the hiding of windows
 * Better window centering
