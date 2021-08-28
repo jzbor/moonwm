@@ -3489,9 +3489,11 @@ togglefloating(const Arg *arg)
 		return;
 	CMASKSETTO(selmon->sel, M_FLOATING, !CMASKGET(selmon->sel, M_FLOATING) || CMASKGET(selmon->sel, M_FIXED));
 	if (CMASKGET(selmon->sel, M_FLOATING) && selmon->lt[selmon->sellt]->arrange)
-		if (selmon->sel->sfx == -1 && selmon->sel->sfy == -1)
+		if (selmon->sel->sfx == -1 && selmon->sel->sfy == -1) {
+			selmon->sel->w = selmon->sel->sfw;
+			selmon->sel->h = selmon->sel->sfh;
             centerclient(selmon->sel);
-        else
+		} else
             /* restore last known float dimensions */
             resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
                    selmon->sel->sfw, selmon->sel->sfh, borderpx, 0);
