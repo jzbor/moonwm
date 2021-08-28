@@ -73,35 +73,32 @@ There are two ways to setup your monitors:
 Use `moonwm-util monitors` and `~/.screenlayouts/default.sh` instead.
 
 ## Customizing
-Most of MoonWMs defaults are overwriteable through environment variables, xrdb or similar methods.
-There is no real configuration file.
-If you want to change something more sophisticated, like replacing `moonwm-util` consider forking the git repository (see below).
+MoonWM brings defaults for everything.
+It automatically searches for stuff like the default browser or terminal.
+Please let me know if your favorite browser or terminal does not get recognised yet.
+Of course if you dislike the defaults you can always adjust the looks and the behavior as well as default applications.
+While styling and window manager settings are managed via the config file some things like default applications have to be set via environment variables.
 
-### Setup personal defaults
-MoonWM is configured through environment variables.
-You can place them in the **config file** `~/.config/moonwm/config.env` in the format shown below.
-These are automatically loaded, exported and reloaded on restart.
-(Environmental variables set and exported in `~/.profile` or similar will work too, but the config file is the preferred method.)
+### Environment Variables
+These are the settings that can be adjusted via environment variables.
+Note that as stated above none of these is strictly necessary for MoonWM to run.
+The values below are not necessarily the defaults but rather examples.
+If you wonder where they go take a look at `~/.profile`.
 
-MoonWM tries to use **sensible defaults** for all settings.
-But you might want to customize the **keyboard layout**, **wallpaper**, etc.:
 ```sh
-MOONWM_KEYMAP="us"
-MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
-MOONWM_MODKEY="Super"            # defaults to Alt
-TOUCHEGG_THRESHOLD="750 750"     # if you are using touchegg
-```
-
-In addition you can explicitly define your **default applications** like a terminal or browser.
-MoonWM will automatically look for defaults if they are not set.
-```sh
+# default applications
 BROWSER="firefox"
 FILEMANAGER="pcmanfm"
 TERMINAL="alacritty"
 DMENUCMD="rofi -show drun"
+# other basic settings
+MOONWM_KEYMAP="us"
+MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
+MOONWM_THEMEDDMENU=1            # automatic dmenu theming
+MOONWM_THEMEDXMENU=1            # automatic xmenu theming
+TOUCHEGG_THRESHOLD="750 750"    # if you are using touchegg
 ```
 
-### Customize WM settings
 To even further customize your keyboard you can put a file with `xmodmap` expressions in `~/.config/moonwm/modmap`.
 It will be evaluated automatically.
 Or you can add `setxkbmap` options to your configuration like so:
@@ -109,34 +106,36 @@ Or you can add `setxkbmap` options to your configuration like so:
 MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
 ```
 
-You can disable certain autostarts of the `moonwm-util` **autostart** routine.
+You can disable or customize certain autostarts of the `moonwm-util` **autostart** routine.
 This is useful if you for example have your own wrapper scripts or other replacements:
 ```sh
-MOONWM_NOTIFYD=0      # disables the notification daemon
-MOONWM_PICOM=0        # disables picom
-```
-
-With these settings you can turn features on or off (with their default values):
-```sh
-MOONWM_KEYS=1           # enable/disable internal moonwm key handling
-MOONWM_WORKSPACES=0     # use workspaces like i3 instead of tags (experimental)
-MOONWM_SWALLOW=1        # enable/disable swallowing
-# bar
-MOONWM_SHOWBAR=1        # show a bar
-MOONWM_SYSTRAY=1        # show system tray icons
-MOONWM_TOPBAR=1         # place bar at the top or bottom
-# clients
-MOONWM_SMARTGAPS=1      # disable gaps when only one client is visible
-MOONWM_RESIZEHINTS=0    # let clients choose their size when tiled
-MOONWM_CENTERONRH=0     # if resizehints applies, center the window
-MOONWM_DECORHINTS=1     # decoration hints (MOTIF)
-# handled by moonwm-util launch
 MOONWM_PICOMEXP=0       # start picom with --experimental-backends flag
-MOONWM_THEMEDDMENU=1    # automatic dmenu theming
-MOONWM_THEMEDXMENU=1    # automatic xmenu theming
+MOONWM_NOTIFYD=1        # enables/disables the notification daemon
+MOONWM_PICOM=1          # enables/disables picom
 ```
 
-You can also customize these settings (these are the defaults), which all take unsigned integer arguments:
+### Configuration File (X Resources)
+The following options should be set in the config file in `~/.config/moonwm/config.xres`.
+Their format is the same as the one used by the `.Xresources` file.
+
+#### Window Manager Settings
+With these settings you can turn features on or off (listed with their default values):
+```sh
+moonwm.keys:        1   # enable/disable internal moonwm key handling
+moonwm.workspaces:  0   # use workspaces like i3 instead of tags (experimental)
+moonwm.swallow:     1   # enable/disable swallowing
+# bar
+moonwm.showbar:     1   # show a bar
+moonwm.systray:     1   # show system tray icons
+moonwm.topbar:      1   # place bar at the top or bottom
+# clients
+moonwm.smartgaps:   1   # disable gaps when only one client is visible
+moonwm.resizehints: 0   # let clients choose their size when tiled
+moonwm.centeronrh:  0   # if resizehints applies, center the window
+moonwm.decorhints:  1   # decoration hints (MOTIF)
+```
+
+You can also customize these settings (also listed with their defaults), which all take unsigned integer arguments:
 ```sh
 MOONWM_LAYOUT=0         # initial default layout
 MOONWM_BORDERWIDTH=5    # width of the window borders
@@ -145,9 +144,8 @@ MOONWM_GAPS=5           # gaps; 0 to disable gaps
 MOONWM_MFACT=55         # master size ratio; must be between 5 and 95
 ```
 
-### Set custom colours with xrdb
-Custom values for colors and some other properties can be set via `xrdb(1)`.
-To edit the design simply add/change these values in your `~/.Xresources`:
+#### Colors
+These are the color values you can customize:
 ```yaml
 moonwm.focusedBorder:      #ebdbb2
 moonwm.focusedTitleBg:     #1d2021
@@ -175,6 +173,10 @@ xmenu.selbackground:    #ebdbb2
 xmenu.selforeground:    #1d2021
 ```
 
+_Note that configuration via the `.Xresources` file or similar is also possible, although the config file mentioned above is preffered.
+To enable styling of other applications `~/.Xresources` is loaded on startup._
+
+
 ### Autostart
 
 On login or reload `moonwm-util` starts a bunch of useful programs by default.
@@ -186,7 +188,6 @@ redshift        # make screen less blue at night time
 touchegg        # touch gestures
 kdeconnect      # interaction with your mobile phone
 ```
-
 
 If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
 
