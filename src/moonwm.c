@@ -1965,6 +1965,7 @@ void
 movemouse(const Arg *arg)
 {
 	int x, y, ocx, ocy, nx, ny;
+	int wasfullscreen = 0;
 	Client *c;
 	Monitor *m;
 	XEvent ev;
@@ -1972,8 +1973,12 @@ movemouse(const Arg *arg)
 
 	if (!(c = selmon->sel))
 		return;
-	if (CMASKGET(c, M_FULLSCREEN)) /* no support moving fullscreen windows by mouse */
-		return;
+	if (CMASKGET(c, M_FULLSCREEN)) {
+		wasfullscreen = 1;
+		/* togglefullscr(NULL); */
+		setfullscreen(c, 0);
+	}
+
 	restack(selmon);
 	ocx = c->x;
 	ocy = c->y;
@@ -2022,6 +2027,10 @@ movemouse(const Arg *arg)
 
 	if (arg->i)
 		activate(c);
+
+	if (wasfullscreen)
+		setfullscreen(c, 1);
+	dropfullscr(c->mon, 0, c);
 }
 
 void
