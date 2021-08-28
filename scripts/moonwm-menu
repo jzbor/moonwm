@@ -21,9 +21,9 @@ CONTEXTMENU="  Close			close
 	  Reset size hints		resetfacts"
 
 # SLOPSTYLE="-b 2 -c 0.92,0.85,0.69 -p -2"
-# SLOPSTYLE="-b 2 -c 0.98,0.28,0.20 -p -2"
+SLOPSTYLE="-b 2 -c 0.98,0.28,0.20 -p -2 -t 999999"
 # SLOPSTYLE="-b 2 -c 0.15,0.15,0.15 -p -2"
-SLOPSTYLE="-b 0"
+# SLOPSTYLE="-b 0"
 
 
 context () {
