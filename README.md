@@ -22,7 +22,6 @@
   - [Available layouts](#available-layouts)
   - [Dependencies](#dependencies)
   - [Patches implemented](#patches-implemented)
-- [Forking](#forking)
 - [Credits](#credits)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
@@ -324,13 +323,6 @@ The `Fira Code Nerd Font` is available [here](https://github.com/ryanoasis/nerd-
 * vanitygaps
 * warp
 * xrdb
-
-
-## Forking
-You are encouraged to fork this project.
-At the moment `config.def.h` might be a little outdated, so you are probably better off just editing `config.h`.
-However please consider the project is not "suckless" neither is that its goal.
-MoonWM should mostly be compatible wtih dwm patches although the huge amount of patches already applied make it a little hard and due to the code being relocated to `src/` you will have to patch them manually.
 
 
 ## Credits
