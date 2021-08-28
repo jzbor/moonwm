@@ -1929,8 +1929,8 @@ manage(Window w, XWindowAttributes *wa)
 	updateclientmonitor(c);
 	c->sfx = -1;
 	c->sfy = -1;
-	c->sfw = -1;
-	c->sfh = -1;
+	c->sfw = c->w;
+	c->sfh = c->h;
 	XSelectInput(dpy, w, EnterWindowMask|FocusChangeMask|PropertyChangeMask|StructureNotifyMask);
 	grabbuttons(c, 0);
 	if (!CMASKGET(c, M_FLOATING))
