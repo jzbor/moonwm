@@ -159,6 +159,7 @@ static void movex(const Arg *arg);
 static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
 static void moveyfloating(const Arg *arg);
+static void newclientpos(Client *c);
 static Client *nexttagged(Client *c);
 static Client *nexttiled(Client *c);
 static void placemouse(const Arg *arg);
@@ -1854,19 +1855,7 @@ manage(Window w, XWindowAttributes *wa)
 	}
 
 	c->bw = borderpx;
-	if (centerspawned || CMASKGET(c, M_CENTER)) {
-		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
-		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
-		centerclient(c);
-	} else {
-		get_pointer_pos(dpy, root, &c->x, &c->y);
-		c->x += spawnedoffset;
-		c->y += spawnedoffset;
-	}
-	c->x = MIN(c->x, c->mon->mx + c->mon->mw - WIDTH(c));
-	c->y = MIN(c->y, c->mon->my + c->mon->mh - HEIGHT(c));
-	c->x = MAX(c->x, c->mon->wx);
-	c->y = MAX(c->y, c->mon->wy);
+	newclientpos(c);
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2111,6 +2100,37 @@ moveyfloating(const Arg *arg)
 	resizefloating(selmon->sel, selmon->sel->x, y,
 		   selmon->sel->w,
 		   selmon->sel->h);
+}
+
+void
+newclientpos(Client *c)
+{
+	int mousex, mousey;
+
+	if (centerspawned || CMASKGET(c, M_CENTER)) {
+		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
+		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
+		centerclient(c);
+	} else {
+		get_pointer_pos(dpy, root, &mousex, &mousey);
+
+		if (mousex < c->mon->mx + c->mon->mw / 3)
+			c->x = mousex - spawnedoffset;
+		else if (mousex < c->mon->mx + (c->mon->mw / 3) * 2)
+			c->x = mousex - WIDTH(c) / 2;
+		else
+			c->x = mousex + spawnedoffset - c->w;
+
+		if (mousey < c->mon->my + c->mon->mh / 3)
+			c->y = mousey - spawnedoffset;
+		else if (mousey < c->mon->my + (c->mon->mh / 3) * 2)
+			c->y = mousey - HEIGHT(c) / 2;
+		else
+			c->y = mousey + spawnedoffset - c->h;
+	}
+
+	c->x = TRUNC(c->x, c->mon->wx, c->mon->wx + c->mon->ww - WIDTH(c));
+	c->y = TRUNC(c->y, c->mon->wy, c->mon->wy + c->mon->wh - HEIGHT(c));
 }
 
 Client *
