@@ -246,15 +246,18 @@ Some applications have default  tags they open on:
 If you want alternative replacements added to the rules please tell me.
 
 ### Available layouts
-* bstack
-* centeredfloatingmaster (disabled)
-* centeredmaster (disabled)
+* tile (default)
 * deck
-* dwindle (disabled)
-* fibonacci (disabled)
-* spiral (disabled)
-* tile
+* monocle
+* floating
 * tileleft
+* bstack
+* grid
+* horizgrid (disabled)
+* spiral (disabled)
+* dwindle (disabled)
+* centeredmaster (disabled)
+* centeredfloatingmaster (disabled)
 
 ### Dependencies
 All packages are listed with their names in the Arch or Arch User Repositories.
