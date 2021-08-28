@@ -149,7 +149,7 @@ get_default_dmenucmd () {
     if command -v rofi > /dev/null 2>&1; then
         echo rofi -show drun
     elif command -v dmenu_run > /dev/null 2>&1; then
-        echo moonwm-util drun
+        echo wmc-utils drun
     else
         return 1
     fi
@@ -593,14 +593,14 @@ xrdb_refresh () {
 }
 
 helptext="
-moonwm-util [-h] [-r] command
+wmc-utils [-h] [-r] command
 
 options:
     -h    Prints this help text
     -r    Check if MoonWM is running first
 
 commands:
-    brightness     Change display brightness (e.g. moonwm-util brightness -5)
+    brightness     Change display brightness (e.g. wmc-utils brightness -5)
     dmenu          Themed wrapper for dmenu (for use in scripts etc.)
     drun           Default application launcher
     help           Prints this help text
@@ -614,7 +614,7 @@ commands:
     setwallpaper   Set the wallpaper
     setup-keyboard Initialize keyboard layout
     start          Launch autostart applications
-    volume         Change output volume (e.g. moonwm-util volume -5 or moonwm-util volume mute)
+    volume         Change output volume (e.g. wmc-utils volume -5 or wmc-utils volume mute)
     xrdb           Refresh xrdb values of moonwm and utils
 "
 
@@ -653,6 +653,6 @@ case $1 in
     start) autostart;;
     volume) volume "$2";;
     xrdb) xrdb_refresh ;;
-    *) printf "Unknown operation '$1'.\nTry 'moonwm-util -h' for more information.\n"; exit 1;;
+    *) printf "Unknown operation '$1'.\nTry 'wmc-utils -h' for more information.\n"; exit 1;;
 esac
 
