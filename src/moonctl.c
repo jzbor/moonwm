@@ -185,7 +185,8 @@ bye()
 void
 closex()
 {
-	XCloseDisplay(dpy);
+	if (dpy)
+		XCloseDisplay(dpy);
 	dpy = NULL;
 }
 
