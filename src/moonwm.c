@@ -159,7 +159,7 @@ static void movex(const Arg *arg);
 static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
 static void moveyfloating(const Arg *arg);
-static void newclientpos(Client *c);
+static void initclientpos(Client *c);
 static Client *nexttagged(Client *c);
 static Client *nexttiled(Client *c);
 static void placemouse(const Arg *arg);
@@ -1854,7 +1854,7 @@ manage(Window w, XWindowAttributes *wa)
 	}
 
 	c->bw = borderpx;
-	newclientpos(c);
+	initclientpos(c);
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2102,7 +2102,7 @@ moveyfloating(const Arg *arg)
 }
 
 void
-newclientpos(Client *c)
+initclientpos(Client *c)
 {
 	int mousex, mousey;
 
@@ -3147,12 +3147,13 @@ settings(void) {
 
 void
 settingsenv(void) {
-	unsigned int imfact = mfact * 100;
+	/* for future use */
 }
 
 void
 settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
+	xrdb_get(db,	"moonwm.centerfloat",	NULL,	&centerspawned,		NULL);
 	xrdb_get(db,	"moonwm.decorhints",	NULL,	&decorhints,		NULL);
 	xrdb_get(db,	"moonwm.gaps",			NULL,	&enablegaps,		NULL);
 	xrdb_get(db,	"moonwm.keys",			NULL,	&managekeys,		NULL);
@@ -3170,7 +3171,7 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappoh);
 	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
 	xrdb_get(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
-	xrdb_get(db,	"moonwm.mfact",			NULL, NULL, &imfact);
+	xrdb_get(db,	"moonwm.mfact",			NULL,	NULL,	&imfact);
 }
 
 void
@@ -3459,11 +3460,13 @@ togglefloating(const Arg *arg)
 		if (selmon->sel->sfx == -1 && selmon->sel->sfy == -1) {
 			selmon->sel->w = selmon->sel->sfw;
 			selmon->sel->h = selmon->sel->sfh;
-            centerclient(selmon->sel);
+			initclientpos(selmon->sel);
+			resizeclient(selmon->sel, selmon->sel->x, selmon->sel->y,
+				   selmon->sel->w, selmon->sel->h, borderpx);
 		} else
-            /* restore last known float dimensions */
-            resize(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
-                   selmon->sel->sfw, selmon->sel->sfh, borderpx, 0);
+			/* restore last known float dimensions */
+			resizeclient(selmon->sel, selmon->sel->sfx, selmon->sel->sfy,
+				   selmon->sel->sfw, selmon->sel->sfh, borderpx);
 	else {
 		/* save last known float dimensions */
 		selmon->sel->sfx = selmon->sel->x;

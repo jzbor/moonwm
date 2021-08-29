@@ -132,6 +132,7 @@ moonwm.topbar:      1   # place bar at the top or bottom
 moonwm.smartgaps:   1   # disable gaps when only one client is visible
 moonwm.resizehints: 0   # let clients choose their size when tiled
 moonwm.centeronrh:  0   # if resizehints applies, center the window
+moonwm.centerfloat: 0   # initially center floating windows
 moonwm.decorhints:  1   # decoration hints (MOTIF)
 ```
 
