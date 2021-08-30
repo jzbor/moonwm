@@ -273,8 +273,13 @@ layouts () {
 }
 
 load_wallpaper () {
-    [ -f "$WALLPAPER" ] \
-        && xwallpaper --zoom "$WALLPAPER" 2> /dev/null &
+    if [ -f "$WALLPAPER" ]; then
+        if command -v xwallpaper > /dev/null; then
+            xwallpaper --zoom "$WALLPAPER" 2> /dev/null &
+        else
+            feh --no-fehbg --bg-fill "$WALLPAPER" &
+        fi
+    fi
     [ -f "$LOCK_TMP_FILE" ] || generate_lock_file &
 }
 
