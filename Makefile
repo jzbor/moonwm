@@ -58,17 +58,17 @@ uninstall:
 		${DESTDIR}${PREFIX}/share/applications/moonwm-wallpaper.desktop
 
 install-scripts:
-	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status wmcommons/scripts/wmc-utils scripts/moonwm-xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
+	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status wmcommons/scripts/wmc-utils wmcommons/scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-helper
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-menu
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-status
 	rm -f ${DESTDIR}${PREFIX}/bin/wmc-utils
-	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-xdg-xmenu
+	rm -f ${DESTDIR}${PREFIX}/bin/xdg-xmenu
 
 pull-xdg-xmenu:
 	wget https://raw.githubusercontent.com/jzbor/mashup/master/utils/xdg-xmenu
-	mv xdg-xmenu scripts/moonwm-xdg-xmenu
+	mv xdg-xmenu wmcommons/scripts/xdg-xmenu
 
 .PHONY: all options clean dist install install-scripts uninstall uninstall-scripts pull-xdg-xmenu

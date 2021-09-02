@@ -1,7 +1,7 @@
 #!/bin/sh
 
 RIGHTMENU="  Applications
-$(moonwm-xdg-xmenu -l | sed -e 's/^/	/')
+$(xdg-xmenu -l | sed -e 's/^/	/')
 
   Shutdown			systemctl poweroff || loginctl poweroff
   Reboot			systemctl reboot || loginctl reboot
