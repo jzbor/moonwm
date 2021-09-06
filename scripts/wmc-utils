@@ -99,12 +99,19 @@ default_dmenu_run () {
 
 dmenu_drun () {
     list="$(xdg-xmenu -at | sort)"
-    selected="$(echo "$list" | cut -f1 | $0 dmenu -i "$@")" \
-    	&& if echo "$list" | grep -F "$selected" > /dev/null; then
-           eval "$(echo "$list" | grep -F "$selected" | head -n 1 | cut -f2)"
-       else
-           eval "$selected"
-       fi
+    selected="$(echo "$list" | cut -f1 | $0 dmenu -i "$@")"
+    [ -z "$selected" ] && return
+    case $selected in
+        \!*) eval ${selected#?} ;;
+        \?*) eval $BROWSER \"${selected#?}\" ;;
+        '') ;;
+        *)
+            if [ -n "$selected" ] && echo "$list" | grep -F "$selected" > /dev/null; then
+                eval "$(echo "$list" | grep -F "$selected" | head -n 1 | cut -f2)"
+            else
+                eval "$selected"
+            fi ;;
+    esac
 }
 
 dmenu_wrapper () {
