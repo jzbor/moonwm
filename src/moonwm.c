@@ -3228,6 +3228,7 @@ setup(void)
 	setviewport();
 	XDeleteProperty(dpy, root, atoms[NetClientList]);
 	XDeleteProperty(dpy, root, atoms[NetClientListStacking]);
+	setenv("WMC_PREFIX", "MOONWM", 1);
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
 	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
