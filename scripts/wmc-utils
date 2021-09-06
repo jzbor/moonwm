@@ -1,15 +1,18 @@
 #!/bin/sh
 
+: ${WMC_PREFIX=WMC}
 TEMPORARYDIR="${TMPDIR:-/tmp}/moonwm/${USER:-default}"
 [ -d "$TEMPORARYDIR" ] || mkdir -vp "$TEMPORARYDIR"
 LOCK_TMP_FILE="$TEMPORARYDIR/lockfile.png"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
 CONFIG_FILE="$CONFIG_DIR/config.env"
 MODMAP_FILE="$CONFIG_DIR/modmap"
-WALLPAPER_FILE="$CONFIG_DIR/background"
-WALLPAPER="${MOONWM_WALLPAPER:-$WALLPAPER_FILE}"
 QUICK_NOTIFICATION_TIMEOUT="1500"
 INTERNAL_DISPLAY_PATTERN='LVDS_*[0-9]\|Lvds_*[0-9]\|lvds_*[0-9]\|eDP_*[0-9]'
+
+WALLPAPER_FILE="$CONFIG_DIR/background"
+temp="$(eval "${WMC_PREFIX}_WALLPAPER")"
+WALLPAPER="${temp:-$WALLPAPER_FILE}"
 
 autostart () {
     # Configure X
@@ -36,7 +39,7 @@ autostart_async () {
     # Daemons that automatically check for running instances
     run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
         /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-    env_def_true MOONWM_NOTIFYD && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
+    env_def_true NOTIFYD && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
     run kdeconnect-indicator kdeconnect-indicator
     run nm-applet nm-applet
     run xfce4-power-manager xfce4-power-manager
@@ -66,8 +69,8 @@ autostart_async () {
 
     # Start compositor
     sleep 2
-    if env_def_true MOONWM_PICOM; then
-        if env_def_false MOONWM_PICOMEXP; then
+    if env_def_true PICOM; then
+        if env_def_false PICOMEXP; then
             run picom "killall -9 picom; picom --experimental-backends"
         else
             run picom "killall -9 picom; picom"
@@ -105,7 +108,7 @@ dmenu_drun () {
 }
 
 dmenu_wrapper () {
-    if env_def_true MOONWM_THEMEDDMENU; then
+    if env_def_true THEMEDDMENU; then
         exec dmenu -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10' "$@"
     else
        	exec dmenu "$@"
@@ -118,12 +121,16 @@ env_is_set () {
 
 # for settings that default to false
 env_def_false () {
-    env_is_set "$1" && [ "$(eval echo "\$$1")" = "1" ]
+    env_is_set "$WMC_PREFIX\_$1" && [ "$(eval echo "\$${WMC_PREFIX}_${1}")" = "1" ]
 }
 
 # for settings that default to true
 env_def_true () {
-    (! env_is_set "$1") || [ "$(eval echo "\$$1")" = "1" ]
+    (! env_is_set "$1") || [ "$(eval echo "\$${WMC_PREFIX}_${1}")" = "1" ]
+}
+
+env_str () {
+    eval echo "\$${WMC_PREFIX}_${1}"
 }
 
 generate_lock_file () {
@@ -200,8 +207,8 @@ load_env_defaults () {
     if ! env_is_set DMENUCMD; then
         export DMENUCMD="$(get_default_dmenucmd)"
     fi
-    if ! env_is_set MOONWM_STATUSCMD; then
-        export MOONWM_STATUSCMD="moonwm-status"
+    if ! env_is_set STATUSCMD; then
+        export ${WMC_PREFIX}_STATUSCMD="moonwm-status"
     fi
 }
 
@@ -213,7 +220,7 @@ load_xmenu_value () {
 }
 
 load_xmenu_defaults () {
-    env_def_true MOONWM_THEMEDXMENU || return
+    env_def_true THEMEDXMENU || return
     load_xmenu_value '\*background'     'moonwm.focusedTitleBg'     '#1d2021'
     load_xmenu_value '\*foreground'     'moonwm.focusedTitleFg'     '#ebdbb2'
     load_xmenu_value xmenu.border       'moonwm.unfocusedBorder'    '#282828'
@@ -504,9 +511,9 @@ set_wallpaper () {
     elif ! [ -f "$1" ]; then
         echo "$1 is not a file." > /dev/stderr
         return 1
-    elif env_is_set MOONWM_WALLPAPER; then
-        echo "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
-        notify-send -a "MoonWM - Wallpaper" "You have \$MOONWM_WALLPAPER set. You must remove it before using this script."
+    elif env_is_set WALLPAPER; then
+        echo "You have \$${WMC_PREFIX}_WALLPAPER set. You must remove it before using this script."
+        notify-send -a "MoonWM - Wallpaper" "You have \$${WMC_PREFIX}_WALLPAPER set. You must remove it before using this script."
         return 1
     else
         [ -d "$CONFIG_DIR" ] || mkdir -vp "$CONFIG_DIR"
@@ -518,7 +525,7 @@ set_wallpaper () {
 }
 
 setup_keyboard () {
-    [ -n "$MOONWM_KEYMAP" ] && setxkbmap $MOONWM_KEYMAP
+    [ -n "$(env_str KEYMAP)" ] && setxkbmap $(env_str KEYMAP)
     [ -f "$MODMAP_FILE" ] && \
         xmodmap - < "$MODMAP_FILE"
     return 0
@@ -537,11 +544,11 @@ volume () {
         volume_notification
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     fi
-    [ -n "$MOONWM_STATUSCMD" ] && $MOONWM_STATUSCMD update
+    [ -n "$(env_str STATUSCMD)" ] && $(env_str STATUSCMD) update
 }
 
 volume_boost () {
-    if env_def_false "MOONWM_BOOST_AUDIO"; then
+    if env_def_false "BOOST_AUDIO"; then
         printf "%s" "--allow-boost"
     fi
 }
