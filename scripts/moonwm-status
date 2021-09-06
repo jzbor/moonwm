@@ -36,13 +36,23 @@ set_status () {
 ### BLOCK FUNCTIONS
 
 volume () {
-    if pamixer --get-mute > /dev/null; then
-        icon='婢'
+    if [ "$MOONWM_NERDFONT" = "0" ]; then
+        icon=''
+    elif pamixer --get-mute > /dev/null; then
+        icon='婢 '
     else
-        icon='墳'
+        icon='墳 '
     fi
-    printf "%s %s%%%%" "$icon" "$(pamixer --get-volume)"
+    printf "%s%s%%%%" "$icon" "$(pamixer --get-volume)"
+}
 
+timedate () {
+    if [ "$MOONWM_NERDFONT" = "0" ]; then
+        icon=''
+    else
+        icon=' '
+    fi
+    printf "%s%s" "$icon" "$(date +%R)"
 }
 
 ### CUSTOM STATUS AND ACTIONS
@@ -51,7 +61,7 @@ get_status () {
     statusline=""
 
     add_block "$(volume)" 1
-    add_block " $(date +%R)" 2
+    add_block "$(timedate)" 2
 
     printf "$statusline|\n"
 }
@@ -81,6 +91,6 @@ case $1 in
         loop;;
     action)
         action;;
-    help)
+    '' | help)
         help;;
 esac

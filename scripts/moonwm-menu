@@ -1,6 +1,16 @@
 #!/bin/sh
 
-RIGHTMENU="  Applications
+MAINMENU="Applications
+$(xdg-xmenu -l | sed -e 's/^/	/')
+
+Shutdown			systemctl poweroff || loginctl poweroff
+Reboot			systemctl reboot || loginctl reboot
+Suspend			wmc-utils lock; loginctl suspend || systemctl suspend
+
+Reload MoonWM	moonctl restartlaunched
+Log out			moonctl quit"
+
+MAINMENU_NF="  Applications
 $(xdg-xmenu -l | sed -e 's/^/	/')
 
   Shutdown			systemctl poweroff || loginctl poweroff
@@ -10,7 +20,17 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
   Reload MoonWM	moonctl restartlaunched
   Log out			moonctl quit"
 
-CONTEXTMENU="  Close			close
+CONTEXTMENU="Close			close
+Resize			resize
+Floating			float
+Fullscreen		fullscreen
+
+More
+	Center				center
+	Close multiple		closemult
+	Reset size hints		resetfacts"
+
+CONTEXTMENU_NF="  Close			close
 ﭔ  Resize			resize
   Floating			float
   Fullscreen		fullscreen
@@ -27,7 +47,11 @@ SLOPSTYLE="-b 2 -c 0.98,0.28,0.20 -p -2 -t 999999"
 
 
 context () {
-    action="$(printf "$CONTEXTMENU" | xmenu -i)"
+    if [ "$MOONWM_NERDFONT" != "0" ]; then
+        action="$(printf "$CONTEXTMENU_NF" | xmenu -i)"
+    else
+        action="$(printf "$CONTEXTMENU" | xmenu -i)"
+    fi
     [ -z "$action" ] && exit
     if [ "$1" = select ] && [ "$action" != closemult ] && [ "$action" != resetfacts ]; then
         case $action in
@@ -93,6 +117,15 @@ layouts_classic () {
     moonctl printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\t\1/' | xmenu -i
 }
 
+mainmenu () {
+    if [ "$MOONWM_NERDFONT" != "0" ]; then
+        echo "$MAINMENU_NF" | xmenu $(menupos) | sh
+    else
+        echo "$MAINMENU" | xmenu $(menupos) | sh
+    fi
+}
+
+
 menupos () {
     if ! [ "$MOONWM_TOPBAR" = 0 ]; then
         echo -p 0x0:current
@@ -103,7 +136,7 @@ menupos () {
 case $1 in
     1 | expose) expose ;;
     2 | favorites) favorites ;;
-    3 | main) echo "$RIGHTMENU" | xmenu $(menupos) | sh ;;
+    3 | main) mainmenu ;;
     '' | context) context client ;;
     select | context-select) context select ;;
     layouts) layouts ;;

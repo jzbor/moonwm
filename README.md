@@ -96,6 +96,7 @@ MOONWM_KEYMAP="us"
 MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
 MOONWM_THEMEDDMENU=1            # automatic dmenu theming
 MOONWM_THEMEDXMENU=1            # automatic xmenu theming
+MOONWM_NERDFONT=1               # enables/disables NerdFont icons in status and menus
 TOUCHEGG_THRESHOLD="750 750"    # if you are using touchegg
 ```
 
