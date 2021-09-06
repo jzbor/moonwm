@@ -199,7 +199,7 @@ static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setcfact(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setmodkey();
+static void setmodkey(char *modstr);
 static void setnumdesktops(void);
 static void settings(void);
 static void settingsxrdb(XrmDatabase db);
@@ -3059,14 +3059,16 @@ setnumdesktops(void){
 }
 
 void
-setmodkey()
+setmodkey(char *modstr)
 {
-	char* modenv = getenv("MOONWM_MODKEY");
 	unsigned int modkey;
 
-    if(!modenv)
-		modkey = Mod1Mask;
-	else if (strcmp(modenv, "Super") == 0)
+    if(!modstr)
+		return;
+
+	fprintf(stderr, "setmodkey: %s\n", modstr);
+
+	if (strcmp(modstr, "Super") == 0)
 		modkey = Mod4Mask;
     else
 		modkey = Mod1Mask;
@@ -3092,8 +3094,6 @@ settings(void) {
 	XrmDatabase dpydb, cfiledb;
 	char  *home, *xdgconfighome, *path = NULL;
 	imfact = mfact * 100;
-
-	setmodkey();
 
 	xrmdisplay = XOpenDisplay(NULL);
 	if (xrmdisplay) {
@@ -3140,6 +3140,7 @@ settings(void) {
 		framerate = 60;
 	if (borderpx > 100)
 		borderpx = 2;
+	setmodkey("Alt");
 
 	if (imfact >= 5 && imfact <= 95)
 		mfact = (float) imfact / 100;
@@ -3152,6 +3153,9 @@ settingsenv(void) {
 
 void
 settingsxrdb(XrmDatabase db) {
+	char *modstr = {0};
+
+	xrdb_get(db,	"moonwm.modkey",		&modstr, NULL,				NULL);
 	xrdb_get(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
 	xrdb_get(db,	"moonwm.centerfloat",	NULL,	&centerspawned,		NULL);
 	xrdb_get(db,	"moonwm.decorhints",	NULL,	&decorhints,		NULL);
@@ -3172,6 +3176,8 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
 	xrdb_get(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
 	xrdb_get(db,	"moonwm.mfact",			NULL,	NULL,	&imfact);
+
+	setmodkey(modstr);
 }
 
 void

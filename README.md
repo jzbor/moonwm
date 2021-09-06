@@ -119,6 +119,12 @@ The following options should be set in the config file in `~/.config/moonwm/conf
 Their format is the same as the one used by the `.Xresources` file.
 
 #### Window Manager Settings
+
+For your modkey you can choose between the Alt and the Super key with Alt being the default:
+```yaml
+moonwm.modkey:      Super   # Alt is the default
+```
+
 With these settings you can turn features on or off (listed with their default values):
 ```yaml
 moonwm.keys:        1   # enable/disable internal moonwm key handling
