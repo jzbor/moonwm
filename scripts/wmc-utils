@@ -115,13 +115,17 @@ dmenu_wrapper () {
    	fi
 }
 
-env_is_set () {
+env_is_set_nopref () {
     env | grep "^$1=" > /dev/null
+}
+
+env_is_set () {
+    env | grep "^$WMC_PREFIX\_$1=" > /dev/null
 }
 
 # for settings that default to false
 env_def_false () {
-    env_is_set "$WMC_PREFIX\_$1" && [ "$(eval echo "\$${WMC_PREFIX}_${1}")" = "1" ]
+    env_is_set "$1" && [ "$(eval echo "\$${WMC_PREFIX}_${1}")" = "1" ]
 }
 
 # for settings that default to true
@@ -197,14 +201,14 @@ get_primary_resolution () {
 }
 
 load_env_defaults () {
-    if (! env_is_set TERMINAL) && get_default_terminal; then
+    if (! env_is_set_nopref TERMINAL) && get_default_terminal; then
         export TERMINAL="$(get_default_terminal)"
         export TERM="xterm-256color"
     fi
-    if (! env_is_set BROWSER) && get_default_browser; then
+    if (! env_is_set_nopref BROWSER) && get_default_browser; then
         export BROWSER="$(get_default_browser)"
     fi
-    if ! env_is_set DMENUCMD; then
+    if ! env_is_set_nopref DMENUCMD; then
         export DMENUCMD="$(get_default_dmenucmd)"
     fi
     if ! env_is_set STATUSCMD; then
