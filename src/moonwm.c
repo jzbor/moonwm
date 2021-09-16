@@ -752,6 +752,7 @@ clientmessage(XEvent *e)
 			updateclientmonitor(c);
 			XAddToSaveSet(dpy, c->win);
 			XSelectInput(dpy, c->win, StructureNotifyMask | PropertyChangeMask | ResizeRedirectMask);
+			/* @TODO make systray class hint a variable */
 			XClassHint ch ={"moonwm-systray", "moonwm-systray"};
 			XSetClassHint(dpy, c->win, &ch);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
@@ -759,10 +760,10 @@ clientmessage(XEvent *e)
 			swa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
 			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			/* FIXME not sure if I have to send these events, too */
-			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			/* /1* FIXME not sure if I have to send these events, too *1/ */
+			/* send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION); */
+			/* send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION); */
+			/* send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION); */
 			XSync(dpy, False);
 			resizebarwin(selmon);
 			updatesystray();
@@ -3226,6 +3227,7 @@ setup(void)
 	/* EWMH support per view */
 	XChangeProperty(dpy, root, atoms[NetSupported], XA_ATOM, 32,
 		PropModeReplace, (unsigned char *) atoms, NetLast);
+    /* @TODO fix net supported */
 	/* load properties from last session */
 	loadwmprops();
 	setnumdesktops();
