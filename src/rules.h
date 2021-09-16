@@ -6,6 +6,7 @@ static const Rule rules[] = {
     /* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
     { .class = "firefox", .monitor = -1,  .props = M_NOSWALLOW },
     { .class = "polybar", .monitor = -1,  .props = M_NOSWALLOW },
+    { .class = "mpv",  .monitor = -1,  .props = M_CENTER },
     /* Terminals */
     { .class = "Alacritty",         .monitor = -1,  .props = M_TERMINAL },
     { .class = "Uxterm",            .monitor = -1,  .props = M_TERMINAL },
