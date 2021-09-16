@@ -3226,8 +3226,7 @@ setup(void)
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	/* EWMH support per view */
 	XChangeProperty(dpy, root, atoms[NetSupported], XA_ATOM, 32,
-		PropModeReplace, (unsigned char *) atoms, NetLast);
-    /* @TODO fix net supported */
+		PropModeReplace, (unsigned char *) atoms, LastAtom);
 	/* load properties from last session */
 	loadwmprops();
 	setnumdesktops();
