@@ -266,6 +266,7 @@ static const char broken[] = "broken";
 static const char moonwmdir[] = "moonwm";
 static const char localshare[] = ".local/share";
 static const char configfile[] = "config.xres";
+static char trayclass[] = "moonwm-systray";
 static unsigned int imfact = 0;
 static char stext[256];
 static char rawstext[256];
@@ -752,8 +753,7 @@ clientmessage(XEvent *e)
 			updateclientmonitor(c);
 			XAddToSaveSet(dpy, c->win);
 			XSelectInput(dpy, c->win, StructureNotifyMask | PropertyChangeMask | ResizeRedirectMask);
-			/* @TODO make systray class hint a variable */
-			XClassHint ch ={"moonwm-systray", "moonwm-systray"};
+			XClassHint ch = { trayclass, trayclass };
 			XSetClassHint(dpy, c->win, &ch);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
 			/* use parents background color */
