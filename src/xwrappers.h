@@ -11,7 +11,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 	   	NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDock, NetWMDesktop,
 	   	NetWMWindowTypeDesktop, NetWMWindowTypeDialog, NetClientList, NetClientListStacking,
 	   	NetDesktopNames, NetDesktopViewport, NetNumberOfDesktops,
-	   	NetCurrentDesktop, NetLast, /* EWMH atoms */
+	   	NetCurrentDesktop, /* EWMH atoms */
 
 		Manager, Xembed, XembedInfo,  /* Xembed atoms */
 
@@ -20,7 +20,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 		WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
 		WMWindowRole, /* default atoms */
 
-		Utf8, Motif, LastAtom };
+		Utf8, Motif, NetLast, LastAtom };
 
 /* function declarations */
 void checkotherwm(Display *dpy);

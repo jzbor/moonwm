@@ -82,7 +82,7 @@ get_atoms(Display *dpy)
 		atoms[SteamGame] = XInternAtom(dpy, "STEAM_GAME", False);
 
 		atoms[Utf8] = XInternAtom(dpy, "UTF8_STRING", False);
-		atoms[Motif] = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
+		atoms[Motif] = XInternAtom(dpy, "_MOTIF_NetLast, WM_HINTS", False);
 
 		atoms_intialised = 1;
 	}
