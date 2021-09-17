@@ -16,6 +16,8 @@
 #define ISINC(X)                ((X) > 1000 && (X) < 3000)
 #define PREVSEL                 3000
 #define LENGTH(X)               (sizeof X / sizeof X[0])
+#define CENTERX(C)				((C)->x + (C)->bw + (C)->w / 2)
+#define CENTERY(C)				((C)->y + (C)->bw + (C)->h / 2)
 #define CMASKGET(C, I)			((C)->props & (I))
 #define CMASKSETTO(C, I, V)		((V) ? ((C)->props |= (I)) : ((C)->props &= ~(I)))
 #define CMASKSET(C, I)			((C)->props |= (I))
