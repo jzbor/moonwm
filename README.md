@@ -139,8 +139,11 @@ moonwm.topbar:      1   # place bar at the top or bottom
 moonwm.smartgaps:   1   # disable gaps when only one client is visible
 moonwm.resizehints: 0   # let clients choose their size when tiled
 moonwm.centeronrh:  0   # if resizehints applies, center the window
-moonwm.centerfloat: 0   # initially center floating windows
 moonwm.decorhints:  1   # decoration hints (MOTIF)
+# navigating and organizing
+moonwm.focusdir:    1   # switch focus based direction instead of stack structure
+moonwm.movedir:     1   # move windows based direction instead of stack structure
+moonwm.centerfloat: 0   # initially center floating windows
 ```
 
 You can also customize these settings (also listed with their defaults), which all take unsigned integer arguments:

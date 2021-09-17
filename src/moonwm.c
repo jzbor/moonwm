@@ -3274,11 +3274,13 @@ settingsxrdb(XrmDatabase db) {
 	char *modstr = {0};
 
 	xrdb_get(db,	"moonwm.modkey",		&modstr, NULL,				NULL);
-	xrdb_get(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
 	xrdb_get(db,	"moonwm.centerfloat",	NULL,	&centerspawned,		NULL);
+	xrdb_get(db,	"moonwm.centeronrh",	NULL,	&centeronrh,		NULL);
 	xrdb_get(db,	"moonwm.decorhints",	NULL,	&decorhints,		NULL);
+	xrdb_get(db,	"moonwm.focusdir",		NULL,	&usefocusdir,		NULL);
 	xrdb_get(db,	"moonwm.gaps",			NULL,	&enablegaps,		NULL);
 	xrdb_get(db,	"moonwm.keys",			NULL,	&managekeys,		NULL);
+	xrdb_get(db,	"moonwm.movedir",		NULL,	&usemovedir,		NULL);
 	xrdb_get(db,	"moonwm.resizehints",	NULL,	&resizehints,		NULL);
 	xrdb_get(db,	"moonwm.showbar",		NULL,	&showbar,			NULL);
 	xrdb_get(db,	"moonwm.smartgaps",		NULL,	&smartgaps,			NULL);
