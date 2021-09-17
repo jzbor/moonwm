@@ -161,7 +161,7 @@ static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
 static void moveyfloating(const Arg *arg);
 static void initclientpos(Client *c);
-static Client *nextdir(Client *s, int dir);
+static Client *nextdir(Client *s, int x, int y, int dir);
 static Client *nexttagged(Client *c);
 static Client *nexttiled(Client *c);
 static void placemouse(const Arg *arg);
@@ -1391,7 +1391,23 @@ focusdir(const Arg *arg)
 	if (!s)
 		return;
 
-	f = nextdir(s, arg->i);
+	f = nextdir(s, CENTERX(s), CENTERY(s), arg->i);
+	if (!f && wraparound) {
+		switch (arg->i) {
+		case 0: // left
+			f = nextdir(s, s->mon->mx + s->mon->mw, CENTERY(s), arg->i);
+			break;
+		case 1: // right
+			f = nextdir(s, s->mon->mx, CENTERY(s), arg->i);
+			break;
+		case 2: // up
+			f = nextdir(s, CENTERX(s), s->mon->my + s->mon->mh, arg->i);
+			break;
+		default:
+		case 3: // down
+			f = nextdir(s, CENTERX(s), s->mon->my, arg->i);
+		}
+	}
 
 	if (f && f != s) {
 		focus(f);
@@ -1908,7 +1924,23 @@ movedir(const Arg *arg)
 	if (!s || CMASKGET(s, M_FLOATING))
 		return;
 
-	f = nextdir(s, arg->i);
+	f = nextdir(s, CENTERX(s), CENTERY(s), arg->i);
+	if (!f && wraparound) {
+		switch (arg->i) {
+		case 0: // left
+			f = nextdir(s, s->mon->mx + s->mon->mw, CENTERY(s), arg->i);
+			break;
+		case 1: // right
+			f = nextdir(s, s->mon->mx, CENTERY(s), arg->i);
+			break;
+		case 2: // up
+			f = nextdir(s, CENTERX(s), s->mon->my + s->mon->mh, arg->i);
+			break;
+		default:
+		case 3: // down
+			f = nextdir(s, CENTERX(s), s->mon->my, arg->i);
+		}
+	}
 
 	if (f && f != s) {
 		for (fprior = f->mon->clients; fprior && fprior->next != f; fprior = fprior->next);
@@ -2143,7 +2175,7 @@ initclientpos(Client *c)
 }
 
 Client *
-nextdir(Client *s, int pos)
+nextdir(Client *s, int x, int y, int dir)
 {
 	int dist = 3000000, altdist = 3000000;
 	unsigned int client_dist, client_altdist;
@@ -2162,40 +2194,41 @@ nextdir(Client *s, int pos)
 		if (!ISVISIBLE(c) || ISFLOATING(c) != isfloating) // || HIDDEN(c)
 			continue;
 
-		switch (pos) {
+		switch (dir) {
 		case 0: // left
-			client_dist = abs(CENTERX(s) - CENTERX(c));
-			client_altdist = abs(CENTERY(s) - CENTERY(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+			client_dist = abs(x - CENTERX(c));
+			client_altdist = abs(y - CENTERY(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx, c->mon->my, c->mon->mx, c->mon->my + c->mon->mh))
 				continue;
 			break;
 		case 1: // right
-			client_dist = abs(CENTERX(s) - CENTERX(c));
-			client_altdist = abs(CENTERY(s) - CENTERY(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+			client_dist = abs(x - CENTERX(c));
+			client_altdist = abs(y - CENTERY(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my))
 				continue;
 			break;
 		case 2: // up
-			client_dist = abs(CENTERY(s) - CENTERY(c));
-			client_altdist = abs(CENTERX(s) - CENTERX(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+			client_dist = abs(y - CENTERY(c));
+			client_altdist = abs(x - CENTERX(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx + c->mon->mw, c->mon->my, c->mon->mx, c->mon->my))
 				continue;
 			break;
 		default:
 		case 3: // down
-			client_dist = abs(CENTERY(s) - CENTERY(c));
-			client_altdist = abs(CENTERX(s) - CENTERX(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+			client_dist = abs(y - CENTERY(c));
+			client_altdist = abs(x - CENTERX(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh))
 				continue;
 		}
 
-		if (client_dist < dist || client_dist == dist &&
-				(c == s->snext && !(s->x == c->x && s->y == c->y))
-				|| (client_altdist < altdist && f != s->snext)) {
+		if (client_dist < dist
+				|| (client_dist != 0 && dist == 0)
+				|| (client_dist == dist && c == s->snext && !(s->x == c->x && s->y == c->y))
+				|| (client_dist == dist && client_altdist < altdist && f != s->snext)) {
 			dist = client_dist;
 			altdist = client_altdist;
 			f = c;
