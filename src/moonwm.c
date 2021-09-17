@@ -161,9 +161,11 @@ static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
 static void moveyfloating(const Arg *arg);
 static void initclientpos(Client *c);
+static Client *nextdir(Client *s, int dir);
 static Client *nexttagged(Client *c);
 static Client *nexttiled(Client *c);
 static void placemouse(const Arg *arg);
+static int pointintriangle(float x, float y, float x1, float y1, float x2, float y2, float x3, float y3);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
 static void pushstack(const Arg *arg);
@@ -1384,65 +1386,12 @@ focus(Client *c)
 void
 focusdir(const Arg *arg)
 {
-	Client *s = selmon->sel, *f = NULL, *c, *next;
+	Client *s = selmon->sel, *f = NULL;
 
 	if (!s)
 		return;
 
-	unsigned int score = -1;
-	int dist = 3000000;
-	unsigned int client_score;
-	int client_dist;
-	int dirweight = 20;
-	int isfloating = ISFLOATING(s);
-
-	next = s->next;
-	if (!next)
-		next = s->mon->clients;
-	for (c = next; c != s; c = next) {
-
-		next = c->next;
-		if (!next)
-			next = s->mon->clients;
-
-		if (!ISVISIBLE(c) || ISFLOATING(c) != isfloating) // || HIDDEN(c)
-			continue;
-
-		switch (arg->i) {
-		case 0: // left
-			client_dist = s->x - c->x - c->w;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->ww)) +
-				abs(s->y - c->y);
-			break;
-		case 1: // right
-			client_dist = c->x - s->x - s->w;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->ww)) +
-				abs(c->y - s->y);
-			break;
-		case 2: // up
-			client_dist = s->y - c->y - c->h;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->wh)) +
-				abs(s->x - c->x);
-			break;
-		default:
-		case 3: // down
-			client_dist = c->y - s->y - s->h;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->wh)) +
-				abs(c->x - s->x);
-			break;
-		}
-
-		if ((((arg->i == 0 || arg->i == 2) && client_score <= score) || client_score < score)
-				|| (dist == client_dist && c == s->snext && !(s->x == c->x && s->y == c->y))){
-			score = client_score;
-			dist = client_dist;
-			f = c;
-		}
-	}
+	f = nextdir(s, arg->i);
 
 	if (f && f != s) {
 		focus(f);
@@ -1954,65 +1903,12 @@ motionnotify(XEvent *e)
 void
 movedir(const Arg *arg)
 {
-	Client *s = selmon->sel, *f = NULL, *c, *next, *fprior, *sprior;
+	Client *s = selmon->sel, *f = NULL, *next, *fprior, *sprior;
 
 	if (!s || CMASKGET(s, M_FLOATING))
 		return;
 
-	unsigned int score = -1;
-	int dist = 3000000;
-	unsigned int client_score;
-	int client_dist;
-	int dirweight = 20;
-	int isfloating = ISFLOATING(s);
-
-	next = s->next;
-	if (!next)
-		next = s->mon->clients;
-	for (c = next; c != s; c = next) {
-
-		next = c->next;
-		if (!next)
-			next = s->mon->clients;
-
-		if (!ISVISIBLE(c) || ISFLOATING(c) != isfloating) // || HIDDEN(c)
-			continue;
-
-		switch (arg->i) {
-		case 0: // left
-			client_dist = s->x - c->x - c->w;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->ww)) +
-				abs(s->y - c->y);
-			break;
-		case 1: // right
-			client_dist = c->x - s->x - s->w;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->ww)) +
-				abs(c->y - s->y);
-			break;
-		case 2: // up
-			client_dist = s->y - c->y - c->h;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->wh)) +
-				abs(s->x - c->x);
-			break;
-		default:
-		case 3: // down
-			client_dist = c->y - s->y - s->h;
-			client_score =
-				dirweight * MIN(abs(client_dist), abs(client_dist + s->mon->wh)) +
-				abs(c->x - s->x);
-			break;
-		}
-
-		if ((((arg->i == 0 || arg->i == 2) && client_score <= score) || client_score < score)
-				|| (dist == client_dist && c == s->snext && !(s->x == c->x && s->y == c->y))){
-			score = client_score;
-			dist = client_dist;
-			f = c;
-		}
-	}
+	f = nextdir(s, arg->i);
 
 	if (f && f != s) {
 		for (fprior = f->mon->clients; fprior && fprior->next != f; fprior = fprior->next);
@@ -2247,6 +2143,71 @@ initclientpos(Client *c)
 }
 
 Client *
+nextdir(Client *s, int pos)
+{
+	unsigned int score = -1;
+	int dist = 3000000, altdist = 3000000;
+	unsigned int client_dist, client_altdist;
+	int dirweight = 20;
+	int isfloating = ISFLOATING(s);
+	Client *c, *next, *f = NULL;
+
+	next = s->next;
+	if (!next)
+		next = s->mon->clients;
+	for (c = next; c != s; c = next) {
+
+		next = c->next;
+		if (!next)
+			next = s->mon->clients;
+
+		if (!ISVISIBLE(c) || ISFLOATING(c) != isfloating) // || HIDDEN(c)
+			continue;
+
+		switch (pos) {
+		case 0: // left
+			client_dist = abs(CENTERX(s) - CENTERX(c));
+			client_altdist = abs(CENTERY(s) - CENTERY(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+						c->mon->mx, c->mon->my, c->mon->mx, c->mon->my + c->mon->mh))
+				continue;
+			break;
+		case 1: // right
+			client_dist = abs(CENTERX(s) - CENTERX(c));
+			client_altdist = abs(CENTERY(s) - CENTERY(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+						c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my))
+				continue;
+			break;
+		case 2: // up
+			client_dist = abs(CENTERY(s) - CENTERY(c));
+			client_altdist = abs(CENTERX(s) - CENTERX(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+						c->mon->mx + c->mon->mw, c->mon->my, c->mon->mx, c->mon->my))
+				continue;
+			break;
+		default:
+		case 3: // down
+			client_dist = abs(CENTERY(s) - CENTERY(c));
+			client_altdist = abs(CENTERX(s) - CENTERX(c));
+			if (!pointintriangle(CENTERX(c), CENTERY(c), CENTERX(s), CENTERY(s),
+						c->mon->mx, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh))
+				continue;
+		}
+
+		if (client_dist < dist || client_dist == dist &&
+				(c == s->snext && !(s->x == c->x && s->y == c->y))
+				|| (client_altdist < altdist && f != s->snext)) {
+			dist = client_dist;
+			altdist = client_altdist;
+			f = c;
+		}
+	}
+
+	return f;
+}
+
+Client *
 nexttagged(Client *c) {
 	Client *walked = c->mon->clients;
 	for(;
@@ -2429,6 +2390,18 @@ placemouse(const Arg *arg)
 	if (wasfullscreen)
 		setfullscreen(c, 1);
 	dropfullscr(c->mon, 0, c);
+}
+
+
+int
+pointintriangle(float x, float y, float x1, float y1, float x2, float y2, float x3, float y3)
+{
+	float t1, t2;
+    t1 = (x*(y3 - y1) + y*(x1 - x3) - x1*y3 + y1*x3) / (x1*(y2 - y3) + y1*(x3 - x2) + x2*y3 - y2*x3);
+	if (t1 < 0 || t1 > 1)
+		return 0;
+    t2 = (x*(y2 - y1) + y*(x1 - x2) - x1*y2 + y1*x2) / -(x1*(y2 - y3) + y1*(x3 - x2) + x2*y3 - y2*x3);
+	return (0 <= t2 && t2 <= 1 && t1 + t2 <= 1);
 }
 
 void
