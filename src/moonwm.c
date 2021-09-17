@@ -2145,10 +2145,8 @@ initclientpos(Client *c)
 Client *
 nextdir(Client *s, int pos)
 {
-	unsigned int score = -1;
 	int dist = 3000000, altdist = 3000000;
 	unsigned int client_dist, client_altdist;
-	int dirweight = 20;
 	int isfloating = ISFLOATING(s);
 	Client *c, *next, *f = NULL;
 
