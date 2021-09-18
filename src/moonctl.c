@@ -78,6 +78,7 @@ static const char *lcommands[] = {
 	"help",
 	"important",
 	"printlayouts",
+	"rootwid",
 	"setlayout",
 	"status",
 	"togglelayout",
@@ -272,6 +273,9 @@ handlelocal(char *command, int argc, char *argv[])
 		bye();
 	} else if (strcmp(command, "printlayouts") == 0) {
 		printlayouts();
+		bye();
+	} else if (strcmp(command, "rootwid") == 0) {
+		printf("%d\n", DefaultRootWindow(dpy));
 		bye();
 	} else if (strcmp(command, "setlayout") == 0) {
 		if (argc == 0)

@@ -71,6 +71,7 @@ context () {
         moonctl important close
         [ -z "$wid" ] && exit
         moonctl activate "$wid" 3000 || exit
+        [ "$wid" = "$(moonctl rootwid)" ] && exit
     fi
     case $action in
         close) moonctl killclient ;;
