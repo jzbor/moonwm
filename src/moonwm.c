@@ -2177,7 +2177,7 @@ initclientpos(Client *c)
 Client *
 nextdir(Client *s, int x, int y, int dir, int ignorepit)
 {
-	int dist = 3000000, altdist = 3000000;
+	unsigned int dist = ~0, altdist = ~0;
 	unsigned int client_dist, client_altdist;
 	int isfloating = ISFLOATING(s);
 	Client *c, *next, *f = NULL;
@@ -2229,7 +2229,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 				continue;
 		}
 
-		if ((client_dist < dist && (altdist != 0 || client_altdist == 0) && (dist == 3000000 || client_dist != 0))
+		if ((client_dist < dist && (altdist != 0 || client_altdist == 0) && (dist == ~0 || client_dist != 0))
 				|| (altdist > 0 && client_altdist == 0 && f != s->snext)
 				|| (client_dist != 0 && dist == 0)
 				|| (client_dist == dist && c == s->snext && !(s->x == c->x && s->y == c->y))
