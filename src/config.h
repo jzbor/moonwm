@@ -309,7 +309,7 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY,         Button3,        resizeorxfact,  {0} },
     { ClkClientWin,         MODKEY|ControlMask, Button3,    resizeorxfact,	{.i = 1} },
     { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-menu context") },
-    { ClkRootWin,			0,              Button2,        riospawnsync,   SHCMD("moonwm-desktop") },
+    { ClkRootWin,			0,              Button2,        spawn,			SHCMD("moonwm-desktop") },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },
