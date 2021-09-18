@@ -38,7 +38,7 @@ static const int riodraw_matchpid   = 0;        /* 0 or 1, indicates whether to 
 static const int riodraw_spawnasync = 1;        /* 0 means that the application is only spawned after a successful selection while
 												 * 1 means that the application is being initialised in the background while the selection is made */
 static const int center_relbar		= 1;		/* 1 means centering applications relative to the bar when using center() or spawning new windows */
-static const int wraparound			= 1;		/* wrap around screenedges in focusdir, movedir */
+static int wraparound				= 0;		/* wrap around screenedges in focusdir, movedir */
 static int workspaces               = 0;
 static int managekeys = 1;
 static const int placemousemode     = 1;

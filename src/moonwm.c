@@ -3293,6 +3293,7 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.systray",		NULL,	&showsystray,		NULL);
 	xrdb_get(db,	"moonwm.topbar",		NULL,	&topbar,			NULL);
 	xrdb_get(db,	"moonwm.workspaces",	NULL,	&workspaces,		NULL);
+	xrdb_get(db,	"moonwm.wraparound",	NULL,	&wraparound,		NULL);
 	xrdb_get(db,	"moonwm.borderwidth",	NULL,	NULL,	&borderpx);
 	xrdb_get(db,	"moonwm.framerate",		NULL,	NULL,	&framerate);
 	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappih);

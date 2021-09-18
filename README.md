@@ -143,6 +143,7 @@ moonwm.decorhints:  1   # decoration hints (MOTIF)
 # navigating and organizing
 moonwm.focusdir:    1   # switch focus based direction instead of stack structure
 moonwm.movedir:     1   # move windows based direction instead of stack structure
+moonwm.wraparound:  0   # wrap around the screen edges when using focusdir or movedir
 moonwm.centerfloat: 0   # initially center floating windows
 ```
 
