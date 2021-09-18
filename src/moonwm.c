@@ -161,7 +161,7 @@ static void movey(const Arg *arg);
 static void movexfloating(const Arg *arg);
 static void moveyfloating(const Arg *arg);
 static void initclientpos(Client *c);
-static Client *nextdir(Client *s, int x, int y, int dir);
+static Client *nextdir(Client *s, int x, int y, int dir, int ignorepit);
 static Client *nexttagged(Client *c);
 static Client *nexttiled(Client *c);
 static void placemouse(const Arg *arg);
@@ -1391,21 +1391,21 @@ focusdir(const Arg *arg)
 	if (!s)
 		return;
 
-	f = nextdir(s, CENTERX(s), CENTERY(s), arg->i);
+	f = nextdir(s, CENTERX(s), CENTERY(s), arg->i, 0);
 	if (!f && wraparound) {
 		switch (arg->i) {
 		case 0: // left
-			f = nextdir(s, s->mon->mx + s->mon->mw, CENTERY(s), arg->i);
+			f = nextdir(s, s->mon->mx + s->mon->mw, CENTERY(s), arg->i, 1);
 			break;
 		case 1: // right
-			f = nextdir(s, s->mon->mx, CENTERY(s), arg->i);
+			f = nextdir(s, s->mon->mx, CENTERY(s), arg->i, 1);
 			break;
 		case 2: // up
-			f = nextdir(s, CENTERX(s), s->mon->my + s->mon->mh, arg->i);
+			f = nextdir(s, CENTERX(s), s->mon->my + s->mon->mh, arg->i, 1);
 			break;
 		default:
 		case 3: // down
-			f = nextdir(s, CENTERX(s), s->mon->my, arg->i);
+			f = nextdir(s, CENTERX(s), s->mon->my, arg->i, 1);
 		}
 	}
 
@@ -1924,21 +1924,21 @@ movedir(const Arg *arg)
 	if (!s || CMASKGET(s, M_FLOATING))
 		return;
 
-	f = nextdir(s, CENTERX(s), CENTERY(s), arg->i);
+	f = nextdir(s, CENTERX(s), CENTERY(s), arg->i, 0);
 	if (!f && wraparound) {
 		switch (arg->i) {
 		case 0: // left
-			f = nextdir(s, s->mon->mx + s->mon->mw, CENTERY(s), arg->i);
+			f = nextdir(s, s->mon->mx + s->mon->mw, CENTERY(s), arg->i, 1);
 			break;
 		case 1: // right
-			f = nextdir(s, s->mon->mx, CENTERY(s), arg->i);
+			f = nextdir(s, s->mon->mx, CENTERY(s), arg->i, 1);
 			break;
 		case 2: // up
-			f = nextdir(s, CENTERX(s), s->mon->my + s->mon->mh, arg->i);
+			f = nextdir(s, CENTERX(s), s->mon->my + s->mon->mh, arg->i, 1);
 			break;
 		default:
 		case 3: // down
-			f = nextdir(s, CENTERX(s), s->mon->my, arg->i);
+			f = nextdir(s, CENTERX(s), s->mon->my, arg->i, 1);
 		}
 	}
 
@@ -2175,7 +2175,7 @@ initclientpos(Client *c)
 }
 
 Client *
-nextdir(Client *s, int x, int y, int dir)
+nextdir(Client *s, int x, int y, int dir, int ignorepit)
 {
 	int dist = 3000000, altdist = 3000000;
 	unsigned int client_dist, client_altdist;
@@ -2198,34 +2198,39 @@ nextdir(Client *s, int x, int y, int dir)
 		case 0: // left
 			client_dist = abs(x - CENTERX(c));
 			client_altdist = abs(y - CENTERY(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
-						c->mon->mx, c->mon->my, c->mon->mx, c->mon->my + c->mon->mh))
+			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
+						c->mon->mx, c->mon->my, c->mon->mx, c->mon->my + c->mon->mh)
+					&& !(c == s->next && CENTERX(c) < CENTERX(s)))
 				continue;
 			break;
 		case 1: // right
 			client_dist = abs(x - CENTERX(c));
 			client_altdist = abs(y - CENTERY(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
-						c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my))
+			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
+						c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my)
+					&& !(c == s->next && CENTERX(c) > CENTERX(s)))
 				continue;
 			break;
 		case 2: // up
 			client_dist = abs(y - CENTERY(c));
 			client_altdist = abs(x - CENTERX(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
-						c->mon->mx + c->mon->mw, c->mon->my, c->mon->mx, c->mon->my))
+			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
+						c->mon->mx + c->mon->mw, c->mon->my, c->mon->mx, c->mon->my)
+					&& !(c == s->next && CENTERY(c) < CENTERY(s)))
 				continue;
 			break;
 		default:
 		case 3: // down
 			client_dist = abs(y - CENTERY(c));
 			client_altdist = abs(x - CENTERX(c));
-			if (!pointintriangle(CENTERX(c), CENTERY(c), x, y,
-						c->mon->mx, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh))
+			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
+						c->mon->mx, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh)
+					&& !(c == s->next && CENTERY(c) > CENTERY(s)))
 				continue;
 		}
 
-		if (client_dist < dist
+		if ((client_dist < dist && (altdist != 0 || client_altdist == 0) && (dist == 3000000 || client_dist != 0))
+				|| (altdist > 0 && client_altdist == 0 && f != s->snext)
 				|| (client_dist != 0 && dist == 0)
 				|| (client_dist == dist && c == s->snext && !(s->x == c->x && s->y == c->y))
 				|| (client_dist == dist && client_altdist < altdist && f != s->snext)) {
