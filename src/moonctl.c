@@ -75,6 +75,7 @@ static const char *lcommands[] = {
 	"-h",
 	"activate",
 	"active",
+	"borderwidth",
 	"clienttags",
 	"currenttags",
 	"help",
@@ -218,7 +219,7 @@ getproperty(Window wid, Atom atom, unsigned char **data) {
 void
 handlelocal(char *command, int argc, char *argv[])
 {
-	int wid, timeout, tags, status;
+	int wid, timeout, tags, status, bw;
 	unsigned char *data = NULL;
 	if (strcmp(command, "activate") == 0) {
 		if (argc == 0)
@@ -242,6 +243,15 @@ handlelocal(char *command, int argc, char *argv[])
 			bye();
 		}
 		die(3, "Unable to get active window");
+	} else if (strcmp(command, "borderwidth") == 0) {
+		status = getproperty(root, XInternAtom(dpy, "_MWM_BORDER_WIDTH", False), &data);
+		if (status == Success && data) {
+			bw = *(unsigned int *)data;
+			printf("%d\n", bw);
+			XFree(data);
+			bye();
+		}
+		die(3, "Unable to get border width");
 	} else if (strcmp(command, "clienttags") == 0) {
 		if (argc == 0)
 			die(2, "Not enough arguments");
