@@ -234,6 +234,7 @@ static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
+static void updateborderwidth(void);
 static void updateclientlist(void);
 static void updateclientmonitor(Client *c);
 static void updateclienttags(Client *c);
@@ -2820,13 +2821,16 @@ riodraw(Client *c, const char slopstyle[])
 	char strout[100] = {0};
 	char tmpstring[30] = {0};
 	char slopcmd[100] = "slop -f x%xx%yx%wx%hx ";
+	char slopborder[8] = {0};
 	int firstchar = 0;
 	int counter = 0;
 
 	/* if (c && c->win) */
 	/* 	unmap(c, 0); */
 
+	sprintf(slopborder, " -b %d", borderpx);
 	strcat(slopcmd, slopstyle);
+	strcat(slopcmd, slopborder);
 	FILE *fp = popen(slopcmd, "r");
 
 	while (fgets(str, 100, fp) != NULL)
@@ -3365,6 +3369,7 @@ setup(void)
 	loadwmprops();
 	setnumdesktops();
 	updatecurrenttags();
+	updateborderwidth();
 	setdesktopnames();
 	setviewport();
 	XDeleteProperty(dpy, root, atoms[NetClientList]);
@@ -3810,6 +3815,14 @@ updatebarpos(Monitor *m)
 		m->wy = m->topbar ? m->wy + bh : m->wy;
 	} else
 		m->by = -bh;
+}
+
+void
+updateborderwidth(void)
+{
+    unsigned long data[1];
+    data[0] = borderpx;
+	XChangeProperty(dpy, root, atoms[MWMBorderWidth], XA_CARDINAL, 32, PropModeReplace, (unsigned char *)data, 1);
 }
 
 void
@@ -4441,6 +4454,7 @@ xrdb(const Arg *arg)
 	printf("xrdb 'colors[0][0]' (result) %s (%p)\n", colors[0][0], colors[0][0]);
 	focus(NULL);
 	arrange(NULL);
+	updateborderwidth();
 }
 
 void
