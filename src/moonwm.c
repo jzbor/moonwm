@@ -2234,10 +2234,13 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 		}
 
 		if ((client_dist < dist && (altdist != 0 || client_altdist == 0) && (dist == ~0 || client_dist != 0))
-				|| (altdist > 0 && client_altdist == 0 && f != s->snext)
-				|| (client_dist != 0 && dist == 0)
-				|| (client_dist == dist && c == s->snext && !(s->x == c->x && s->y == c->y))
-				|| (client_dist == dist && client_altdist < altdist && f != s->snext)) {
+				|| (dir % 2 == 0 && altdist == 0 && client_dist == 0
+					&& client_altdist == 0 && dist == 0) /* back in monocle or deck layout */
+				|| (altdist > 0 && client_altdist == 0 && f != s->snext) /* one exactly in line I guess */
+				|| (client_dist != 0 && dist == 0 && altdist == 0) /* choosing a non-stacked one if there is one */
+				|| (client_dist == dist && c == s->snext && client_dist != 0) /* using snext if it's not stacked on top */
+				|| (client_dist == dist && client_altdist < altdist && f != s->snext)) /* one thats closer on the other axis */
+		{
 			dist = client_dist;
 			altdist = client_altdist;
 			f = c;
