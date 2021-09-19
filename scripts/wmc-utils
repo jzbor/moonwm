@@ -566,9 +566,8 @@ volume_boost () {
 }
 
 volume_notification () {
-    if pidof xfce4-notifyd > /dev/null; then
-        return
-    fi
+    # currently disabled
+    return
 
     muted="$(pamixer --get-mute)"
     if [ "$1" = mute ] && [ "$muted" = "true" ]; then
