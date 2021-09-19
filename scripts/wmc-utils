@@ -104,6 +104,7 @@ dmenu_drun () {
     case $selected in
         \!*) eval ${selected#?} ;;
         \?*) eval $BROWSER \"${selected#?}\" ;;
+        \:*) eval $TERMINAL -e \"${selected#?}\" ;;
         '') ;;
         *)
             if [ -n "$selected" ] && echo "$list" | grep -F "$selected" > /dev/null; then
