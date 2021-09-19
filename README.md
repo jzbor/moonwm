@@ -75,6 +75,7 @@ Use `moonwm-util monitors` and `~/.screenlayouts/default.sh` instead.
 
 ### Drun (MOD+d) features
 You can prepend your query with an `!` to execute the following input directly or with a `?` to pass it on to your default browser.
+To execute a command in a new terminal window try to prepend a `:`.
 If no desktop file according to your input is found and you hit enter the input will be executed in a shell.
 
 ## Customizing
