@@ -79,6 +79,7 @@ get_atoms(Display *dpy)
 		atoms[MWMClientTags] = XInternAtom(dpy, "_MWM_CLIENT_TAGS", False);
 		atoms[MWMCurrentTags] = XInternAtom(dpy, "_MWM_CURRENT_TAGS", False);
 		atoms[MWMClientMonitor] = XInternAtom(dpy, "_MWM_CLIENT_MONITOR", False);
+		atoms[MWMBorderWidth] = XInternAtom(dpy, "_MWM_BORDER_WIDTH", False);
 		atoms[SteamGame] = XInternAtom(dpy, "STEAM_GAME", False);
 
 		atoms[Utf8] = XInternAtom(dpy, "UTF8_STRING", False);

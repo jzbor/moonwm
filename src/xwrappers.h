@@ -15,7 +15,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 
 		Manager, Xembed, XembedInfo,  /* Xembed atoms */
 
-		SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMLast, /* MoonWM atoms */
+		SteamGame, MWMClientTags, MWMCurrentTags, MWMClientMonitor, MWMBorderWidth, MWMLast, /* MoonWM atoms */
 
 		WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
 		WMWindowRole, /* default atoms */
