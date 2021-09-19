@@ -9,6 +9,7 @@
   - [Most important shortcuts](#most-important-shortcuts)
   - [Quick help](#quick-help)
   - [Setting up multiple monitors](#setting-up-multiple-monitors)
+  - [Drun (MOD+d) features](#drun-modd-features)
 - [Customizing](#customizing)
   - [Environment Variables](#environment-variables)
   - [Configuration File (X Resources)](#configuration-file-x-resources)
@@ -71,6 +72,10 @@ There are two ways to setup your monitors:
 
 **NOTE**: `moonwm-util screensetup` and the usage of `~/.screenlayouts/autoload.sh` are both deprecated.
 Use `moonwm-util monitors` and `~/.screenlayouts/default.sh` instead.
+
+### Drun (MOD+d) features
+You can prepend your query with an `!` to execute the following input directly or with a `?` to pass it on to your default browser.
+If no desktop file according to your input is found and you hit enter the input will be executed in a shell.
 
 ## Customizing
 MoonWM brings defaults for everything.
