@@ -20,11 +20,14 @@ typedef struct {
 
 static const char *icommands[] = {
 	"cyclelayout",
+	"focusdir",
 	"focusmon",
 	"focusstack",
 	"incnmaster",
+	"movedir",
 	"movex",
 	"movey",
+	"resetfacts",
 	"resizex",
 	"resizey",
 	"shiftview",
@@ -33,7 +36,6 @@ static const char *icommands[] = {
 	"tagmonkt",
 	"toggletag",
 	"toggleview",
-	"resetfacts",
 	NULL,
 };
 

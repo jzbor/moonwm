@@ -55,11 +55,12 @@ static Signal signals[] = {
 	/* signum           function */
 	{ "center",         center },
 	{ "cyclelayout",    cyclelayout },
-	{ "winview",		winview },
+	{ "focusdir",       focusdir },
 	{ "focusmon",       focusmon },
 	{ "focusstack",     focusstack },
 	{ "incnmaster",     incnmaster },
 	{ "killclient",     killclient },
+	{ "movedir",		movedir },
 	{ "movex",          movex },
 	{ "movey",          movey },
 	{ "quit",           quit },
@@ -87,6 +88,7 @@ static Signal signals[] = {
 	{ "toggleview",     toggleview },
 	{ "view",           view },
 	{ "viewall",        viewall },
+	{ "winview",		winview },
 	{ "xrdb",           xrdb },
 	{ "zoom",           zoom },
 };
