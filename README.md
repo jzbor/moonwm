@@ -52,7 +52,7 @@ Use **hjkl** or **arrow keys** for `<direction>`:
 
 ### Quick help
 **For a quick interactive help page press MOD(Win)+F11.
-You will get a interactive list with shortcuts and their corresponding actions.
+You will get an interactive list with shortcuts and their corresponding actions.
 You can also directly select most of the entries to execute their action.**
 
 ### Setting up multiple monitors
