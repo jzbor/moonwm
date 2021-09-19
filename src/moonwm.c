@@ -373,8 +373,11 @@ applyrules(Client *c)
 			|| (steamid = window_get_atomprop(dpy, c->win, atoms[SteamGame], AnyPropertyType)))
 		CMASKSET(c, M_STEAM);
 
-	for (i = 0; i < LENGTH(rules); i++) {
-		r = &rules[i];
+	for (i = 0; i < LENGTH(rules) + LENGTH(tagrules); i++) {
+		if (i < LENGTH(rules))
+			r = &rules[i];
+		else
+			r = &tagrules[i - LENGTH(rules)];
 		if ((!r->title || strstr(c->name, r->title))
 		&& (!r->class || strstr(class, r->class))
 		&& (!r->role || strstr(role, r->role))
@@ -389,6 +392,7 @@ applyrules(Client *c)
 				c->mon = m;
 		}
 	}
+
 	if (ch.res_class)
 		XFree(ch.res_class);
 	if (ch.res_name)
@@ -3287,10 +3291,12 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.keys",			NULL,	&managekeys,		NULL);
 	xrdb_get(db,	"moonwm.movedir",		NULL,	&usemovedir,		NULL);
 	xrdb_get(db,	"moonwm.resizehints",	NULL,	&resizehints,		NULL);
+	xrdb_get(db,	"moonwm.rules",			NULL,	&userules,			NULL);
 	xrdb_get(db,	"moonwm.showbar",		NULL,	&showbar,			NULL);
 	xrdb_get(db,	"moonwm.smartgaps",		NULL,	&smartgaps,			NULL);
 	xrdb_get(db,	"moonwm.swallow",		NULL,	&swallowdefault,	NULL);
 	xrdb_get(db,	"moonwm.systray",		NULL,	&showsystray,		NULL);
+	xrdb_get(db,	"moonwm.tagrules",		NULL,	&usetagrules,		NULL);
 	xrdb_get(db,	"moonwm.topbar",		NULL,	&topbar,			NULL);
 	xrdb_get(db,	"moonwm.workspaces",	NULL,	&workspaces,		NULL);
 	xrdb_get(db,	"moonwm.wraparound",	NULL,	&wraparound,		NULL);

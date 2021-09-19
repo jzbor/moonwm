@@ -40,6 +40,8 @@ static const int riodraw_spawnasync = 1;        /* 0 means that the application 
 static const int center_relbar		= 1;		/* 1 means centering applications relative to the bar when using center() or spawning new windows */
 static int wraparound				= 0;		/* wrap around screenedges in focusdir, movedir */
 static int workspaces               = 0;
+static int userules					= 1;		/* 1 means don't apply any rules */
+static int usetagrules				= 0;		/* 1 means don't apply any tag-specific rules */
 static int managekeys = 1;
 static const int placemousemode     = 1;
 	/* placemouse options, choose which feels more natural:

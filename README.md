@@ -131,6 +131,9 @@ With these settings you can turn features on or off (listed with their default v
 moonwm.keys:        1   # enable/disable internal moonwm key handling
 moonwm.workspaces:  0   # use workspaces like i3 instead of tags (experimental)
 moonwm.swallow:     1   # enable/disable swallowing
+# rules (take a look at src/rules.h)
+moonwm.rules:       1   # load rules to configure windows (eg. center dialogs)
+moonwm.tagrules:    0   # load tagrules to configure window tags (eg. Spotify on tag 8)
 # bar
 moonwm.showbar:     1   # show a bar
 moonwm.systray:     1   # show system tray icons
