@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [Upcoming](#upcoming)
 - [7.1.1](#711)
 - [7.1.0](#710)
 - [7.0.4](#704)
@@ -15,12 +16,20 @@
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 ## Upcoming
-* Improving the 'expose' feature
 * Move windows with your mouse even when they are fullscreen
-* Configuration is now done in the xres format
-* Compiler optimizations enabled by default
 * Spawn floating windows where the mouse is
 * Pulling windows to first monitor if theirs got disconnected
+* Configuration is now done in the xres format
+* Making a lot of stuff optional via options:
+    * rules and tagrules
+    * enable/disable NerdFont icons via env variable (`MOONWM_NERDFONT`)
+* Navigation and organisation by direction:
+    * added movedir
+    * improved focusdir algorithm
+* Support for feh as wallpaper-setter
+* Improved drun (with `!` and `?` modifier)
+* Improving the 'expose' feature
+* Compiler optimizations enabled by default
 * Splitting stuff of to [wmcommons](https://github.com/jzbor/wmcommons)
 
 ## 7.1.1
