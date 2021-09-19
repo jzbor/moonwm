@@ -160,7 +160,7 @@ moonwm.mfact:       55  # master size ratio; must be between 5 and 95
 ```
 
 #### Colors
-These are the color values you can customize:
+These are the color values you can customize (either in `~/.Xresources` or `~/.config/moonwm/config.xres`):
 ```yaml
 moonwm.focusedBorder:      #ebdbb2
 moonwm.focusedTitleBg:     #1d2021
@@ -178,11 +178,14 @@ moonwm.vacantTagBg:        #1d2021
 moonwm.vacantTagFg:        #7c6f64
 ```
 
-You should also edit the according xmenu and general entries to get everything to fit together:
+To make everything, especially the menu fit together you also need to customize it's coloring.
+You can do that **only in `~/.Xresources`**.
 ```yaml
 *background:            #1d2021
 *foreground:            #ebdbb2
 
+xmenu.background:       #1d2021
+xmenu.foreground:       #ebdbb2
 xmenu.border:           #1d2021
 xmenu.selbackground:    #ebdbb2
 xmenu.selforeground:    #1d2021
