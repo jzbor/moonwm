@@ -54,8 +54,10 @@
 #include <xwrappers.h>
 
 /* macros */
-#define ISVISIBLEONTAG(C, T)    ((C->tags & T))
+#define ISPROPERLAST(S, C)	((C) == (S)->snext && !(SAMESIZE(S, C)))
 #define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
+#define ISVISIBLEONTAG(C, T)    ((C->tags & T))
+#define SAMESIZE(A, B)		(abs((A)->w - (B)->w) < 5 && abs((A)->h - (B)->h < 5))
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TAGSLENGTH              (LENGTH(tags))
 
@@ -2205,7 +2207,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(y - CENTERY(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx, c->mon->my, c->mon->mx, c->mon->my + c->mon->mh)
-					&& !(c == s->next && CENTERX(c) < CENTERX(s)))
+					&& !(c == s->snext && CENTERX(c) < CENTERX(s)))
 				continue;
 			break;
 		case 1: // right
@@ -2213,7 +2215,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(y - CENTERY(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my)
-					&& !(c == s->next && CENTERX(c) > CENTERX(s)))
+					&& !(c == s->snext && CENTERX(c) > CENTERX(s)))
 				continue;
 			break;
 		case 2: // up
@@ -2221,7 +2223,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(x - CENTERX(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx + c->mon->mw, c->mon->my, c->mon->mx, c->mon->my)
-					&& !(c == s->next && CENTERY(c) < CENTERY(s)))
+					&& !(c == s->snext && CENTERY(c) < CENTERY(s)))
 				continue;
 			break;
 		default:
@@ -2230,17 +2232,17 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(x - CENTERX(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh)
-					&& !(c == s->next && CENTERY(c) > CENTERY(s)))
+					&& !(c == s->snext && CENTERY(c) > CENTERY(s)))
 				continue;
 		}
 
 		if ((client_dist < dist && (altdist != 0 || client_altdist == 0) && (dist == ~0 || client_dist != 0))
 				|| (dir % 2 == 0 && altdist == 0 && client_dist == 0
 					&& client_altdist == 0 && dist == 0) /* back in monocle or deck layout */
-				|| (altdist > 0 && client_altdist == 0 && f != s->snext) /* one exactly in line I guess */
+				|| (altdist > 0 && client_altdist == 0 && SAMESIZE(s, c)) /* one exactly in line I guess */
 				|| (client_dist != 0 && dist == 0 && altdist == 0) /* choosing a non-stacked one if there is one */
-				|| (client_dist == dist && c == s->snext && client_dist != 0) /* using snext if it's not stacked on top */
-				|| (client_dist == dist && client_altdist < altdist && f != s->snext)) /* one thats closer on the other axis */
+				|| (client_dist == dist && client_dist != 0 && (altdist != 0 || !SAMESIZE(s, f)) && ISPROPERLAST(s, c)) /* using snext if it's not stacked on top */
+				|| (client_dist == dist && client_altdist < altdist && !ISPROPERLAST(s, f))) /* one thats closer on the other axis */
 		{
 			dist = client_dist;
 			altdist = client_altdist;
