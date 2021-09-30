@@ -68,7 +68,6 @@ static Signal signals[] = {
 	{ "resizex",        resizex },
 	{ "resizey",        resizey },
 	{ "restart",        restart },
-	{ "restartlaunched", restartlaunched },
 	{ "rioresize",      rioresize },
 	{ "setcfact",       setcfact },
 	{ "setlayout",      setlayoutex },

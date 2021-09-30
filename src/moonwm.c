@@ -187,7 +187,6 @@ static void resizex(const Arg *arg);
 static void resizey(const Arg *arg);
 static void restack(Monitor *m);
 static void restart(const Arg *arg);
-static void restartlaunched(const Arg *arg);
 static int riodraw(Client *c, const char slopstyle[]);
 static void rioposition(Client *c, int x, int y, int w, int h);
 static void rioresize(const Arg *arg);
@@ -266,7 +265,6 @@ static void zoom(const Arg *arg);
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
 static const char providedautostart[] = "wmc-utils start";
-static char *launcherargs[] = { "wmc-utils", "launch" };
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static const char moonwmdir[] = "moonwm";
@@ -307,7 +305,6 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 static Atom *atoms;
 static int running = 1;
 static int restartwm = 0;
-static int restartlauncher = 0;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy;
@@ -2809,13 +2806,6 @@ restart(const Arg *arg)
 	running = 0;
 }
 
-void
-restartlaunched(const Arg *arg)
-{
-	restartlauncher = 1;
-	running = 0;
-}
-
 // drag out an area using slop and resize the selected window to it.
 int
 riodraw(Client *c, const char slopstyle[])
@@ -4503,8 +4493,6 @@ main(int argc, char *argv[])
 	XCloseDisplay(dpy);
 	if (restartwm) {
 		execvp(argv[0], argv);
-	} else if (restartlauncher) {
-		execvp(launcherargs[0], launcherargs);
 	}
 	return EXIT_SUCCESS;
 }

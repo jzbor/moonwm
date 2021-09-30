@@ -56,7 +56,6 @@ static const char *ncommands[] = {
 	"killclient",
 	"quit",
 	"restart",
-	"restartlaunched",
 	"rioresize",
 	"tagall",
 	"togglebar",

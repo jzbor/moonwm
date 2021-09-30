@@ -7,7 +7,7 @@ Shutdown			systemctl poweroff || loginctl poweroff
 Reboot			systemctl reboot || loginctl reboot
 Suspend			wmc-utils lock; loginctl suspend || systemctl suspend
 
-Reload MoonWM	moonctl restartlaunched
+Reload MoonWM	moonctl restart
 Log out			moonctl quit"
 
 MAINMENU_NF="  Applications
@@ -17,7 +17,7 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
   Reboot			systemctl reboot || loginctl reboot
   Suspend			wmc-utils lock; loginctl suspend || systemctl suspend
 
-  Reload MoonWM	moonctl restartlaunched
+  Reload MoonWM	moonctl restart
   Log out			moonctl quit"
 
 CONTEXTMENU="Close			close
