@@ -297,6 +297,7 @@ static Button buttons[] = {
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
     { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
+    { ClkWinTitle,          0,              Button2,        center,			{0} },
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
     { ClkStatusText,        0,              Button1,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button2,        spawn,          {.v = statushandler } },
