@@ -377,7 +377,9 @@ applyrules(Client *c)
 		CMASKSET(c, M_STEAM);
 
 	for (i = 0; i < LENGTH(rules) + LENGTH(tagrules); i++) {
-		if (i < LENGTH(rules))
+		if ((i < LENGTH(rules) && !userules) || i >= LENGTH(rules) && !usetagrules)
+			continue;
+		else if (i < LENGTH(rules))
 			r = &rules[i];
 		else
 			r = &tagrules[i - LENGTH(rules)];
