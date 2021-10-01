@@ -54,10 +54,10 @@
 #include <xwrappers.h>
 
 /* macros */
-#define ISPROPERLAST(S, C)	((C) == (S)->snext && !(SAMESIZE(S, C)))
+#define ISPROPERLAST(S, C)		((C) == (S)->snext && !(SAMESIZE(S, C)))
 #define ISVISIBLE(C)            ISVISIBLEONTAG(C, C->mon->tagset[C->mon->seltags])
 #define ISVISIBLEONTAG(C, T)    ((C->tags & T))
-#define SAMESIZE(A, B)		(abs((A)->w - (B)->w) < 5 && abs((A)->h - (B)->h < 5))
+#define SAMESIZE(A, B)			(abs((A)->w - (B)->w) < 5 && abs((A)->h - (B)->h < 5))
 #define TAGMASK                 ((1 << LENGTH(tags)) - 1)
 #define TAGSLENGTH              (LENGTH(tags))
 
