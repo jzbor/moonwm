@@ -187,7 +187,7 @@ static void resizex(const Arg *arg);
 static void resizey(const Arg *arg);
 static void restack(Monitor *m);
 static void restart(const Arg *arg);
-static int riodraw(Client *c, const char slopstyle[]);
+static int riodraw(Client *c);
 static void rioposition(Client *c, int x, int y, int w, int h);
 static void rioresize(const Arg *arg);
 static void riospawn(const Arg *arg);
@@ -215,6 +215,7 @@ static void shiftview(const Arg *arg);
 static void shiftviewclients(const Arg *arg);
 static void showhide(Client *c);
 static void sigchld(int unused);
+static void slopcommand(char *str);
 static void spawn(const Arg *arg);
 static pid_t spawncmd(const Arg *arg);
 static int stackpos(const Arg *arg);
@@ -2808,23 +2809,20 @@ restart(const Arg *arg)
 
 // drag out an area using slop and resize the selected window to it.
 int
-riodraw(Client *c, const char slopstyle[])
+riodraw(Client *c)
 {
 	int i;
 	char str[100] = {0};
 	char strout[100] = {0};
 	char tmpstring[30] = {0};
-	char slopcmd[100] = "slop -f x%xx%yx%wx%hx ";
-	char slopborder[8] = {0};
+	char slopcmd[100] = {0};
 	int firstchar = 0;
 	int counter = 0;
 
 	/* if (c && c->win) */
 	/* 	unmap(c, 0); */
 
-	sprintf(slopborder, " -b %d", borderpx);
-	strcat(slopcmd, slopstyle);
-	strcat(slopcmd, slopborder);
+	slopcommand(slopcmd);
 	FILE *fp = popen(slopcmd, "r");
 
 	while (fgets(str, 100, fp) != NULL)
@@ -2902,7 +2900,7 @@ rioresize(const Arg *arg)
 {
 	Client *c = (arg && arg->v ? (Client*)arg->v : selmon->sel);
 	if (c)
-		riodraw(c, slopresizestyle);
+		riodraw(c);
 }
 
 /* spawn a new window and drag out an area using slop to postiion it */
@@ -2911,7 +2909,7 @@ riospawn(const Arg *arg)
 {
 	if (riodraw_spawnasync) {
 		riopid = spawncmd(arg);
-		riodraw(NULL, slopspawnstyle);
+		riodraw(NULL);
 	} else
 		riospawnsync(arg);
 }
@@ -2919,7 +2917,7 @@ riospawn(const Arg *arg)
 void
 riospawnsync(const Arg *arg)
 {
-	if (riodraw(NULL, slopspawnstyle))
+	if (riodraw(NULL))
 		riopid = spawncmd(arg);
 }
 
@@ -3475,6 +3473,20 @@ sigchld(int unused)
 	if (signal(SIGCHLD, sigchld) == SIG_ERR)
 		die("can't install SIGCHLD handler:");
 	while (0 < waitpid(-1, NULL, WNOHANG));
+}
+
+void
+slopcommand(char *str)
+{
+	XRenderColor color = scheme[SchemeHigh][ColBorder].color;
+	unsigned short max = ~0;
+	char sloptheming[100] = {0};
+	sprintf(sloptheming, " -b %d -t 0 -l -c %.2f,%.2f,%.2f,0.3", borderpx,
+		((float) color.red) / ((float) max),
+		((float) color.green) / ((float) max),
+		((float) color.blue) / ((float) max));
+	strcpy(str, "slop -f x%xx%yx%wx%hx ");
+	strcat(str, sloptheming);
 }
 
 void
