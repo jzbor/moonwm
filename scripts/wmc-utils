@@ -1,11 +1,11 @@
 #!/bin/sh
 
 : ${WMC_PREFIX=WMC}
-TEMPORARYDIR="${TMPDIR:-/tmp}/moonwm/${USER:-default}"
+: ${WMC_NAME=wmcommons}
+TEMPORARYDIR="${TMPDIR:-/tmp}/$WMC_NAME/${USER:-default}"
 [ -d "$TEMPORARYDIR" ] || mkdir -vp "$TEMPORARYDIR"
 LOCK_TMP_FILE="$TEMPORARYDIR/lockfile.png"
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
-CONFIG_FILE="$CONFIG_DIR/config.env"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/$WMC_NAME"
 MODMAP_FILE="$CONFIG_DIR/modmap"
 QUICK_NOTIFICATION_TIMEOUT="1500"
 INTERNAL_DISPLAY_PATTERN='LVDS_*[0-9]\|Lvds_*[0-9]\|lvds_*[0-9]\|eDP_*[0-9]'
@@ -87,7 +87,7 @@ brightness () {
     fi
     notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Brightness \
         -i "notification-display-brightness" \
-        -h string:x-canonical-private-synchronous:moonwm-brightness \
+        -h "string:x-canonical-private-synchronous:$WMC_NAME-brightness" \
         "Set brightness to $(light | sed 's/\..*//g')%"
 }
 
@@ -233,26 +233,19 @@ load_xmenu_value () {
 
 load_xmenu_defaults () {
     env_def_true THEMEDXMENU || return
-    load_xmenu_value '\*background'     'moonwm.focusedTitleBg'     '#1d2021'
-    load_xmenu_value '\*foreground'     'moonwm.focusedTitleFg'     '#ebdbb2'
-    load_xmenu_value xmenu.border       'moonwm.unfocusedBorder'    '#282828'
-    load_xmenu_value xmenu.foreground   'moonwm.focusedTitleFg'     '#ebdbb2'
-    load_xmenu_value xmenu.background   'moonwm.focusedTitleBg'     '#1d2021'
-    load_xmenu_value xmenu.selforeground 'moonwm.focusedTitleBg'    '#1d2021'
-    load_xmenu_value xmenu.selbackground 'moonwm.focusedTitleFg'    '#ebdbb2'
+    load_xmenu_value '\*background'     "$WMC_NAME.focusedTitleBg"     '#1d2021'
+    load_xmenu_value '\*foreground'     "$WMC_NAME.focusedTitleFg"     '#ebdbb2'
+    load_xmenu_value xmenu.border       "$WMC_NAME.unfocusedBorder"    '#282828'
+    load_xmenu_value xmenu.foreground   "$WMC_NAME.focusedTitleFg"     '#ebdbb2'
+    load_xmenu_value xmenu.background   "$WMC_NAME.focusedTitleBg"     '#1d2021'
+    load_xmenu_value xmenu.selforeground "$WMC_NAME.focusedTitleBg"    '#1d2021'
+    load_xmenu_value xmenu.selbackground "$WMC_NAME.focusedTitleFg"    '#ebdbb2'
     load_xmenu_value xmenu.font         ''          'FiraCode Nerd Font:size=9,monospace:size=9'
     load_xmenu_value xmenu.borderWidth  ''                          2
-    load_xmenu_value xmenu.separator    'moonwm.focusedTitleFg'     '#ebdbb2'
+    load_xmenu_value xmenu.separator    "$WMC_NAME.focusedTitleFg"     '#ebdbb2'
 }
 
 launch () {
-    # Load user configuration
-    if [ -f "$CONFIG_FILE" ]; then
-        set -o allexport
-        . "$CONFIG_FILE"
-        set +o allexport
-    fi
-
     # Load default values for env variables
     load_env_defaults
 
@@ -262,15 +255,8 @@ launch () {
 }
 
 launch_valgrind () {
-    logfile="${XDG_DATA_HOME:-$USER/.local/share}/moonwm/valgrind.log"
+    logfile="${XDG_DATA_HOME:-$USER/.local/share}/$WMC_NAME/valgrind.log"
     options="--leak-check=full --show-leak-kinds=all --track-origins=yes -v"
-
-    # Load user configuration
-    if [ -f "$CONFIG_FILE" ]; then
-        set -o allexport
-        . "$CONFIG_FILE"
-        set +o allexport
-    fi
 
     # Load default values for env variables
     load_env_defaults
@@ -572,7 +558,7 @@ volume_notification () {
     muted="$(pamixer --get-mute)"
     if [ "$1" = mute ] && [ "$muted" = "true" ]; then
         notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Volume -i "notification-audio-volume-muted" \
-            -h string:x-canonical-private-synchronous:moonwm-volume \
+            -h "string:x-canonical-private-synchronous:$WMC_NAME-volume" \
             "Muted"
     else
         level="$(pamixer --get-volume)"
@@ -588,11 +574,11 @@ volume_notification () {
 
         if [ "$1" = mute ] && [ "$muted" = "false" ]; then
             notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Volume -i "$icon" \
-                -h string:x-canonical-private-synchronous:moonwm-volume \
+                -h "string:x-canonical-private-synchronous:$WMC_NAME-volume" \
                 "Unmuted"
         elif [ "$muted" = "false" ]; then
             notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Volume -i "$icon" \
-                -h string:x-canonical-private-synchronous:moonwm-volume \
+                -h "string:x-canonical-private-synchronous:$WMC_NAME-volume" \
                 "$(pamixer --get-volume-human)"
         fi
     fi
