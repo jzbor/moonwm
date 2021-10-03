@@ -1776,6 +1776,8 @@ loadxrdb(XrmDatabase db)
 	xrdb_get_color(db, "moonwm.focusedTitleFg", hightitlefg);
 	xrdb_get_color(db, "moonwm.focusedTitleBg", hightitlebg);
 	xrdb_get_color(db, "moonwm.focusedBorder", highborderfg);
+	xrdb_get_color(db, "moonwm.windowSelection", winselection);
+	xrdb_get_color(db, "moonwm.areaSelection", areaselection);
 }
 
 void
@@ -3479,7 +3481,7 @@ sigchld(int unused)
 void
 slopcommand(char *str)
 {
-	XRenderColor color = scheme[SchemeHigh][ColBorder].color;
+	XRenderColor color = scheme[SchemeHigh][ColAreaSelect].color;
 	unsigned short max = ~0;
 	char sloptheming[100] = {0};
 	sprintf(sloptheming, " -b %d -t 0 -l -c %.2f,%.2f,%.2f,0.3", borderpx,

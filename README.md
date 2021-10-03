@@ -182,6 +182,7 @@ moonwm.unfocusedTitleBg:   #1d2021
 moonwm.unfocusedTitleFg:   #7c6f64
 moonwm.vacantTagBg:        #1d2021
 moonwm.vacantTagFg:        #7c6f64
+moonwm.areaSelection:      #ebdbb2
 ```
 
 To make everything, especially the menu fit together you also need to customize it's coloring.

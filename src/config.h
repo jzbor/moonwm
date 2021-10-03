@@ -65,13 +65,15 @@ static char hightagbg[]             = "#1d2021";
 static char hightitlefg[]           = "#ebdbb2";
 static char hightitlebg[]           = "#1d2021";
 static char highborderfg[]          = "#ebdbb2";
+static char winselection[]          = "#1d2021";
+static char areaselection[]         = "#fb4934";
 
 static char *colors[][9] = {
        /*               fg           bg           border   */
        [SchemeNorm] = { normtagfg, normtagbg, normtitlefg, normtitlebg, statusfg,
            statusbg, normborderfg, menufg, menubg},
        [SchemeHigh] = { hightagfg, hightagbg, hightitlefg, hightitlebg, statusfg,
-           statusbg, highborderfg, menufg, menubg},
+           statusbg, highborderfg, winselection, areaselection},
 };
 
 /* tagging */
