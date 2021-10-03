@@ -1247,7 +1247,7 @@ drawbar(Monitor *m)
 
 	x = 0;
 	w = TEXTW(menulabel);
-	drw_setscheme(drw, scheme[SchemeHigh]);
+	drw_setscheme(drw, scheme[SchemeNorm]);
 	drw_text(drw, x, 0, w, bh, lrpad/2, menulabel, 0, ColMenuFg, ColMenuBg);
 	x = w;
 
