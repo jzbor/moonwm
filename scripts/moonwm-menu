@@ -1,5 +1,6 @@
 #!/bin/sh
 
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/config.xres"
 MAINMENU="Applications
 $(xdg-xmenu -l | sed -e 's/^/	/')
 
@@ -41,11 +42,7 @@ CONTEXTMENU_NF="  Close			close
 	  Reset size hints		resetfacts"
 
 SLOPBW="$(moonctl borderwidth)" || SLOPBW="2"
-# SLOPSTYLE="-b 2 -c 0.92,0.85,0.69 -p -2"
-SLOPSTYLE="-b $SLOPBW -c 0.98,0.28,0.20 -p -$SLOPBW -t 999999"
-# SLOPSTYLE="-b 2 -c 0.15,0.15,0.15 -p -2"
-# SLOPSTYLE="-b 0"
-
+SLOPSTYLE="-b $SLOPBW -c \"${MOONWM_WINSELECTION_COL:-0.98,0.28,0.20}\" -p -$SLOPBW -t 999999"
 
 context () {
     if [ "$MOONWM_NERDFONT" != "0" ]; then
