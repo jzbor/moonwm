@@ -3,6 +3,10 @@
 #ifndef WMCOMMONS_DRW_H
 #define WMCOMMONS_DRW_H
 
+/* quick hack for current coloring */
+#define     ColWinSelect    ColMenuFg
+#define     ColAreaSelect   ColMenuBg
+
 typedef struct {
 	Cursor cursor;
 } Cur;
