@@ -58,6 +58,7 @@ static Signal signals[] = {
 	{ "focusdir",       focusdir },
 	{ "focusmon",       focusmon },
 	{ "focusstack",     focusstack },
+	{ "gesture",		gesture },
 	{ "incnmaster",     incnmaster },
 	{ "killclient",     killclient },
 	{ "movedir",		movedir },

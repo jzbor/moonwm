@@ -23,6 +23,7 @@ static const char *icommands[] = {
 	"focusdir",
 	"focusmon",
 	"focusstack",
+	"gesture",
 	"incnmaster",
 	"movedir",
 	"movex",

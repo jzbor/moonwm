@@ -134,6 +134,7 @@ static void focusfloating(const Arg *arg);
 static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
+static void gesture(const Arg *arg);
 static pid_t getparentprocess(pid_t p);
 static unsigned int getsystraywidth();
 static void grabbuttons(Client *c, int focused);
@@ -1476,6 +1477,28 @@ focusstack(const Arg *arg)
 	focus(c ? c : p);
 	restack(selmon);
 }
+
+void
+gesture(const Arg *arg)
+{
+	switch (arg->i) {
+		case 0:	// in
+			if (!selmon->sel)
+				break;
+			if (CMASKGET(selmon->sel, M_FULLSCREEN))
+				setfullscreen(selmon->sel, 0);
+			else
+				togglefloating(NULL);
+			break;
+		case 1:	//out
+			if (!selmon->sel)
+				break;
+			if (!CMASKGET(selmon->sel, M_FULLSCREEN))
+				setfullscreen(selmon->sel, 1);
+			break;
+	}
+}
+
 
 unsigned int
 getsystraywidth()
