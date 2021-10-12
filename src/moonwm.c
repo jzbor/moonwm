@@ -2232,7 +2232,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(y - CENTERY(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx, c->mon->my, c->mon->mx, c->mon->my + c->mon->mh)
-					&& !(c == s->snext && CENTERX(c) < CENTERX(s)))
+					&& !(!ISFLOATING(c) && c == s->snext && CENTERX(c) < CENTERX(s)))
 				continue;
 			break;
 		case 1: // right
@@ -2240,7 +2240,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(y - CENTERY(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my)
-					&& !(c == s->snext && CENTERX(c) > CENTERX(s)))
+					&& !(!ISFLOATING(c) && c == s->snext && CENTERX(c) > CENTERX(s)))
 				continue;
 			break;
 		case 2: // up
@@ -2248,7 +2248,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(x - CENTERX(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx + c->mon->mw, c->mon->my, c->mon->mx, c->mon->my)
-					&& !(c == s->snext && CENTERY(c) < CENTERY(s)))
+					&& !(!ISFLOATING(c) && c == s->snext && CENTERY(c) < CENTERY(s)))
 				continue;
 			break;
 		default:
@@ -2257,7 +2257,7 @@ nextdir(Client *s, int x, int y, int dir, int ignorepit)
 			client_altdist = abs(x - CENTERX(c));
 			if (!ignorepit && !pointintriangle(CENTERX(c), CENTERY(c), x, y,
 						c->mon->mx, c->mon->my + c->mon->mh, c->mon->mx + c->mon->mw, c->mon->my + c->mon->mh)
-					&& !(c == s->snext && CENTERY(c) > CENTERY(s)))
+					&& !(!ISFLOATING(c) && c == s->snext && CENTERY(c) > CENTERY(s)))
 				continue;
 		}
 
