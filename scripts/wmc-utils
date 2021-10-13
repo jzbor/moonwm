@@ -191,7 +191,9 @@ get_default_notification_daemon () {
 }
 
 get_default_terminal () {
-    if command -v xfce4-terminal > /dev/null 2>&1; then
+    if command -v buttermilk > /dev/null 2>&1; then
+        echo buttermilk
+    elif command -v xfce4-terminal > /dev/null 2>&1; then
         echo xfce4-terminal
     elif command -v gnome-terminal > /dev/null 2>&1; then
         echo gnome-terminal
