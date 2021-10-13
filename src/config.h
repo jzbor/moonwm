@@ -65,8 +65,8 @@ static char hightagbg[]             = "#1d2021";
 static char hightitlefg[]           = "#ebdbb2";
 static char hightitlebg[]           = "#1d2021";
 static char highborderfg[]          = "#ebdbb2";
-static char winselection[]          = "#1d2021";
-static char areaselection[]         = "#fb4934";
+static char winselection[]          = "#fb4934";
+static char areaselection[]         = "#ebdbb2";
 
 static char *colors[][9] = {
        /*               fg           bg           border   */
