@@ -4,7 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [Upcoming](#upcoming)
+- [7.2.0](#720)
 - [7.1.1](#711)
 - [7.1.0](#710)
 - [7.0.4](#704)
@@ -15,7 +15,7 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming
+## 7.2.0
 * Move windows with your mouse even when they are fullscreen
 * Spawn floating windows where the mouse is
 * Pulling windows to first monitor if theirs got disconnected
