@@ -103,6 +103,7 @@ static void attachaside(Client *c);
 static void attachstack(Client *c);
 static int fake_signal(void);
 static void buttonpress(XEvent *e);
+static void borrow(const Arg *arg);
 static void center(const Arg *arg);
 static void centerclient(Client *c);
 static void cleanup(void);
@@ -188,6 +189,8 @@ static void resizex(const Arg *arg);
 static void resizey(const Arg *arg);
 static void restack(Monitor *m);
 static void restart(const Arg *arg);
+static void restore(const Arg *arg);
+static void restoreclient(Client *c);
 static int riodraw(Client *c);
 static void rioposition(Client *c, int x, int y, int w, int h);
 static void rioresize(const Arg *arg);
@@ -220,6 +223,7 @@ static void slopcommand(char *str);
 static void spawn(const Arg *arg);
 static pid_t spawncmd(const Arg *arg);
 static int stackpos(const Arg *arg);
+static void steal(const Arg *arg);
 static Client *swallowingclient(Window w);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
@@ -644,6 +648,30 @@ buttonpress(XEvent *e)
 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+}
+
+void
+borrow(const Arg *arg)
+{
+	Client *c;
+	Monitor *m;
+	for (m = mons; m; m = m->next) {
+		for (c = m->stack; c; c = c->snext) {
+			if (c->win == arg->i)
+				break;
+		}
+		if (c) break;
+	}
+
+	if (!c)
+		return;
+	c->origtags = c->tags;
+	c->tags = c->mon->tagset[c->mon->seltags];
+	CMASKSET(c, M_BORROWED);
+
+	updateclienttags(c);
+	focus(c);
+	arrange(selmon);
 }
 
 void
@@ -1227,7 +1255,7 @@ dragmfact(const Arg *arg)
 void
 drawbar(Monitor *m)
 {
-	int x, w, tw = 0, stw = 0;
+	int clienttags, x, w, tw = 0, stw = 0;
 	unsigned int i, occ = 0, urg = 0;
 	Client *c;
 
@@ -1241,9 +1269,10 @@ drawbar(Monitor *m)
 
 	resizebarwin(m);
 	for (c = m->clients; c; c = c->next) {
-		occ |= c->tags;
+		clienttags = CMASKGET(c, M_BORROWED) ? c->origtags : c->tags;
+		occ |= clienttags;
 		if (CMASKGET(c, M_URGENT))
-			urg |= c->tags;
+			urg |= clienttags;
 	}
 
 	x = 0;
@@ -1254,15 +1283,21 @@ drawbar(Monitor *m)
 
 	for (i = 0; i < LENGTH(tags); i++) {
 		w = TEXTW(tags[i]);
+		/* fix underscore coloring for borrowed clients */
+		if (selmon->sel)
+			clienttags = CMASKGET(selmon->sel, M_BORROWED) ? selmon->sel->origtags : selmon->sel->tags;
+		else
+			clienttags = 0;
+
 		if (occ & 1 << i)
 			drw_setscheme(drw, scheme[SchemeHigh]);
 		else
 			drw_setscheme(drw, scheme[SchemeNorm]);
 
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], m->tagset[m->seltags] & 1 << i, ColTagFg, ColTagBg);
-		if (m == selmon && selmon->sel && selmon->sel->tags & 1 << i && m->tagset[m->seltags] & 1 << i) {
+		if (m == selmon && clienttags & (1 << i) && m->tagset[m->seltags] & (1 << i)) {
 			drw_rect(drw, x + 8, bh - 4, w - 16, 1, 1, ColTagBg);
-		} else if (m == selmon && selmon->sel && selmon->sel->tags & 1 << i) {
+		} else if (m == selmon && clienttags & (1 << i)) {
 			drw_rect(drw, x + 8, bh - 4, w - 16, 1, 1, ColTagFg);
 		}
 		x += w;
@@ -2832,6 +2867,28 @@ restart(const Arg *arg)
 	running = 0;
 }
 
+void
+restore(const Arg *arg)
+{
+	if (!selmon->sel)
+		return;
+	restoreclient(selmon->sel);
+}
+
+void
+restoreclient(Client *c)
+{
+	if (!selmon->sel->origtags)
+		return;
+	selmon->sel->tags = selmon->sel->origtags;
+	selmon->sel->origtags = 0;
+	CMASKUNSET(selmon->sel, M_BORROWED);
+
+	updateclienttags(selmon->sel);
+	focus(NULL);
+	arrange(selmon);
+}
+
 // drag out an area using slop and resize the selected window to it.
 int
 riodraw(Client *c)
@@ -3581,10 +3638,35 @@ stackpos(const Arg *arg) {
 }
 
 void
+steal(const Arg *arg)
+{
+	Client *c;
+	Monitor *m;
+	for (m = mons; m; m = m->next) {
+		for (c = m->stack; c; c = c->snext) {
+			if (c->win == arg->i)
+				break;
+		}
+		if (c) break;
+	}
+
+	if (!c)
+		return;
+	c->origtags = c->tags;
+	c->tags = c->mon->tagset[c->mon->seltags];
+
+	updateclienttags(c);
+	focus(c);
+	arrange(selmon);
+}
+
+void
 tag(const Arg *arg)
 {
 	if (selmon->sel && arg->ui & TAGMASK) {
 		selmon->sel->tags = arg->ui & TAGMASK;
+		selmon->sel->origtags = 0;
+		CMASKUNSET(selmon->sel, M_BORROWED);
 		updateclienttags(selmon->sel);
 		focus(NULL);
 		arrange(selmon);
@@ -3730,6 +3812,8 @@ unfocus(Client *c, int setfocus)
 		return;
 	grabbuttons(c, 0);
 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
+	if (CMASKGET(c, M_BORROWED))
+		restoreclient(c);
 	if (setfocus) {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
 		XDeleteProperty(dpy, root, atoms[NetActiveWindow]);

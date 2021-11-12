@@ -53,6 +53,7 @@ tagall(const Arg *arg) {
 /* trigger signals using `xsetroot -name "fsignal:<signame> [<type> <value>]"` */
 static Signal signals[] = {
 	/* signum           function */
+	{ "borrow",         borrow },
 	{ "center",         center },
 	{ "cyclelayout",    cyclelayout },
 	{ "focusdir",       focusdir },
@@ -69,12 +70,14 @@ static Signal signals[] = {
 	{ "resizex",        resizex },
 	{ "resizey",        resizey },
 	{ "restart",        restart },
+	{ "restore",        restore },
 	{ "rioresize",      rioresize },
 	{ "setcfact",       setcfact },
 	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },
 	{ "shiftview",      shiftview },
 	{ "shiftviewclients", shiftviewclients },
+	{ "steal",          steal },
 	{ "tag",            tag },
 	{ "tagall",         tagall },
 	{ "tagmon",         tagmon },

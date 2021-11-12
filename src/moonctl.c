@@ -19,6 +19,7 @@ typedef struct {
 } Layout;
 
 static const char *icommands[] = {
+	"borrow",
 	"cyclelayout",
 	"focusdir",
 	"focusmon",
@@ -33,6 +34,7 @@ static const char *icommands[] = {
 	"resizey",
 	"shiftview",
 	"shiftviewclients",
+	"steal",
 	"tagmon",
 	"tagmonkt",
 	"toggletag",
@@ -57,6 +59,7 @@ static const char *ncommands[] = {
 	"killclient",
 	"quit",
 	"restart",
+	"restore",
 	"rioresize",
 	"tagall",
 	"togglebar",
