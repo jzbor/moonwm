@@ -66,6 +66,7 @@
 #define M_STEAM			(1 << 10)
 #define M_TERMINAL		(1 << 11)
 #define M_URGENT		(1 << 12)
+#define M_BORROWED		(1 << 13)
 
 
 /* enums */
@@ -101,6 +102,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
+	unsigned int origtags;
 	int props;
 	pid_t pid;
 	Client *next;
