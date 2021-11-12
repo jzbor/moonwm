@@ -1,6 +1,7 @@
 /* vim: set noet: */
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +13,8 @@
 #define SYNCTIME		(10)
 #define DEFTIMEOUT		(100)
 #define FCOMMANDHELP	("\t%s\n")
+#define MIN(a,b)		(((a)<(b))?(a):(b))
+#define MAX(a,b)		(((a)>(b))?(a):(b))
 
 
 typedef struct {
@@ -88,6 +91,7 @@ static const char *lcommands[] = {
 	"setlayout",
 	"status",
 	"togglelayout",
+	"windows",
 	"wmname",
 	NULL,
 };
@@ -114,12 +118,15 @@ static void bye();
 static void closex();
 static void die(int exitcode, char *message);
 static int getproperty(Window wid, Atom atom, unsigned char **prop);
+static int getpropertydetailed (Window wid, Atom atom, Atom *actual_type, int *actual_format,
+		unsigned long *nitems, unsigned long *bytes_after, unsigned char **data);
 static void handlelocal(char *command, int argc, char *argv[]);
 static void important(char *str);
 static void loadx();
 static void printhelp();
 static void printcmdarr(const char *arr[]);
 static void printlayouts();
+static void printwindow(Window wid);
 static void setlayout(char *arg);
 static void signal(char *commmand, char *type, char *arg);
 static void setstatus(char *str);
@@ -211,10 +218,16 @@ getproperty(Window wid, Atom atom, unsigned char **data) {
 	int actual_format;
 	unsigned long _nitems;
 	unsigned long bytes_after; /* unused */
+	return getpropertydetailed(wid, atom, &actual_type, &actual_format, &_nitems, &bytes_after, data);
+}
+
+int
+getpropertydetailed (Window wid, Atom atom, Atom *actual_type, int *actual_format,
+		unsigned long *nitems, unsigned long *bytes_after, unsigned char **data) {
 	int status;
 	status = XGetWindowProperty(dpy, wid, atom, 0, (~0L),
-			False, AnyPropertyType, &actual_type,
-			&actual_format, &_nitems, &bytes_after,
+			False, AnyPropertyType, actual_type,
+			actual_format, nitems, bytes_after,
 			data);
 	return status;
 }
@@ -222,7 +235,7 @@ getproperty(Window wid, Atom atom, unsigned char **data) {
 void
 handlelocal(char *command, int argc, char *argv[])
 {
-	int wid, timeout, tags, status, bw;
+	int wid, timeout, tags, status, bw, i;
 	unsigned char *data = NULL;
 	if (strcmp(command, "activate") == 0) {
 		if (argc == 0)
@@ -239,10 +252,7 @@ handlelocal(char *command, int argc, char *argv[])
 		if (status == Success && data) {
 			wid = *(int *)data;
 			XFree(data);
-			data = NULL;
-			XFetchName(dpy, wid, (char **) &data);
-			printf("%d\t%s\n", wid, data);
-			XFree(data);
+			printwindow(wid);
 			bye();
 		}
 		die(3, "Unable to get active window");
@@ -302,6 +312,22 @@ handlelocal(char *command, int argc, char *argv[])
 			die(2, "Not enough arguments");
 		setstatus(argv[0]);
 		bye();
+	} else if (strcmp(command, "windows") == 0) {
+		Atom actual_type;
+		int actual_format;
+		unsigned long nitems, bytes_after; /* unused */
+		status = getpropertydetailed(root, XInternAtom(dpy, "_NET_CLIENT_LIST", False),
+				&actual_type, &actual_format, &nitems, &bytes_after, &data);
+		if (status == Success && data && actual_format == 32) {
+			Window *windows = (Window *) data;
+			for (i = 0; i < nitems; i++) {
+				wid = windows[i];
+				printwindow(wid);
+			}
+			XFree(data);
+			bye();
+		}
+		die(3, "Unable to list windows");
 	} else if (strcmp(command, "wmname") == 0) {
 		wmname(argc == 0 ? NULL : argv[0]);
 		bye();
@@ -378,6 +404,40 @@ printlayouts()
 {
 	for (int i = 0; layouts[i].symbol; i++)
 		printf("%s %s\t\t%s\n", layouts[i].symbol, layouts[i].name, layouts[i].id);
+}
+
+void
+printwindow(Window wid)
+{
+	unsigned char *title = NULL;
+	int changed = 1;
+	XClassHint classhints = {0};
+	XFetchName(dpy, wid, (char **) &title);
+	XGetClassHint(dpy, wid, &classhints);
+
+	if (title == NULL) {
+		title = "";
+		changed |= (1 << 1);
+	}
+	if (classhints.res_name == NULL) {
+		classhints.res_name = "unknown";
+		changed |= (1 << 2);
+	}
+	if (classhints.res_class == NULL) {
+		classhints.res_class = "unknown";
+		changed |= (1 << 3);
+	}
+
+	int offset = 25 - (strlen(classhints.res_class) + strlen(classhints.res_name));
+	offset = MAX(offset, 0);
+	printf("%-15d%s (%s) %-*s %s\n", wid, classhints.res_class, classhints.res_name,
+			offset, "", title);
+	if (!(changed & (1 << 1)))
+		XFree(title);
+	if (!(changed & (1 << 2)))
+		XFree(classhints.res_name);
+	if (!(changed & (1 << 3)))
+		XFree(classhints.res_class);
 }
 
 void
