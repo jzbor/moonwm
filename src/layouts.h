@@ -743,15 +743,19 @@ void
 monocle(Monitor *m)
 {
 	unsigned int n = 0;
+	int oh, ov, ih, iv;
 	Client *c;
 
-	for (c = m->clients; c; c = c->next)
-		if (ISVISIBLE(c) && !CMASKGET(c, M_FLOATING))
-			n++;
+	getgaps(m, &oh, &ov, &ih, &iv, &n);
+	if (n == 0)
+		return;
+	if (smartgaps)
+		oh = ov = 0;
+
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx, m->wy, m->ww, m->wh, 0, 0);
+		resize(c, m->wx + oh, m->wy + ov, m->ww - 2*oh, m->wh - 2*ov, 0, 0);
 }
 
 /*
