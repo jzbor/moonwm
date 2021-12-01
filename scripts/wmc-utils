@@ -222,7 +222,7 @@ load_env_defaults () {
         export DMENUCMD="$(get_default_dmenucmd)"
     fi
     if ! env_is_set STATUSCMD; then
-        export ${WMC_PREFIX}_STATUSCMD="moonwm-status"
+        export STATUSCMD="moonwm-status"
     fi
 }
 
@@ -544,7 +544,7 @@ volume () {
         volume_notification
         ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
     fi
-    [ -n "$(env_str STATUSCMD)" ] && $(env_str STATUSCMD) update
+    [ -n "$STATUSCMD" ] && $STATUSCMD update
 }
 
 volume_boost () {
