@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [7.2.1](#721)
 - [7.2.0](#720)
 - [7.1.1](#711)
 - [7.1.0](#710)
@@ -14,6 +15,15 @@
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+
+## 7.2.1
+* Fixing built-in status
+* Fix smartgaps for monocle layout
+* Adding command to list all windows: `windows`
+* Adding commands `borrow`, `steal` and `restore` to quickly get windows onto your current tags:
+    * `borrow` borrows a window from its tags until it looses focus
+    * `steal` permanently takes a window from its tags
+    * `restore` reverts any of the two actions listed above
 
 ## 7.2.0
 * Move windows with your mouse even when they are fullscreen
