@@ -91,6 +91,10 @@ case $1 in
         loop;;
     action)
         action;;
-    '' | help)
+    '')
+        echo "Defaulting to 'loop'"
+        echo "For other options see '$0 help'"
+        loop;;
+    help)
         help;;
 esac
