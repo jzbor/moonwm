@@ -21,23 +21,29 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
   Log out			moonctl quit"
 
 CONTEXTMENU="Close			close
+Move			mousemove
 Resize			resize
+
 Floating			float
+Center				center
 Fullscreen		fullscreen
 
 More
-	Center				center
 	Close multiple		closemult
+	Floating and move	floatingmove
 	Reset size hints		resetfacts"
 
 CONTEXTMENU_NF="  Close			close
+  Move			mousemove
 ﭔ  Resize			resize
+
   Floating			float
+  Center				center
   Fullscreen		fullscreen
 
    More
-	  Center				center
 	  Close multiple		closemult
+	  Floating and move	floatingmove
 	  Reset size hints		resetfacts"
 
 SLOPBW="$(moonctl borderwidth)" || SLOPBW="2"
@@ -77,6 +83,8 @@ context () {
         fullscreen) moonctl togglefullscr ;;
         center) moonctl center ;;
         resetfacts) moonctl resetfacts 0 ;;
+        mousemove) moonctl mousemove 0 ;;
+        floatingmove) moonctl togglefloating; moonctl mousemove 0 ;;
         closemult)
             while [ 1 = 1 ]; do
                 moonctl important "Select multiple windows to close; Exit with <Esc> or right click."

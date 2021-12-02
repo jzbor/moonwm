@@ -62,6 +62,7 @@ static Signal signals[] = {
 	{ "gesture",		gesture },
 	{ "incnmaster",     incnmaster },
 	{ "killclient",     killclient },
+	{ "mousemove",      moveorplace },
 	{ "movedir",		movedir },
 	{ "movex",          movex },
 	{ "movey",          movey },
