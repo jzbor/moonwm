@@ -221,7 +221,7 @@ load_env_defaults () {
     if ! env_is_set_nopref DMENUCMD; then
         export DMENUCMD="$(get_default_dmenucmd)"
     fi
-    if ! env_is_set STATUSCMD; then
+    if [ -z "$STATUSCMD" ]; then
         export STATUSCMD="moonwm-status"
     fi
 }
