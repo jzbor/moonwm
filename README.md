@@ -225,7 +225,8 @@ To setup your own status command you should also set the according env variable 
 ```sh
 export MOONWM_STATUSCMD="/path/to/my/statuscmd"
 ```
-This command gets asynchonously on MoonWMs startup with `loop` as the first parameter.
+This command gets asynchonously on MoonWMs startup with either `loop` as the first parameter or no parameters at all.
+For now it's best if your script can handle both scenarios.
 It should then repeatedly set the status to the WM_NAME (for example with `moonctl status`).
 Make sure to add in a `sleep` so it doesn't unnecessarily wastes resources.
 
