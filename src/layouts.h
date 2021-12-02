@@ -212,7 +212,7 @@ bstack(Monitor *m)
 	sh = mh = m->wh - 2*oh;
 	mw = m->ww - 2*ov - iv * (MIN(n, m->nmaster) - 1);
 	sw = m->ww - 2*ov - iv * (n - m->nmaster - 1);
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		sh = (mh - ih) * (1 - m->mfact);
@@ -257,7 +257,7 @@ bstackhoriz(Monitor *m)
 	sh = m->wh - 2*oh - ih * (n - m->nmaster - 1);
 	mw = m->ww - 2*ov - iv * (MIN(n, m->nmaster) - 1);
 	sw = m->ww - 2*ov;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		sh = (mh - ih) * (1 - m->mfact);
@@ -309,7 +309,7 @@ centeredmaster(Monitor *m)
 	mw = m->ww - 2*ov;
 	lh = m->wh - 2*oh - ih * (((n - m->nmaster) / 2) - 1);
 	rh = m->wh - 2*oh - ih * (((n - m->nmaster) / 2) - ((n - m->nmaster) % 2 ? 0 : 1));
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
@@ -394,7 +394,7 @@ centeredfloatingmaster(Monitor *m)
 	sh = mh = m->wh - 2*oh;
 	mw = m->ww - 2*ov - iv*(n - 1);
 	sw = m->ww - 2*ov - iv*(n - m->nmaster - 1);
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		mivf = 0.8;
@@ -453,7 +453,7 @@ deck(Monitor *m)
 	sy = my = m->wy + oh;
 	sh = mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
 	sw = mw = m->ww - 2*ov;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		sw = (mw - iv) * (1 - m->mfact);
@@ -498,7 +498,7 @@ fibonacci(Monitor *m, int s)
 	ny = m->wy + oh;
 	nw = m->ww - 2*ov;
 	nh = m->wh - 2*oh;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		if (r) {
@@ -612,7 +612,7 @@ gaplessgrid(Monitor *m)
 	crest = (m->ww - 2*ov - iv * (cols - 1)) - cw * cols;
 	x = m->wx + ov;
 	y = m->wy + oh;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	for (i = 0, c = nexttiled(m->clients); c; i++, c = nexttiled(c->next)) {
 		if (i/rows + 1 > cols - n%cols) {
@@ -661,7 +661,7 @@ grid(Monitor *m)
 	cw = (m->ww - 2*ov - iv * (cols - 1)) / (cols ? cols : 1);
 	chrest = (m->wh - 2*oh - ih * (rows - 1)) - ch * rows;
 	cwrest = (m->ww - 2*ov - iv * (cols - 1)) - cw * cols;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
 		cc = i / rows;
 		cr = i % rows;
@@ -701,7 +701,7 @@ horizgrid(Monitor *m) {
 	sy = my = m->wy + oh;
 	sh = mh = m->wh - 2*oh;
 	sw = mw = m->ww - 2*ov;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (n > ntop) {
 		sh = (mh - ih) / 2;
@@ -742,7 +742,7 @@ horizgrid(Monitor *m) {
 void
 monocle(Monitor *m)
 {
-	unsigned int n = 0;
+	unsigned int n = 0, bw;
 	int oh, ov, ih, iv;
 	Client *c;
 
@@ -751,11 +751,12 @@ monocle(Monitor *m)
 		return;
 	if (smartgaps)
 		oh = ov = 0;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx + oh, m->wy + ov, m->ww - 2*oh, m->wh - 2*ov, 0, 0);
+		resize(c, m->wx + oh, m->wy + ov, m->ww - (2 * oh) - (2 * bw), m->wh - (2 * ov) - (2 * bw), bw, 0);
 }
 
 /*
@@ -794,7 +795,7 @@ nrowgrid(Monitor *m)
 	cy = m->wy + oh;
 	ch = (m->wh - 2*oh - ih*(rows - 1)) / rows;
 	uh = ch;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next), ci++) {
 		if (ci == cols) {
@@ -840,7 +841,7 @@ tile(Monitor *m)
 	mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
 	sh = m->wh - 2*oh - ih * (n - m->nmaster - 1);
 	sw = mw = m->ww - 2*ov;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		sw = (mw - iv) * (1 - m->mfact);
@@ -882,7 +883,7 @@ tileleft(Monitor *m)
 	mh = m->wh - 2*oh - ih * (MIN(n, m->nmaster) - 1);
 	sh = m->wh - 2*oh - ih * (n - m->nmaster - 1);
 	sw = mw = m->ww - 2*ov;
-    bw = n == 1 ? 0 : borderpx;
+    bw = n == 1 && smartgaps ? 0 : borderpx;
 
 	if (m->nmaster && n > m->nmaster) {
 		sw = (mw - iv) * (1 - m->mfact);
