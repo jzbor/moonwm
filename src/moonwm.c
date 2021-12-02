@@ -1836,6 +1836,8 @@ loadxrdb(XrmDatabase db)
 	xrdb_get_color(db, "moonwm.focusedBorder", highborderfg);
 	xrdb_get_color(db, "moonwm.windowSelection", winselection);
 	xrdb_get_color(db, "moonwm.areaSelection", areaselection);
+
+	enablegaps = enablegaps ? 1 : 0;
 }
 
 void
@@ -4564,10 +4566,19 @@ systraytomon(Monitor *m) {
 void
 xrdb(const Arg *arg)
 {
+	Monitor *m, *selmon_old;
 	settings();
 	for (int i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 9);
-	printf("xrdb 'colors[0][0]' (result) %s (%p)\n", colors[0][0], colors[0][0]);
+
+	/* make sure gaps are set on all monitors */
+	selmon_old = selmon;
+	for (m = mons; m; m = m->next) {
+		selmon = m;
+		setgaps(gappoh, gappov, gappih, gappiv);
+	}
+	selmon = selmon_old;
+
 	focus(NULL);
 	arrange(NULL);
 	updateborderwidth();
