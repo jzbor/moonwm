@@ -847,7 +847,7 @@ clientmessage(XEvent *e)
 		killclient(NULL);
 	} else if (cme->message_type == atoms[NetWMDesktop]) {
 		desktop = cme->data.l[0];
-		c->tags |= (1 << desktop) & TAGMASK;
+		c->tags = (1 << desktop) & TAGMASK;
 		focus(NULL);
 		arrange(c->mon);
 		updateclienttags(c);
