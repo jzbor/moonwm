@@ -147,10 +147,10 @@ static const Layout layouts[] = {
     { MODKEY|ShiftMask,      KEY,    move##AXIS,          ARG }, \
     { MODKEY|ControlMask,    KEY,    resize##AXIS,        ARG },
 #define FOCUSKEYS(LEFT, DOWN, UP, RIGHT) \
-    { MODKEY,    LEFT,      focusdir,        {.i = 0} }, \
-    { MODKEY,    RIGHT,     focusdir,        {.i = 1} }, \
-    { MODKEY,    UP,        focusdir,        {.i = 2} }, \
-    { MODKEY,    DOWN,      focusdir,        {.i = 3} },
+    { MODKEY,    LEFT,      focusaction,        {.i = 0} }, \
+    { MODKEY,    RIGHT,     focusaction,        {.i = 1} }, \
+    { MODKEY,    UP,        focusaction,        {.i = 2} }, \
+    { MODKEY,    DOWN,      focusaction,        {.i = 3} },
 
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */

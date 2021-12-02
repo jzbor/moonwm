@@ -130,6 +130,7 @@ static void enternotify(XEvent *e);
 static void expose(XEvent *e);
 static void winview(const Arg *arg);
 static void focus(Client *c);
+static void focusaction(const Arg *arg);
 static void focusdir(const Arg *arg);
 static void focusfloating(const Arg *arg);
 static void focusin(XEvent *e);
@@ -1424,6 +1425,27 @@ focus(Client *c)
 	}
 	selmon->sel = c;
 	drawbars();
+}
+
+void
+focusaction(const Arg *arg) {
+	if (usefocusdir) {
+		focusdir(arg);
+	} else {
+		switch (arg->i) {
+			case 0: // LEFT
+			case 1: // RIGHT
+				focusstack(&((Arg) {.i = 0}));
+				break;
+			case 2: // UP
+				focusstack(&((Arg) {.i = INC(-1)}));
+				break;
+			case 3: // DOWN
+				focusstack(&((Arg) {.i = INC(+1)}));
+				break;
+		}
+
+	}
 }
 
 void
