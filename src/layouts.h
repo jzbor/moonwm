@@ -742,7 +742,7 @@ horizgrid(Monitor *m) {
 void
 monocle(Monitor *m)
 {
-	unsigned int n = 0, bw;
+	unsigned int n = 0, bw = borderpx;
 	int oh, ov, ih, iv;
 	Client *c;
 
@@ -750,8 +750,7 @@ monocle(Monitor *m)
 	if (n == 0)
 		return;
 	if (smartgaps)
-		oh = ov = 0;
-    bw = n == 1 && smartgaps ? 0 : borderpx;
+		bw = oh = ov = 0;
 
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
