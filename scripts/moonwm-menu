@@ -112,7 +112,7 @@ expose () {
 
 favorites () {
     cat "${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/favorites.xmenu" | \
-        grep -v '^#.*' | xmenu -i $(menupos) | sh
+        grep -v '^#.*' | xmenu $(menupos) | sh
 }
 
 layouts () {
