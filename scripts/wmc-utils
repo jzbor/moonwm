@@ -456,7 +456,7 @@ monitors () {
 }
 
 play () {
-    if command -v pw-play; then
+    if command -v pw-play > /dev/null; then
         pw-play "$1" &
     else
         ffplay -nodisp -autoexit "$1" 2> /dev/null &
