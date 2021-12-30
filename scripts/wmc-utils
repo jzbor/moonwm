@@ -455,6 +455,14 @@ monitors () {
     load_wallpaper
 }
 
+play () {
+    if command -v pw-play; then
+        pw-play "$1" &
+    else
+        ffplay -nodisp -autoexit "$1" 2> /dev/null &
+    fi
+}
+
 run () {
     # 1: executable to test for
     # 2: command to execute
@@ -494,7 +502,7 @@ screenshot () {
     esac
 
     if [ "$success" = 0 ]; then
-        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/screen-capture.oga > /dev/null 2>&1 &
+        play /usr/share/sounds/freedesktop/stereo/screen-capture.oga
         if command -v dunstify > /dev/null 2>&1; then
             dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename" \
                 --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
@@ -539,11 +547,11 @@ volume () {
     elif [ "$1" -lt 0 ]; then
         pamixer "$(volume_boost)" -d "$(echo "$1" | sed 's/-//')"
         volume_notification
-        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
+        play /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
     elif [ "$1" -gt 0 ]; then
         pamixer "$(volume_boost)" -i "$(echo "$1" | sed 's/-//')"
         volume_notification
-        ffplay -nodisp -autoexit /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga 2> /dev/null
+        play /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
     fi
     [ -n "$STATUSCMD" ] && $STATUSCMD update
 }
