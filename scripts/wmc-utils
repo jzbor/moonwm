@@ -256,6 +256,22 @@ launch () {
     exec moonwm
 }
 
+launch_minimal () {
+    # Configure X
+    moonctl wmname LG3D
+    setup_keyboard > ~/test.log 2>&1
+
+    if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/xdg-xmenu" ]; then
+        (sleep 120; nice xdg-xmenu -e > /dev/null 2>&1) &
+    else
+        nice xdg-xmenu -f > /dev/null 2>&1 &
+    fi
+
+    load_xmenu_defaults
+    xrdb -merge ~/.Xresources
+    exec moonwm
+}
+
 launch_valgrind () {
     logfile="${XDG_DATA_HOME:-$USER/.local/share}/$WMC_NAME/valgrind.log"
     options="--leak-check=full --show-leak-kinds=all --track-origins=yes -v"
@@ -613,7 +629,7 @@ xrdb_refresh () {
 }
 
 helptext="
-wmc-utils [-h] [-r] command
+$(basename $0) [-h] [-r] command
 
 options:
     -h    Prints this help text
@@ -625,6 +641,7 @@ commands:
     drun           Default application launcher
     help           Prints this help text
     launch         Wrapper to launch MoonWM properly (used in moonwm.desktop, can be used in .xinitrc)
+    launch-minimal Wrapper to launch MoonWM properly (minimal version)
     lock           Locks the screen
     monitors       Setup monitors (modes: 'internal', 'external', 'extend', 'mirror')
     run            Launcher with all exectutables in \$PATH
@@ -662,6 +679,7 @@ case $1 in
     help) echo "$helptext"; exit;;
     launch) launch;;
     launch-valgrind) launch_valgrind;;
+    launch-minimal) launch_minimal;;
     lock) lock;;
     monitors) monitors "$2" ;;
     run) shift; default_dmenu_run "$@";;
