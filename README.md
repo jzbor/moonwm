@@ -1,6 +1,12 @@
 ![](moonwm.png)
 # MoonWM
 
+***WARNING:** From version 8.0.0 on the **scripts** making MoonWM a complete desktop experience are going to get **stripped drastically or removed entirely**.
+This functionality will **instead** get managed by **[pademelon](https://github.com/jzbor/pademelon)**.
+The goal is to let MoonWM be just a WM and improve the desktop experience over all.*
+
+---
+
 <!-- START doctoc.sh generated TOC please keep comment here to allow auto update -->
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
