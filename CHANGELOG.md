@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [7.3.0](#730)
 - [7.2.1](#721)
 - [7.2.0](#720)
 - [7.1.1](#711)
@@ -15,6 +16,13 @@
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+
+## 7.3.0
+* Initial compatibility with pademelon
+* Improved resource management with lockscreen image generating
+* Borderwidth now always respects smartgaps
+* Pipewire for a more efficient implementation of playing sounds
+* Fixed behavior for `_NET_WM_DESKTOP`
 
 ## 7.2.1
 * Fixing built-in status
