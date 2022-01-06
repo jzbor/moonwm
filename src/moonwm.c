@@ -3052,10 +3052,12 @@ runautostart(void)
 		return;
 
 	/* run wmc-utils if available */
-	system(providedautostart);
+	if (!getenv("MOONWM_NO_AUTOSTART"))
+		system(providedautostart);
 
 	/* run statuscmd if available */
-	spawn(&((Arg) { .v = statuscmd }));
+	if (!getenv("MOONWM_NO_STATUS"))
+		spawn(&((Arg) { .v = statuscmd }));
 
 	/* if $XDG_DATA_HOME is set and not empty, use $XDG_DATA_HOME/moonwm,
 	 * otherwise use ~/.local/share/moonwm as autostart script directory

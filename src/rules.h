@@ -22,6 +22,8 @@ static const Rule rules[] = {
     { .class = "Pcmanfm", .title = "Execute File",  .monitor = -1, .props = M_FLOATING|M_NOSWALLOW },
     { .title = "Event Tester",                      .monitor = -1, .props = M_FLOATING|M_NOSWALLOW }, /* xev */
     { .title = "[debug]",                           .monitor = -1, .props = M_FLOATING|M_NOSWALLOW }, /* personal debugging */
+    { .class = "Pademelon-settings",                .monitor = -1, .props = M_FLOATING|M_NOSWALLOW },
+    { .class = "Arandr",                            .monitor = -1, .props = M_FLOATING|M_NOSWALLOW },
     /* Non-Floating */
     { .class = "Gimp",  .monitor = -1,  .props = M_FLOATING },
     /* Games */
