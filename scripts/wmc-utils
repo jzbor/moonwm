@@ -259,7 +259,6 @@ launch () {
 launch_minimal () {
     # Configure X
     moonctl wmname LG3D
-    setup_keyboard > ~/test.log 2>&1
 
     if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/xdg-xmenu" ]; then
         (sleep 120; nice xdg-xmenu -e > /dev/null 2>&1) &
