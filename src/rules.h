@@ -24,6 +24,7 @@ static const Rule rules[] = {
     { .title = "[debug]",                           .monitor = -1, .props = M_FLOATING|M_NOSWALLOW }, /* personal debugging */
     { .class = "Pademelon-settings",                .monitor = -1, .props = M_FLOATING|M_NOSWALLOW },
     { .class = "Arandr",                            .monitor = -1, .props = M_FLOATING|M_NOSWALLOW },
+    { .class = "Lxappearance",                      .monitor = -1, .props = M_FLOATING|M_NOSWALLOW },
     /* Non-Floating */
     { .class = "Gimp",  .monitor = -1,  .props = M_FLOATING },
     /* Games */
