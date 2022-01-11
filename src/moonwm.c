@@ -106,6 +106,7 @@ static void buttonpress(XEvent *e);
 static void borrow(const Arg *arg);
 static void center(const Arg *arg);
 static void centerclient(Client *c);
+static int checkignorewin(Client *c, Atom window_type, int lr);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
 static void clientmessage(XEvent *e);
@@ -697,6 +698,37 @@ centerclient(Client *c)
 	int cy = c->mon->my + barmod + (c->mon->mh - barmod - HEIGHT(c)) / 2;
 
 	resize(c, cx, cy, c->w, c->h, borderpx, 0);
+}
+
+int
+checkignorewin(Client *c, Atom window_type, int lr) {
+	int di;
+	unsigned long dl, nitems;
+	unsigned char *p = NULL;
+	Atom da = None;
+	Atom *win_types;
+	get_atoms(dpy);
+
+	/* FIXME getatomprop should return the number of items and a pointer to
+	 * the stored data instead of this workaround */
+	if (XGetWindowProperty(dpy, c->win, atoms[NetWMWindowType], 0L, sizeof(Atom), False, XA_ATOM,
+		&da, &di, &nitems, &dl, &p) == Success && p) {
+		win_types = (Atom *) p;
+		for (int i = 0; i < nitems; i++) {
+			if (win_types[i] == window_type) {
+				XMapWindow(dpy, c->win);
+				if (lr < 0)
+					XLowerWindow(dpy, c->win);
+				else if (lr > 0)
+					XRaiseWindow(dpy, c->win);
+				free(c);
+				return 1;
+			}
+
+		}
+		XFree(p);
+	}
+	return 0;
 }
 
 void
@@ -1899,23 +1931,29 @@ manage(Window w, XWindowAttributes *wa)
 	}
 	loadclientprops(c);
 
-	if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDesktop]) {
-		XMapWindow(dpy, c->win);
-		XLowerWindow(dpy, c->win);
-		free(c);
-		return;
-	} else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) {
-		XMapWindow(dpy, c->win);
-		XRaiseWindow(dpy, c->win);
-		free(c);
-		return;
-		/* @TODO add code for _KDE_NET_WM_WINDOW_TYPE_OVERRIDE */
+	/* if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDesktop]) { */
+	/* 	XMapWindow(dpy, c->win); */
+	/* 	XLowerWindow(dpy, c->win); */
+	/* 	free(c); */
+	/* 	return; */
 	/* } else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) { */
 	/* 	XMapWindow(dpy, c->win); */
 	/* 	XRaiseWindow(dpy, c->win); */
 	/* 	free(c); */
 	/* 	return; */
-	}
+	/* 	/1* @TODO add code for _KDE_NET_WM_WINDOW_TYPE_OVERRIDE *1/ */
+	/* /1* } else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) { *1/ */
+	/* /1* 	XMapWindow(dpy, c->win); *1/ */
+	/* /1* 	XRaiseWindow(dpy, c->win); *1/ */
+	/* /1* 	free(c); *1/ */
+	/* /1* 	return; *1/ */
+	/* } */
+	if (checkignorewin(c, atoms[NetWMWindowTypeDesktop], -1))
+		return;
+	if (checkignorewin(c, atoms[NetWMWindowTypeDock], 1))
+		return;
+	if (checkignorewin(c, atoms[KDENetWMWindowTypeOverride], 0))
+		return;
 
 	c->bw = borderpx;
 	initclientpos(c);
