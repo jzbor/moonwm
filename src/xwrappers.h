@@ -20,7 +20,7 @@ enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,
 		WMProtocols, WMDelete, WMState, WMTakeFocus, WMChangeState,
 		WMWindowRole, /* default atoms */
 
-		Utf8, Motif, NetLast, LastAtom };
+		KDENetWMWindowTypeOverride, Utf8, Motif, NetLast, LastAtom };
 
 /* function declarations */
 void checkotherwm(Display *dpy);

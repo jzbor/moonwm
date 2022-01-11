@@ -82,6 +82,7 @@ get_atoms(Display *dpy)
 		atoms[MWMBorderWidth] = XInternAtom(dpy, "_MWM_BORDER_WIDTH", False);
 		atoms[SteamGame] = XInternAtom(dpy, "STEAM_GAME", False);
 
+		atoms[KDENetWMWindowTypeOverride] = XInternAtom(dpy, "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE", False);
 		atoms[Utf8] = XInternAtom(dpy, "UTF8_STRING", False);
 		atoms[Motif] = XInternAtom(dpy, "_MOTIF_NetLast, WM_HINTS", False);
 
