@@ -1909,6 +1909,12 @@ manage(Window w, XWindowAttributes *wa)
 		XRaiseWindow(dpy, c->win);
 		free(c);
 		return;
+		/* @TODO add code for _KDE_NET_WM_WINDOW_TYPE_OVERRIDE */
+	/* } else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) { */
+	/* 	XMapWindow(dpy, c->win); */
+	/* 	XRaiseWindow(dpy, c->win); */
+	/* 	free(c); */
+	/* 	return; */
 	}
 
 	c->bw = borderpx;
@@ -3532,7 +3538,9 @@ shiftview(const Arg *arg) {
 		shifted.ui = selmon->tagset[selmon->seltags] >> (- arg->i)
 		   | selmon->tagset[selmon->seltags] << (LENGTH(tags) + arg->i);
 
+	ignorewarp = 1;
 	view(&shifted);
+	ignorewarp = 0;
 }
 
 void
@@ -3557,7 +3565,9 @@ shiftviewclients(const Arg *arg)
 			   | shifted.ui << (LENGTH(tags) + arg->i));
 		} while (tagmask && !(shifted.ui & tagmask));
 
+	ignorewarp = 1;
 	view(&shifted);
+	ignorewarp = 0;
 }
 
 void
