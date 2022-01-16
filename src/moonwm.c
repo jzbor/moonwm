@@ -3576,9 +3576,7 @@ shiftview(const Arg *arg) {
 		shifted.ui = selmon->tagset[selmon->seltags] >> (- arg->i)
 		   | selmon->tagset[selmon->seltags] << (LENGTH(tags) + arg->i);
 
-	ignorewarp = 1;
 	view(&shifted);
-	ignorewarp = 0;
 }
 
 void
@@ -3603,9 +3601,7 @@ shiftviewclients(const Arg *arg)
 			   | shifted.ui << (LENGTH(tags) + arg->i));
 		} while (tagmask && !(shifted.ui & tagmask));
 
-	ignorewarp = 1;
 	view(&shifted);
-	ignorewarp = 0;
 }
 
 void
@@ -4558,6 +4554,14 @@ void
 warp(const Client *c, int edge)
 {
 	int x, y;
+	Client *a;
+
+	/* avoid jumping on bar or empty space */
+	if (!get_pointer_pos(dpy, root, &x, &y))
+		return;
+	a = recttoclient(x, y, 1, 1);
+	if (!a || a == c)
+		return;
 
 	if (!c) {
 		XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww/2, selmon->wy + selmon->wh/2);
