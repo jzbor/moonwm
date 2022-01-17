@@ -347,6 +347,7 @@ activate(Client *c) {
 	for (i = 0; i < LENGTH(tags) && !((1 << i) & c->tags); i++);
 	if (i < LENGTH(tags)) {
 		const Arg a = {.ui = 1 << i};
+		unfocus(selmon->sel, 0);
 		selmon = c->mon;
 		if (!ISVISIBLE(c))
 			view(&a);
@@ -4555,12 +4556,14 @@ warp(const Client *c, int edge)
 {
 	int x, y;
 	Client *a;
+	Monitor *m;
 
 	/* avoid jumping on bar or empty space */
 	if (!get_pointer_pos(dpy, root, &x, &y))
 		return;
 	a = recttoclient(x, y, 1, 1);
-	if (!a || a == c)
+	m = recttomon(x, y, 1, 1);
+	if (m == c->mon && (!a || a == c))
 		return;
 
 	if (!c) {
