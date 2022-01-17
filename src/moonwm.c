@@ -1932,23 +1932,6 @@ manage(Window w, XWindowAttributes *wa)
 	}
 	loadclientprops(c);
 
-	/* if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDesktop]) { */
-	/* 	XMapWindow(dpy, c->win); */
-	/* 	XLowerWindow(dpy, c->win); */
-	/* 	free(c); */
-	/* 	return; */
-	/* } else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) { */
-	/* 	XMapWindow(dpy, c->win); */
-	/* 	XRaiseWindow(dpy, c->win); */
-	/* 	free(c); */
-	/* 	return; */
-	/* 	/1* @TODO add code for _KDE_NET_WM_WINDOW_TYPE_OVERRIDE *1/ */
-	/* /1* } else if (window_get_atomprop(dpy, c->win, atoms[NetWMWindowType], XA_ATOM) == atoms[NetWMWindowTypeDock]) { *1/ */
-	/* /1* 	XMapWindow(dpy, c->win); *1/ */
-	/* /1* 	XRaiseWindow(dpy, c->win); *1/ */
-	/* /1* 	free(c); *1/ */
-	/* /1* 	return; *1/ */
-	/* } */
 	if (checkignorewin(c, atoms[NetWMWindowTypeDesktop], -1))
 		return;
 	if (checkignorewin(c, atoms[NetWMWindowTypeDock], 1))
@@ -2424,6 +2407,7 @@ placemouse(const Arg *arg)
 	prevr = c;
 	px = c->x;
 	py = c->y;
+	XRaiseWindow(dpy, c->win);
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess) {
 		if (wasfullscreen)
