@@ -20,6 +20,13 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
+## 8.0.0
+* Merging `wmcommons` back into the project
+* Dropping the following functions of `moonwm-utils`:
+    * `brightness`, `launch`, `monitors` `screenlayouts`, `screenstup`, `setup-keyboard`, `setwallpaper`, `start`, `volume`
+* Integrating `pademelon-tools` for volume, backlight and wallpaper
+* Launching status only when `MOONWM_LAUNCH_STATUS` is specified (temporary workaround)
+
 ## 7.3.3
 * Fixing cursor warping
 * Fixing window activating across monitors

@@ -272,7 +272,6 @@ static void zoom(const Arg *arg);
 /* variables */
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
-static const char providedautostart[] = "wmc-utils start";
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static const char moonwmdir[] = "moonwm";
@@ -3080,12 +3079,9 @@ runautostart(void)
 		/* this is almost impossible */
 		return;
 
-	/* run wmc-utils if available */
-	if (!getenv("MOONWM_NO_AUTOSTART"))
-		system(providedautostart);
-
 	/* run statuscmd if available */
-	if (!getenv("MOONWM_NO_STATUS"))
+	/* @TODO review if it should be removed */
+	if (getenv("MOONWM_LAUNCH_STATUS"))
 		spawn(&((Arg) { .v = statuscmd }));
 
 	/* if $XDG_DATA_HOME is set and not empty, use $XDG_DATA_HOME/moonwm,
