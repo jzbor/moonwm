@@ -1,7 +1,7 @@
 /* vim: set noet: */
 
-#ifndef WMCOMMONS_XWRAPPERS_H
-#define WMCOMMONS_XWRAPPERS_H
+#ifndef XWRAPPERS_H
+#define XWRAPPERS_H
 
 /* enums */
 enum { NetSupported, NetWMDemandsAttention, NetWMName, NetWMState, NetWMCheck,

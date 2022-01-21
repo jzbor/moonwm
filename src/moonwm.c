@@ -48,10 +48,10 @@
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
 
-#include <common.h>
-#include <drw.h>
-#include <util.h>
-#include <xwrappers.h>
+#include "common.h"
+#include "drw.h"
+#include "util.h"
+#include "xwrappers.h"
 
 /* macros */
 #define ISPROPERLAST(S, C)		((C) == (S)->snext && !(SAMESIZE(S, C)))

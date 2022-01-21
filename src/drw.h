@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
-#ifndef WMCOMMONS_DRW_H
-#define WMCOMMONS_DRW_H
+#ifndef DRW_H
+#define DRW_H
 
 /* quick hack for current coloring */
 #define     ColWinSelect    ColMenuFg

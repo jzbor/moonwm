@@ -3,7 +3,7 @@
 
 include config.mk
 
-VPATH = src wmcommons/src
+VPATH = src
 SRC = drw.c moonwm.c util.c xwrappers.c
 OBJ = ${SRC:.c=.o}
 
@@ -58,7 +58,7 @@ uninstall:
 		${DESTDIR}${PREFIX}/share/applications/moonwm-wallpaper.desktop
 
 install-scripts:
-	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status wmcommons/scripts/wmc-utils wmcommons/scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
+	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/wmc-utils scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
 	ln -sf ${DESTDIR}${PREFIX}/bin/wmc-utils ${DESTDIR}${PREFIX}/bin/moonwm-utils
 
 uninstall-scripts:
@@ -71,6 +71,6 @@ uninstall-scripts:
 
 pull-xdg-xmenu:
 	wget https://raw.githubusercontent.com/jzbor/mashup/master/utils/xdg-xmenu
-	mv xdg-xmenu wmcommons/scripts/xdg-xmenu
+	mv xdg-xmenu scripts/xdg-xmenu
 
 .PHONY: all options clean dist install install-scripts uninstall uninstall-scripts pull-xdg-xmenu
