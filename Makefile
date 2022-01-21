@@ -48,14 +48,12 @@ install: all
 	install -Dm644 CHANGELOG.md README.md -t ${DESTDIR}${DOCPREFIX}/moonwm/
 	mkdir -p ${DESTDIR}${PREFIX}/share/xsessions/
 	sed "s/PREFIX/$(shell echo "${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
-	install -Dm644 moonwm-wallpaper.desktop -t ${DESTDIR}${PREFIX}/share/applications/
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \
 		${DESTDIR}${MANPREFIX}/man1/moonwm.1 \
 		${DESTDIR}${PREFIX}/bin/moonctl
-	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop \
-		${DESTDIR}${PREFIX}/share/applications/moonwm-wallpaper.desktop
+	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
 install-scripts:
 	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin

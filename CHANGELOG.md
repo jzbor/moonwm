@@ -27,6 +27,10 @@
     * `brightness`, `launch`, `monitors` `screenlayouts`, `screenstup`, `setup-keyboard`, `setwallpaper`, `start`, `volume`
 * Integrating `pademelon-tools` for volume, backlight and wallpaper
 * Launching status only when `MOONWM_LAUNCH_STATUS` is specified (temporary workaround)
+* Adding keybindings:
+    * Increase and decrease nmaster (`MOD + a` / `MOD + x`)
+* Removing keybindings:
+    * Screen locking
 
 ## 7.3.3
 * Fixing cursor warping

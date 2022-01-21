@@ -35,6 +35,9 @@ options="\
      Reset all tiled sizing hints                   MOD + Shift + r
      Focus next client                              MOD + space                        :moonctl focusnext 2001
      Close window                                   MOD + Shift + q                    :moonctl killclient
+  # On any tag
+     Increase number of windows in master area      MOD + a                            :moonctl incnmaster 1
+     Decrease number of windows in master area      MOD + x                            :moonctl incnmaster -1
 
 ### LAYOUTS ###
      Default tiling layout                          MOD + t                            :moonctl setlayout 0
@@ -58,7 +61,6 @@ options="\
      Screenshot (select area)                       MOD + Print                        :moonwm-utils screenshot
      Screenshot whole screen                        MOD + Print                        :moonwm-utils screenshot screen
      Screenshot focused window                      MOD + Print                        :moonwm-utils screenshot focused
-     Lock screen                                    MOD + x                            :moonwm-utils lock
      Log out                                        Control + MOD + BackSpace          :moonctl quit
 
 ### FUNCTION KEYS ###

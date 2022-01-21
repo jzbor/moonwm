@@ -205,6 +205,8 @@ static Key keys[] = {
     DIRECTIONKEY(XK_Down,  y, {.i = -20})
     DIRECTIONKEY(XK_Up,    y, {.i = 20})
     DIRECTIONKEY(XK_Right, x, {.i = 20})
+    { MODKEY,				XK_a,       incnmaster,      {.i = 1} },
+    { MODKEY,				XK_x,       incnmaster,      {.i = -1} },
     { MODKEY,               XK_r,       rioresize,       {0} },
     /* { MODKEY|ShiftMask,     XK_r,       resetfacts,      { .i = 1 } }, */
     { MODKEY|ShiftMask,     XK_r,       resetfacts,      {0} },
@@ -247,7 +249,6 @@ static Key keys[] = {
     { MODKEY|ShiftMask,     XK_Print,   spawn,           SHCMD("moonwm-utils screenshot screen") },
     { MODKEY|ControlMask,   XK_Print,   spawn,           SHCMD("moonwm-utils screenshot focused") },
     /* OTHER */
-    { MODKEY,               XK_x,       spawn,           SHCMD("moonwm-utils lock") },
     { ControlMask|MODKEY,   XK_BackSpace, quit,          {0} },
     /* FUNCTION KEYS */
     { MODKEY,               XK_F1,      togglebar,       {0} },
