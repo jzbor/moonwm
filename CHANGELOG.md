@@ -4,6 +4,9 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [7.3.3](#733)
+- [7.3.2](#732)
+- [7.3.1](#731)
 - [7.3.0](#730)
 - [7.2.1](#721)
 - [7.2.0](#720)
@@ -16,6 +19,18 @@
 - [7.0.0](#700)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+
+## 7.3.3
+* Fixing cursor warping
+* Fixing window activating across monitors
+* Fixing window placing by mouse for multiple monitors
+
+## 7.3.2
+* Respecting `_KDE_NET_WM_WINDOW_TYPE_OVERRIDE`
+* Quickfix for cursor jumping
+
+## 7.3.1
+* Hotfix for wmcommons
 
 ## 7.3.0
 * Initial compatibility with pademelon
