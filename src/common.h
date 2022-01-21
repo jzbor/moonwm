@@ -1,7 +1,7 @@
 /* vim: set noet: */
 
-#ifndef WMCOMMONW_COMMON_H
-#define WMCOMMONW_COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)

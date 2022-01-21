@@ -1132,10 +1132,10 @@ dmenu(const Arg *arg)
 {
 	char *dmenucmd = getenv("DMENUCMD");
 	if (!dmenucmd)
-		dmenucmd = "wmc-utils drun";
+		dmenucmd = "moonwm-utils drun";
 	char temp[strlen(dmenucmd) + 4];
 	strcpy(temp, dmenucmd);
-	if (!topbar && strcmp(dmenucmd, "wmc-utils drun") == 0)
+	if (!topbar && strcmp(dmenucmd, "moonwm-utils drun") == 0)
 		strcat(temp, " -b");
 	spawn(&((Arg) { .v = (const char*[]){ "/bin/sh", "-c", temp, NULL } }));
 }
@@ -3499,8 +3499,6 @@ setup(void)
 	setviewport();
 	XDeleteProperty(dpy, root, atoms[NetClientList]);
 	XDeleteProperty(dpy, root, atoms[NetClientListStacking]);
-	setenv("WMC_PREFIX", "MOONWM", 1);
-	setenv("WMC_NAME", "moonwm", 1);
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
 	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask

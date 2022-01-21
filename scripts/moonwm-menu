@@ -5,7 +5,7 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
 
 Shutdown			systemctl poweroff || loginctl poweroff
 Reboot			systemctl reboot || loginctl reboot
-Suspend			wmc-utils lock; loginctl suspend || systemctl suspend
+Suspend			moonwm-utils lock; loginctl suspend || systemctl suspend
 
 Reload MoonWM	moonctl restart
 Log out			moonctl quit"
@@ -15,7 +15,7 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
 
   Shutdown			systemctl poweroff || loginctl poweroff
   Reboot			systemctl reboot || loginctl reboot
-  Suspend			wmc-utils lock; loginctl suspend || systemctl suspend
+  Suspend			moonwm-utils lock; loginctl suspend || systemctl suspend
 
   Reload MoonWM	moonctl restart
   Log out			moonctl quit"

@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=MoonWM
 Comment=My (jzbor's) own outstandingly named WM
-Exec=PREFIX/bin/wmc-utils launch
-TryExec=PREFIX/bin/wmc-utils
+Exec=PREFIX/bin/moonwm
+TryExec=PREFIX/bin/moonwm
 Type=Application
 DesktopNames=MoonWM

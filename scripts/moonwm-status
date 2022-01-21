@@ -94,9 +94,9 @@ action () {
     case "$STATUSCMDN" in
         0)
             case $BUTTON in
-                1) wmc-utils volume mute;;
-                4) wmc-utils volume +5;;
-                5) wmc-utils volume -5;;
+                1) pademelon-tools volume --mute toggle;;
+                4) pademelon-tools volume --inc 5;;
+                5) pademelon-tools volume --dec 5;;
             esac;;
         1)
             case $BUTTON in
