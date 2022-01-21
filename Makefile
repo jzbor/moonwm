@@ -58,14 +58,13 @@ uninstall:
 		${DESTDIR}${PREFIX}/share/applications/moonwm-wallpaper.desktop
 
 install-scripts:
-	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/wmc-utils scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
-	ln -sf ${DESTDIR}${PREFIX}/bin/wmc-utils ${DESTDIR}${PREFIX}/bin/moonwm-utils
+	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-helper
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-menu
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-status
-	rm -f ${DESTDIR}${PREFIX}/bin/wmc-utils
+	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
 	rm -f ${DESTDIR}${PREFIX}/bin/xdg-xmenu
 

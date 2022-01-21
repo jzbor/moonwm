@@ -9,87 +9,7 @@ MODMAP_FILE="$CONFIG_DIR/modmap"
 QUICK_NOTIFICATION_TIMEOUT="1500"
 INTERNAL_DISPLAY_PATTERN='LVDS_*[0-9]\|Lvds_*[0-9]\|lvds_*[0-9]\|eDP_*[0-9]'
 
-WALLPAPER_FILE="$CONFIG_DIR/background"
-LOCK_TMP_FILE="$CONFIG_DIR/lockimage.png"
-temp="$(eval "${WMC_PREFIX}_WALLPAPER")"
-WALLPAPER="${temp:-$WALLPAPER_FILE}"
-
-autostart () {
-    # Configure X
-    moonctl wmname LG3D
-    load_wallpaper
-    setup_keyboard
-
-    # Other daemons
-    killall -9 sxhkd 2> /dev/null; run sxhkd sxhkd
-
-    if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/xdg-xmenu" ]; then
-        (sleep 120; nice xdg-xmenu -e > /dev/null 2>&1) &
-    else
-        nice xdg-xmenu -f > /dev/null 2>&1 &
-    fi
-
-    autostart_async &
-}
-
-autostart_async () {
-    # Load xmenu defaults
-    load_xmenu_defaults
-
-    # Daemons that automatically check for running instances
-    run /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
-        /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-    env_def_true NOTIFYD && run "$(get_default_notification_daemon)" "$(get_default_notification_daemon)"
-    run kdeconnect-indicator kdeconnect-indicator
-    run nm-applet nm-applet
-    run xfce4-power-manager xfce4-power-manager
-
-    # Applets & tray icons
-    (killall -9 /usr/lib/geoclue-2.0/demos/agent; /usr/lib/geoclue-2.0/demos/agent & sleep 5;
-    run redshift "killall -9 redshift; redshift -x; redshift -l geoclue2") &
-
-    pidof touchegg > /dev/null || rm ~/.config/touchegg/.touchegg.lock
-    run touchegg "touchegg --daemon $TOUCHEGG_THRESHOLDS"
-    run touchegg touchegg
-
-    # Auto setup displays
-    if [ -x ~/.screenlayout/default.sh ]; then
-        ~/.screenlayout/default.sh
-        load_wallpaper
-    elif [ -x ~/.screenlayout/autoload.sh ]; then
-        ~/.screenlayout/autoload.sh
-        load_wallpaper
-    else
-        monitors extend quiet
-    fi
-
-
-    # Run nextcloud last so polkit is up
-    run nextcloud "nextcloud --background"
-
-    # Start compositor
-    sleep 2
-    if env_def_true PICOM; then
-        if env_def_false PICOMEXP; then
-            run picom "killall -9 picom; picom --experimental-backends"
-        else
-            run picom "killall -9 picom; picom"
-        fi
-    fi
-
-}
-
-brightness () {
-    if [ "$1" -lt 0 ]; then
-        light -U "$(echo "$1" | sed 's/-//')"
-    elif [ "$1" -gt 0 ]; then
-        light -A "$(echo "$1" | sed 's/-//')"
-    fi
-    notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Brightness \
-        -i "notification-display-brightness" \
-        -h "string:x-canonical-private-synchronous:$WMC_NAME-brightness" \
-        "Set brightness to $(light | sed 's/\..*//g')%"
-}
+LOCK_TMP_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/pademelon/background"
 
 default_dmenu_run () {
     dmenu_path | \
@@ -143,13 +63,6 @@ env_def_true () {
 
 env_str () {
     eval echo "\$${WMC_PREFIX}_${1}"
-}
-
-generate_lock_file () {
-    resolution="$(get_primary_resolution)"
-    if ! [ "$(file "$LOCK_TMP_FILE" | cut -f11 -d',' | sed 's/\s//g')" = "$resolution" ]; then
-        nice -n 19 convert -blur 0x8 -resize "$resolution"^ -crop "$resolution"+0+0 "$WALLPAPER" "$LOCK_TMP_FILE"
-    fi
 }
 
 get_default_browser () {
@@ -247,15 +160,6 @@ load_xmenu_defaults () {
     load_xmenu_value xmenu.separator    "$WMC_NAME.focusedTitleFg"     '#ebdbb2'
 }
 
-launch () {
-    # Load default values for env variables
-    load_env_defaults
-
-    xrdb -merge ~/.Xresources
-
-    exec moonwm
-}
-
 launch_minimal () {
     # Configure X
     moonctl wmname LG3D
@@ -271,40 +175,6 @@ launch_minimal () {
     exec moonwm
 }
 
-launch_valgrind () {
-    logfile="${XDG_DATA_HOME:-$USER/.local/share}/$WMC_NAME/valgrind.log"
-    options="--leak-check=full --show-leak-kinds=all --track-origins=yes -v"
-
-    # Load default values for env variables
-    load_env_defaults
-
-    xrdb -merge ~/.Xresources
-
-    [ -f "$logfile" ] && mv "$logfile" "$logfile.bak"
-
-    exec valgrind $options moonwm > "$logfile" 2>&1
-}
-
-layouts () {
-    layout="$HOME/.screenlayout/$(ls -1u ~/.screenlayout/ | $0 dmenu -p "Layouts: ")"
-    if [ -x "$layout" ]; then
-        sh -c "$layout"
-        setup_keyboard
-        load_wallpaper
-    fi
-}
-
-load_wallpaper () {
-    if [ -f "$WALLPAPER" ]; then
-        if command -v xwallpaper > /dev/null; then
-            xwallpaper --zoom "$WALLPAPER" 2> /dev/null &
-        else
-            feh --no-fehbg --bg-fill "$WALLPAPER" &
-        fi
-    fi
-    [ -f "$LOCK_TMP_FILE" ] || generate_lock_file &
-}
-
 lock () {
     if pidof lightdm > /dev/null; then
         dm-tool lock
@@ -312,162 +182,6 @@ lock () {
         [ -f "$LOCK_TMP_FILE" ] || generate_lock_file
         i3lock -c 1d2021 -i "$LOCK_TMP_FILE"
     fi
-}
-
-monitors () {
-    connected="$(xrandr | grep " connected " | cut -d " " -f 1)"
-    disconnected="$(xrandr | grep " disconnected " | cut -d " " -f 1)"
-    internal="$(echo "$connected" | grep "$INTERNAL_DISPLAY_PATTERN")"
-    external="$(echo "$connected" | grep -v "$INTERNAL_DISPLAY_PATTERN")"
-    last=""
-
-    case $1 in
-        internal)
-            if [ -n "$internal" ]; then
-                for display in $internal; do
-                    if [ -z "$last" ]; then
-                        echo "Setting up first display: $display"
-                        xrandr --output "$display" --auto --primary
-                        last="$display"
-                    else
-                        echo "Setting up $display next to $last"
-                        xrandr --output "$display" --auto --right-of "$last"
-                        last="$display"
-                    fi
-                done
-                for display in $external; do
-                    echo "Disabling $display"
-                    xrandr --output "$display" --off
-                done
-            else
-                echo "No internal display connected"
-            fi
-            [ "$2" = 'quiet' ] \
-                || notify-send -a "MoonWM Monitor Setup" "Enabling only internal displays (if on a laptop)."
-            echo internal > "$TEMPORARYDIR/monitormode"
-            ;;
-        external)
-            if [ -n "$external" ]; then
-                for display in $external; do
-                    if [ -z "$last" ]; then
-                        echo "Setting up first display: $display"
-                        xrandr --output "$display" --auto --primary
-                        last="$display"
-                    else
-                        echo "Setting up $display next to $last"
-                        xrandr --output "$display" --auto --right-of "$last"
-                        last="$display"
-                    fi
-                done
-                for display in $internal; do
-                    echo "Disabling $display"
-                    xrandr --output "$display" --off
-                done
-            else
-                echo "No external display connected"
-            fi
-            [ "$2" = 'quiet' ] \
-                || notify-send -a "MoonWM Monitor Setup" "Enabling only external monitors (if connected)."
-            echo external > "$TEMPORARYDIR/monitormode"
-            ;;
-        extend)
-            if  [ -z "$external" ] || grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
-                for display in $internal; do
-                    if [ -z "$last" ]; then
-                        echo "Setting up first display: $display"
-                        xrandr --output "$display" --auto --primary
-                        last="$display"
-                    else
-                        echo "Setting up $display next to $last"
-                        xrandr --output "$display" --auto --right-of "$last"
-                        last="$display"
-                    fi
-                done
-            else
-                for display in $internal; do
-                    xrandr --output "$display" --off
-                    echo "Disabling internal display: $display (lid closed)"
-                done
-            fi
-            for display in $external; do
-                if [ -z "$last" ]; then
-                    echo "Setting up first display: $display"
-                    xrandr --output "$display" --auto --primary
-                    last="$display"
-                else
-                    echo "Setting up $display next to $last"
-                    xrandr --output "$display" --auto --right-of "$last"
-                    last="$display"
-                fi
-            done
-            [ "$2" = 'quiet' ] \
-                || notify-send -a "MoonWM Monitor Setup" "Arranging monitors from left to right."
-            echo extend > "$TEMPORARYDIR/monitormode"
-            ;;
-        mirror)
-            if  [ -z "$external" ] || grep -v closed /proc/acpi/button/lid/LID*/state > /dev/null 2>&1; then
-                for display in $internal; do
-                    if [ -z "$last" ]; then
-                        echo "Setting up first display: $display"
-                        xrandr --output "$display" --auto --primary
-                        res="$(xrandr | grep "^$display " | cut -d' ' -f4 |cut -d'+' -f1)"
-                        last="$display"
-                    else
-                        echo "Setting up $display mirroring $last"
-                        xrandr --output "$display" --mode "$res" --same-as "$last" \
-                            || xrandr --output "$display" --same-as "$last"
-                        last="$display"
-                    fi
-                done
-            else
-                for display in $internal; do
-                    xrandr --output "$display" --off
-                    echo "Disabling internal display: $display (lid closed)"
-                done
-            fi
-            for display in $external; do
-                if [ -z "$last" ]; then
-                    echo "Setting up first display: $display"
-                    xrandr --output "$display" --auto --primary
-                    last="$display"
-                else
-                    echo "Setting up $display mirroring $last"
-                    xrandr --output "$display" --mode "$res" --same-as "$last" \
-                        || xrandr --output "$display" --same-as "$last"
-                    last="$display"
-                fi
-            done
-            [ "$2" = 'quiet' ] \
-                || notify-send -a "MoonWM Monitor Setup" "Setting monitors to mirror mode."
-            echo mirror > "$TEMPORARYDIR/monitormode"
-            ;;
-        toggle | cycle)
-            if [ -f "$TEMPORARYDIR/monitormode" ]; then
-                currentmode="$(cat "$TEMPORARYDIR/monitormode")"
-                case $currentmode in
-                    internal) monitors external;;
-                    external) monitors extend;;
-                    extend) monitors mirror;;
-                    mirror) monitors internal;;
-                    *) monitors internal;;
-                esac
-            else
-                echo "Unable to access monitor state file ($TEMPORARYDIR/monitormode) - falling back to 'extend'" > /dev/stderr
-                monitors extend
-            fi
-            return
-            ;;
-        *)
-            echo "Unknown monitor mode: $1"
-            ;;
-    esac
-
-    # Preventing initialization of VIRTUAL1 on undock
-    for display in $disconnected; do
-        xrandr --output "$display" --off
-    done
-
-    load_wallpaper
 }
 
 play () {
@@ -527,89 +241,6 @@ screenshot () {
     fi
 }
 
-set_wallpaper () {
-    if [ -z "$1" ]; then
-        echo "No file specified." > /dev/stderr
-        return 1
-    elif ! [ -f "$1" ]; then
-        echo "$1 is not a file." > /dev/stderr
-        return 1
-    elif env_is_set WALLPAPER; then
-        echo "You have \$${WMC_PREFIX}_WALLPAPER set. You must remove it before using this script."
-        notify-send -a "MoonWM - Wallpaper" "You have \$${WMC_PREFIX}_WALLPAPER set. You must remove it before using this script."
-        return 1
-    else
-        [ -d "$CONFIG_DIR" ] || mkdir -vp "$CONFIG_DIR"
-        cp -f "$1" "$WALLPAPER_FILE"
-        rm -fv "$LOCK_TMP_FILE"
-        load_wallpaper
-        echo "Successfully set new wallpaper."
-        notify-send -a "MoonWM - Wallpaper" -i "$(realpath "$WALLPAPER_FILE")" "Successfully set new wallpaper."
-    fi
-}
-
-setup_keyboard () {
-    [ -n "$(env_str KEYMAP)" ] && setxkbmap $(env_str KEYMAP)
-    [ -f "$MODMAP_FILE" ] && \
-        xmodmap - < "$MODMAP_FILE"
-    return 0
-}
-
-volume () {
-    if [ "$1" = "mute" ]; then
-        pamixer -t
-        volume_notification mute
-    elif [ "$1" -lt 0 ]; then
-        pamixer "$(volume_boost)" -d "$(echo "$1" | sed 's/-//')"
-        volume_notification
-        play /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
-    elif [ "$1" -gt 0 ]; then
-        pamixer "$(volume_boost)" -i "$(echo "$1" | sed 's/-//')"
-        volume_notification
-        play /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga
-    fi
-    [ -n "$STATUSCMD" ] && $STATUSCMD update
-}
-
-volume_boost () {
-    if env_def_false "BOOST_AUDIO"; then
-        printf "%s" "--allow-boost"
-    fi
-}
-
-volume_notification () {
-    # currently disabled
-    return
-
-    muted="$(pamixer --get-mute)"
-    if [ "$1" = mute ] && [ "$muted" = "true" ]; then
-        notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Volume -i "notification-audio-volume-muted" \
-            -h "string:x-canonical-private-synchronous:$WMC_NAME-volume" \
-            "Muted"
-    else
-        level="$(pamixer --get-volume)"
-        if [ "$level" -lt 25 ]; then
-            icon="notification-audio-volume-off"
-        elif [ "$level" -lt 50 ]; then
-            icon="notification-audio-volume-low"
-        elif [ "$level" -lt 75 ]; then
-            icon="notification-audio-volume-medium"
-        else
-            icon="notification-audio-volume-high"
-        fi
-
-        if [ "$1" = mute ] && [ "$muted" = "false" ]; then
-            notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Volume -i "$icon" \
-                -h "string:x-canonical-private-synchronous:$WMC_NAME-volume" \
-                "Unmuted"
-        elif [ "$muted" = "false" ]; then
-            notify-send -t "$QUICK_NOTIFICATION_TIMEOUT" -a Volume -i "$icon" \
-                -h "string:x-canonical-private-synchronous:$WMC_NAME-volume" \
-                "$(pamixer --get-volume-human)"
-        fi
-    fi
-}
-
 xrdb_get () {
     xrdb -query -all | grep "^$1": | sed 's/.*#/#/g' | sort | head -n 1
 }
@@ -635,22 +266,13 @@ options:
     -r    Check if MoonWM is running first
 
 commands:
-    brightness     Change display brightness (e.g. wmc-utils brightness -5)
     dmenu          Themed wrapper for dmenu (for use in scripts etc.)
     drun           Default application launcher
     help           Prints this help text
-    launch         Wrapper to launch MoonWM properly (used in moonwm.desktop, can be used in .xinitrc)
     launch-minimal Wrapper to launch MoonWM properly (minimal version)
     lock           Locks the screen
-    monitors       Setup monitors (modes: 'internal', 'external', 'extend', 'mirror')
     run            Launcher with all exectutables in \$PATH
-    screenlayouts  Select monitor configuration via dmenu
-    screensetup    Calls 'monitors extend' (deprecated)
     screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
-    setwallpaper   Set the wallpaper
-    setup-keyboard Initialize keyboard layout
-    start          Launch autostart applications
-    volume         Change output volume (e.g. wmc-utils volume -5 or wmc-utils volume mute)
     xrdb           Refresh xrdb values of moonwm and utils
 "
 
@@ -672,23 +294,13 @@ done
 
 
 case $1 in
-    brightness) brightness "$2";;
     dmenu) shift; dmenu_wrapper "$@";;
     drun) shift; dmenu_drun "$@";;
     help) echo "$helptext"; exit;;
-    launch) launch;;
-    launch-valgrind) launch_valgrind;;
     launch-minimal) launch_minimal;;
     lock) lock;;
-    monitors) monitors "$2" ;;
     run) shift; default_dmenu_run "$@";;
-    screenlayouts) layouts;;
-    screensetup) monitors extend;;
     screenshot) screenshot "$2";;
-    setup-keyboard) setup_keyboard;;
-    setwallpaper) set_wallpaper "$2" ;;
-    start) autostart;;
-    volume) volume "$2";;
     xrdb) xrdb_refresh ;;
     *) printf "Unknown operation '$1'.\nTry 'wmc-utils -h' for more information.\n"; exit 1;;
 esac
