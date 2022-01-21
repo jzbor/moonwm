@@ -272,8 +272,9 @@ static void zoom(const Arg *arg);
 /* variables */
 static const char autostartblocksh[] = "autostart_blocking.sh";
 static const char autostartsh[] = "autostart.sh";
+static const char providedautostart[] = "moonwm-utils start";
 static Systray *systray =  NULL;
-static const char broken[] = "broken";
+static const char broken[] = "moonwm-utils start";
 static const char moonwmdir[] = "moonwm";
 static const char localshare[] = ".local/share";
 static const char configfile[] = "config.xres";
@@ -3078,6 +3079,8 @@ runautostart(void)
 	if ((home = getenv("HOME")) == NULL)
 		/* this is almost impossible */
 		return;
+
+	system(providedautostart);
 
 	/* run statuscmd if available */
 	/* @TODO review if it should be removed */

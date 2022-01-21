@@ -9,6 +9,18 @@ INTERNAL_DISPLAY_PATTERN='LVDS_*[0-9]\|Lvds_*[0-9]\|lvds_*[0-9]\|eDP_*[0-9]'
 
 LOCK_TMP_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/pademelon/background"
 
+autostart () {
+    # load xmenu theming
+    load_xmenu_defaults ()
+
+    # refresh xdg-xmenu cache
+    if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/xdg-xmenu" ]; then
+        (sleep 120; nice xdg-xmenu -e > /dev/null 2>&1) &
+    else
+        nice xdg-xmenu -f > /dev/null 2>&1 &
+    fi
+}
+
 default_dmenu_run () {
     dmenu_path | \
     	$0 dmenu "$@" | \
@@ -217,6 +229,7 @@ commands:
     lock           Locks the screen
     run            Launcher with all exectutables in \$PATH
     screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
+    start          Some internal jobs moonwm runs on startup
     xrdb           Refresh xrdb values of moonwm and utils
 "
 
