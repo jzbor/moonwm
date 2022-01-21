@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [8.0.0](#800)
 - [7.3.3](#733)
 - [7.3.2](#732)
 - [7.3.1](#731)
