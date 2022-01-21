@@ -32,6 +32,7 @@
 * Removing keybindings:
     * Screen locking
 * Dropping support for `setxkbmap` options and custom `modmap`
+* Redoing the main menu
 
 ## 7.3.3
 * Fixing cursor warping
