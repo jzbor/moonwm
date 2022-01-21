@@ -17,15 +17,15 @@ The goal is to let MoonWM be just a WM and improve the desktop experience over a
   - [Setting up multiple monitors](#setting-up-multiple-monitors)
   - [Drun (MOD+d) features](#drun-modd-features)
 - [Customizing](#customizing)
+  - [Default Applications](#default-applications)
   - [Environment Variables](#environment-variables)
+  - [Other Environment Variables](#other-environment-variables)
   - [Configuration File (X Resources)](#configuration-file-x-resources)
     - [Window Manager Settings](#window-manager-settings)
     - [Colors](#colors)
-  - [Autostart](#autostart)
   - [Creating your own status script](#creating-your-own-status-script)
   - [Add favorites menu](#add-favorites-menu)
 - [Details](#details)
-  - [Default tags](#default-tags)
   - [Available layouts](#available-layouts)
   - [Dependencies](#dependencies)
   - [Patches implemented](#patches-implemented)
@@ -91,40 +91,27 @@ Please let me know if your favorite browser or terminal does not get recognised 
 Of course if you dislike the defaults you can always adjust the looks and the behavior as well as default applications.
 While styling and window manager settings are managed via the config file some things like default applications have to be set via environment variables.
 
+### Default Applications
+If you are using pademelon you can customize the default apps with the `pademelon-settings` GUI tool.
+
 ### Environment Variables
-These are the settings that can be adjusted via environment variables.
-Note that as stated above none of these is strictly necessary for MoonWM to run.
 The values below are not necessarily the defaults but rather examples.
 If you wonder where they go take a look at `~/.profile`.
-
 ```sh
 # default applications
 BROWSER="firefox"
 FILEMANAGER="pcmanfm"
 TERMINAL="alacritty"
 DMENUCMD="rofi -show drun"
-# other basic settings
-MOONWM_KEYMAP="us"
-MOONWM_WALLPAPER="~/path/to/wallpaper.jpg"
+```
+
+### Other Environment Variables
+The values below are not necessarily the defaults but rather examples.
+If you wonder where they go take a look at `~/.profile`.
+```sh
 MOONWM_THEMEDDMENU=1            # automatic dmenu theming
 MOONWM_THEMEDXMENU=1            # automatic xmenu theming
 MOONWM_NERDFONT=1               # enables/disables NerdFont icons in status and menus
-TOUCHEGG_THRESHOLD="750 750"    # if you are using touchegg
-```
-
-To even further customize your keyboard you can put a file with `xmodmap` expressions in `~/.config/moonwm/modmap`.
-It will be evaluated automatically.
-Or you can add `setxkbmap` options to your configuration like so:
-```sh
-MOONWM_KEYMAP="us,de -option -option grp:lalt_switch"
-```
-
-You can disable or customize certain autostarts of the `moonwm-util` **autostart** routine.
-This is useful if you for example have your own wrapper scripts or other replacements:
-```sh
-MOONWM_PICOMEXP=0       # start picom with --experimental-backends flag
-MOONWM_NOTIFYD=1        # enables/disables the notification daemon
-MOONWM_PICOM=1          # enables/disables picom
 ```
 
 ### Configuration File (X Resources)
@@ -208,20 +195,6 @@ _Note that configuration via the `.Xresources` file or similar is also possible,
 To enable styling of other applications `~/.Xresources` is loaded on startup._
 
 
-### Autostart
-
-On login or reload `moonwm-util` starts a bunch of useful programs by default.
-You can find a list of "essential" utilities that are started automatically [below](#Dependencies).
-In addition these programs get started, provided you have installed them:
-```
-nextcloud       # cloud for your data
-redshift        # make screen less blue at night time
-touchegg        # touch gestures
-kdeconnect      # interaction with your mobile phone
-```
-
-If you wish to run any of your own scripts: `~/.local/share/moonwm/autostart.sh` and `~/.local/share/moonwm/autostart_blocking.sh` are run on each startup if available and executable.
-
 ### Creating your own status script
 The built-in `moonwm-status` script should be a good foundation for making your own statuscmd.
 It is easily extensible and you can simply add blocks with `add_block` in the `get_status` function.
@@ -259,23 +232,12 @@ Example:
   Media			mpv
   Files			$FILEMANAGER
 ﭮ  Discord			discord
-ﭮ  Discord [c]		discord-canary
-  Spotify			if pidof spotify; then moonctl toggleview $((1<<7)); else spotify; fi
+  Spotify			spotify
   Mail				thunderbird
 ```
 
 
 ## Details
-
-### Default tags
-Some applications have default  tags they open on:
-```
-5:      Jetbrains IDEA
-7:      Discord, Teamspeak
-8:      Spotify
-9:      Thunderbird
-```
-If you want alternative replacements added to the rules please tell me.
 
 ### Available layouts
 * tile (default)
@@ -302,27 +264,15 @@ libxinerama
 slop
 xmenu
 ```
-**These are the ones the `moonwm-util` script uses, starts or other programs I deem essential for a working desktop interface:**
+**These are the ones the `moonwm-util` and `moonwm-status` scripts use, starts or other programs I deem essential for a working desktop interface:**
 ```
-arandr          # gui to setup screens
 dmenu           # (application) menu
-ffmpeg          # playing sounds
-geoclue         # location services
-i3lock          # screen locking
-imagemagick     # lock screen generation
 libnotify       # desktop notifications
-light           # change background light of screen
-network-manager-applet      # network management
+libpulse        # observing volume status
 otf-nerd-fonts-fira-code    # default font
-pamixer         # volume manipulation
-picom           # compositor
-polkit-gnome    # security policy agent
 sound-theme-freedesktop     # sounds
-xfce4-power-manager         # power management
-xorg-setxkbmap  # set keyboard layout
-xorg-xrandr     # setup screens
+xorg-xrandr     # multihead support
 xorg-xrdb       # interaction with xres database
-xwallpaper      # set wallpaper
 ```
 You may want to use `rofi-dmenu` as a provider for `dmenu` if you use rofi.
 
