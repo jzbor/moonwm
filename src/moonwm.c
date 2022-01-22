@@ -2518,6 +2518,7 @@ placemouse(const Arg *arg)
 		}
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
+	XLowerWindow(dpy, c->win);
 
 	if ((m = recttomon(px, py, 1, 1)) && m != c->mon) {
 		detach(c);
