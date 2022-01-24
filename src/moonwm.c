@@ -2407,7 +2407,6 @@ placemouse(const Arg *arg)
 	prevr = c;
 	px = c->x;
 	py = c->y;
-	XRaiseWindow(dpy, c->win);
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess) {
 		if (wasfullscreen)
@@ -2431,6 +2430,7 @@ placemouse(const Arg *arg)
 		return;
 	}
 
+	XRaiseWindow(dpy, c->win);
 	do {
 		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
 		switch (ev.type) {
