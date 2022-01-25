@@ -710,8 +710,6 @@ checkignorewin(Client *c, Atom window_type, int lr) {
 	Atom *win_types;
 	get_atoms(dpy);
 
-	/* FIXME getatomprop should return the number of items and a pointer to
-	 * the stored data instead of this workaround */
 	if (XGetWindowProperty(dpy, c->win, atoms[NetWMWindowType], 0L, sizeof(Atom), False, XA_ATOM,
 		&da, &di, &nitems, &dl, &p) == Success && p) {
 		win_types = (Atom *) p;
@@ -2536,6 +2534,7 @@ placemouse(const Arg *arg)
 	}
 
 	focus(c);
+	restack(c->mon);
 	CMASKUNSET(c, M_BEINGMOVED);
 
 	if (nx != -9999)
