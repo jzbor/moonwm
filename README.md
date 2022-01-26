@@ -266,10 +266,12 @@ xmenu
 ```
 **These are the ones the `moonwm-util` and `moonwm-status` scripts use, starts or other programs I deem essential for a working desktop interface:**
 ```
+arandr          # multihead configuration
 dmenu           # (application) menu
 libnotify       # desktop notifications
 libpulse        # observing volume status
 otf-nerd-fonts-fira-code    # default font
+pavucontrol     # audio configuration
 sound-theme-freedesktop     # sounds
 xorg-xrandr     # multihead support
 xorg-xrdb       # interaction with xres database

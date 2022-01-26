@@ -2954,8 +2954,8 @@ riodraw(Client *c)
 	int firstchar = 0;
 	int counter = 0;
 
-	/* if (c && c->win) */
-	/* 	unmap(c, 0); */
+	if (!c)
+		return 0;
 
 	slopcommand(slopcmd);
 	FILE *fp = popen(slopcmd, "r");
@@ -3018,6 +3018,8 @@ rioposition(Client *c, int x, int y, int w, int h)
 		focus(c);
 	}
 
+	if (CMASKGET(c, M_FULLSCREEN))
+		setfullscreen(c, 0);
 	CMASKSET(c, M_FLOATING);
 	if (riodraw_borders)
 		resize(c, x, y, w - (borderpx * 2), h - (borderpx * 2), borderpx, 0);
