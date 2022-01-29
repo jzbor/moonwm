@@ -7,7 +7,7 @@ VPATH = src
 MOONWM_OBJECTS 	= drw.o moonwm.o util.o xwrappers.o
 MOONCTL_OBJECTS = moonctl.o
 
-all: options moonwm moonctl
+all: options moonwm moonctl moonwm.1
 
 options:
 	@echo moonwm build options:
@@ -31,6 +31,9 @@ moonwm: ${MOONWM_OBJECTS}
 
 moonctl: ${MOONCTL_OBJECTS}
 	${CC} -g -o $@ $^ ${MOONCTL_LIBS} ${LDFLAGS}
+
+moonwm.1: README.md
+	go-md2man -in $< -out $@
 
 clean:
 	rm -f moonctl moonwm moonwm-${VERSION}.tar.gz

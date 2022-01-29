@@ -22,5 +22,6 @@ MOONCTL_DEPS = x11
 MOONCTL_LIBS = `pkg-config --libs $(MOONCTL_DEPS)`
 CFLAGS 	   	+= `pkg-config --cflags $(MOONCTL_DEPS)`
 
-# compiler and linker
-CC = cc
+# compiler, linker and md2man converter
+CC 		= cc
+MD2MAN	= go-md2man
