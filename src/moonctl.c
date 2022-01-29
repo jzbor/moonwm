@@ -143,7 +143,6 @@ activate(Window wid, int timeout)
 	Atom atom;
 	unsigned char *result = NULL;
 	int ret, i, status, data;
-	unsigned long sleeptime;
 
 	if (wid == root) {
 		return 10;
@@ -301,7 +300,7 @@ handlelocal(char *command, int argc, char *argv[])
 		printlayouts();
 		bye();
 	} else if (strcmp(command, "rootwid") == 0) {
-		printf("%d\n", DefaultRootWindow(dpy));
+		printf("%ld\n", DefaultRootWindow(dpy));
 		bye();
 	} else if (strcmp(command, "setlayout") == 0) {
 		if (argc == 0)
@@ -410,7 +409,7 @@ printlayouts()
 void
 printwindow(Window wid)
 {
-	unsigned char *title = NULL;
+	char *title = NULL;
 	int changed = 1;
 	XClassHint classhints = {0};
 	XFetchName(dpy, wid, (char **) &title);
@@ -431,7 +430,7 @@ printwindow(Window wid)
 
 	int offset = 25 - (strlen(classhints.res_class) + strlen(classhints.res_name));
 	offset = MAX(offset, 0);
-	printf("%-15d%s (%s) %-*s %s\n", wid, classhints.res_class, classhints.res_name,
+	printf("%-15ld%s (%s) %-*s %s\n", wid, classhints.res_class, classhints.res_name,
 			offset, "", title);
 	if (!(changed & (1 << 1)))
 		XFree(title);
@@ -518,7 +517,7 @@ int
 main(int argc, char *argv[])
 {
 
-	int i, wid, timeout;
+	int i;
 	exename = argv[0];
 	if (argc == 1) {
 		fprintf(stderr, "Please specify a command.\n");
