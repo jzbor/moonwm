@@ -265,6 +265,7 @@ All packages are listed with their names in the Arch or Arch User Repositories.
 libx11
 libxcb
 libxinerama
+pkgconf
 slop
 xmenu
 ```

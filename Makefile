@@ -4,33 +4,34 @@
 include config.mk
 
 VPATH = src
-SRC = drw.c moonwm.c util.c xwrappers.c
-OBJ = ${SRC:.c=.o}
+MOONWM_OBJECTS 	= drw.o moonwm.o util.o xwrappers.o
+MOONCTL_OBJECTS = moonctl.o
 
 all: options moonwm moonctl
 
 options:
 	@echo moonwm build options:
-	@echo "CFLAGS   = ${CFLAGS}"
-	@echo "LDFLAGS  = ${LDFLAGS}"
-	@echo "CC       = ${CC}"
+	@echo "CFLAGS   	= ${CFLAGS}"
+	@echo "LDFLAGS  	= ${LDFLAGS}"
+	@echo "CC       	= ${CC}"
+	@echo "MOONWM_LIBS	= ${MOONWM_LIBS}"
+	@echo "MOONCTL_LIBS	= ${MOONCTL_LIBS}"
 
-.c.o:
+%.o: %.c src/config.h config.mk
 	${CC} -c ${CFLAGS} $<
-
-${OBJ}: config.h config.mk common.h
 
 config.h:
 	cp config.def.h $@
 
-moonwm: ${OBJ}
-	${CC} -g -o $@ ${OBJ} ${LDFLAGS}
+moonwm: ${MOONWM_OBJECTS}
+	${CC} -g -o $@ $^ ${MOONWM_LIBS} ${LDFLAGS}
 
-moonctl: moonctl.c
-	${CC} -g -o $@ src/moonctl.c ${LDFLAGS}
+moonctl: ${MOONCTL_OBJECTS}
+	${CC} -g -o $@ $^ ${MOONCTL_LIBS} ${LDFLAGS}
 
 clean:
-	rm -f moonctl moonwm ${OBJ} moonctl.o moonwm-${VERSION}.tar.gz
+	rm -f moonctl moonwm moonwm-${VERSION}.tar.gz
+	rm -rf ${MOONWM_OBJECTS} ${MOONCTL_OBJECTS}
 
 dist: clean
 	mkdir -p moonwm-${VERSION}
