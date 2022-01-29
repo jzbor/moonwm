@@ -151,11 +151,15 @@ moonwm.centerfloat: 0   # initially center floating windows
 
 You can also customize these settings (also listed with their defaults), which all take unsigned integer arguments:
 ```yaml
-moonwm.layout:      0   # initial default layout
-moonwm.borderwidth: 5   # width of the window borders
-moonwm.framerate:   60  # frame rate when dragging windows; should be >= monitor refresh rate
-moonwm.gaps:        5   # gaps; 0 to disable gaps
-moonwm.mfact:       55  # master size ratio; must be between 5 and 95
+moonwm.layout:          0   # initial default layout
+moonwm.borderwidth:     5   # width of the window borders
+moonwm.framerate:       60  # frame rate when dragging windows; should be >= monitor refresh rate
+moonwm.gaps:            5   # gaps; 0 to disable gaps
+moonwm.mfact:           55  # master size ratio; must be between 5 and 95
+moonwm.inset-top:       0   # inset at the top of the screen (for external bars)
+moonwm.inset-bottom:    0   # inset at the bottom of the screen (for external bars)
+moonwm.inset-left:      0   # inset at the left of the screen (for external bars)
+moonwm.inset-right:     0   # inset at the right of the screen (for external bars)
 ```
 
 #### Colors

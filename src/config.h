@@ -49,6 +49,10 @@ static const int placemousemode     = 1;
 	 *    1 - tiled position is relative to window center
 	 *    2 - mouse pointer warps to window center
 	 */
+static unsigned int inset_top		= 0; /* Insets from screen edge */
+static unsigned int inset_right		= 0;
+static unsigned int inset_bottom	= 0;
+static unsigned int inset_left		= 0;
 static const char *fonts[]          = { "FiraCode Nerd Font:size=10", "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static char menulabel[]            = "::::::";

@@ -694,9 +694,8 @@ center(const Arg *arg)
 void
 centerclient(Client *c)
 {
-	int barmod = (c->mon->topbar ? 1 : -1) * (c->mon->showbar && center_relbar ? bh : 0);
-	int cx = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
-	int cy = c->mon->my + barmod + (c->mon->mh - barmod - HEIGHT(c)) / 2;
+	int cx = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
+	int cy = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
 
 	resize(c, cx, cy, c->w, c->h, borderpx, 0);
 }
@@ -3399,6 +3398,13 @@ settings(void) {
 
 	/* settingsenv(); */
 
+	/* updating insets and topbar */
+	for (Monitor *m = mons; m; m = m->next) {
+		m->topbar = topbar;
+		updatebarpos(m);
+		arrange(m);
+	}
+
 	/* sanity checks */
 	if (!framerate)
 		framerate = 60;
@@ -3445,6 +3451,10 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
 	xrdb_get(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
 	xrdb_get(db,	"moonwm.mfact",			NULL,	NULL,	&imfact);
+	xrdb_get(db,	"moonwm.inset-top",		NULL,	NULL,	&inset_top);
+	xrdb_get(db,	"moonwm.inset-right",	NULL,	NULL,	&inset_right);
+	xrdb_get(db,	"moonwm.inset-bottom",	NULL,	NULL,	&inset_bottom);
+	xrdb_get(db,	"moonwm.inset-left",	NULL,	NULL,	&inset_left);
 
 	setmodkey(modstr);
 }
@@ -3751,15 +3761,10 @@ togglebar(const Arg *arg)
 	updatebarpos(selmon);
 	resizebarwin(selmon);
 	if (showsystray) {
-		XWindowChanges wc;
-		if (!selmon->showbar)
-			wc.y = -bh;
-		else if (selmon->showbar) {
-			wc.y = 0;
-			if (!selmon->topbar)
-				wc.y = selmon->mh - bh;
-		}
-		XConfigureWindow(dpy, systray->win, CWY, &wc);
+		if (selmon->showbar)
+			XMapWindow(dpy, systray->win);
+		else
+			XUnmapWindow(dpy, systray->win);
 	}
 	arrange(selmon);
 }
@@ -3978,14 +3983,28 @@ updatebars(void)
 void
 updatebarpos(Monitor *m)
 {
+	m->wx = m->mx;
 	m->wy = m->my;
+	m->ww = m->mw;
 	m->wh = m->mh;
+
 	if (m->showbar) {
+		XMapWindow(dpy, m->barwin);
 		m->wh -= bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh;
-		m->wy = m->topbar ? m->wy + bh : m->wy;
-	} else
-		m->by = -bh;
+		if (m->topbar) {
+			m->by = m->wy + inset_top;
+			m->wy = m->wy + bh;
+		} else {
+			m->by = m->my + m->mh - inset_bottom - bh;
+		}
+	} else {
+		XUnmapWindow(dpy, m->barwin);
+	}
+
+	m->wx += inset_left;
+	m->wy += inset_top;
+	m->ww -= inset_left + inset_right;
+	m->wh -= inset_top + inset_bottom;
 }
 
 void
@@ -4306,7 +4325,7 @@ updatesystray(void)
 	XWindowChanges wc;
 	Client *i;
 	Monitor *m = systraytomon(NULL);
-	unsigned int x = m->mx + m->mw;
+	unsigned int x = m->mx + m->mw - inset_right;
 	unsigned int w = 1;
 
 	if (!showsystray)
