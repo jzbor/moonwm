@@ -40,7 +40,7 @@ The goal is to let MoonWM be just a WM and improve the desktop experience over a
 
 **Installation from source:**
 ```sh
-sudo make install install-scripts clean
+sudo make install-all clean
 ```
 
 ## Usage
@@ -259,9 +259,11 @@ Example:
 
 ### Dependencies
 All packages are listed with their names in the Arch or Arch User Repositories.
+The default configuration of MoonWM heavily relies on [Pademelon](https://github.com/jzbor/pademelon), so you will probably want to install it (`pademelon`).
 
 **These are the ones required by the MoonWM build itself:**
 ```
+go-md2man
 libx11
 libxcb
 libxinerama
@@ -269,7 +271,9 @@ pkgconf
 slop
 xmenu
 ```
-**These are the ones the `moonwm-util` and `moonwm-status` scripts use, starts or other programs I deem essential for a working desktop interface:**
+*Note: `pkgconf` and `go-md2man` are required only at compile time. The others are also runtime requirements.*
+
+**These are the external programs the `moonwm-util` and `moonwm-status` scripts use.**
 ```
 arandr          # multihead configuration
 dmenu           # (application) menu
