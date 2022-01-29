@@ -17,11 +17,14 @@ options:
 	@echo "MOONWM_LIBS	= ${MOONWM_LIBS}"
 	@echo "MOONCTL_LIBS	= ${MOONCTL_LIBS}"
 
-%.o: %.c src/config.h config.mk
+%.o: %.c config.h rules.h config.mk
 	${CC} -c ${CFLAGS} $<
 
-config.h:
-	cp config.def.h $@
+config.h: config.def.h
+	cp -a src/config.def.h src/config.h
+
+rules.h:
+	cp -a src/rules.def.h src/rules.h
 
 moonwm: ${MOONWM_OBJECTS}
 	${CC} -g -o $@ $^ ${MOONWM_LIBS} ${LDFLAGS}
@@ -31,7 +34,8 @@ moonctl: ${MOONCTL_OBJECTS}
 
 clean:
 	rm -f moonctl moonwm moonwm-${VERSION}.tar.gz
-	rm -rf ${MOONWM_OBJECTS} ${MOONCTL_OBJECTS}
+	rm -f ${MOONWM_OBJECTS} ${MOONCTL_OBJECTS}
+	rm -f src/config.h src/rules.h
 
 dist: clean
 	mkdir -p moonwm-${VERSION}
@@ -72,3 +76,4 @@ pull-xdg-xmenu:
 	mv xdg-xmenu scripts/xdg-xmenu
 
 .PHONY: all options clean dist install install-scripts uninstall uninstall-scripts pull-xdg-xmenu
+.NOTPARALLEL: clean
