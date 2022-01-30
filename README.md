@@ -18,7 +18,6 @@ The goal is to let MoonWM be just a WM and improve the desktop experience over a
   - [Drun (MOD+d) features](#drun-modd-features)
 - [Customizing](#customizing)
   - [Default Applications](#default-applications)
-  - [Environment Variables](#environment-variables)
   - [Other Environment Variables](#other-environment-variables)
   - [Configuration File (X Resources)](#configuration-file-x-resources)
     - [Window Manager Settings](#window-manager-settings)
@@ -62,22 +61,9 @@ You will get an interactive list with shortcuts and their corresponding actions.
 You can also directly select most of the entries to execute their action.**
 
 ### Setting up multiple monitors
-Keep in mind that MoonWM is not able to automatically add newly connected monitors.
-There are two ways to setup your monitors:
-
-1. Manual:
-    * Use `arandr` to configure your screens and save them.
-    * They will be saved in `~/.screenlayouts`
-    * Any layout called `default.sh` will be automatically loaded on startup.
-    * You can use the layout menu `Mod+Control+m` to select a layout.
-2. Automatically:
-    * There are four different modes: `internal`, `external`, `extend` and `mirror`
-    * On startup `external` will be used if `default.sh` is not defined.
-    * You can use `Mod+Shift+m` to cycle through the four different modes.
-    * You can also use `moonwm-util monitors {internal,external,extend,mirror}` to set a mode.
-
-**NOTE**: `moonwm-util screensetup` and the usage of `~/.screenlayouts/autoload.sh` are both deprecated.
-Use `moonwm-util monitors` and `~/.screenlayouts/default.sh` instead.
+The easiest way to setup multiple monitors is through `arandr`.
+It also supports saving configurations for later use.
+If you use pademelon `pademelon-daemon` automatically saves your most recent layout and restores it on restart.
 
 ### Drun (MOD+d) features
 You can prepend your query with an `!` to execute the following input directly or with a `?` to pass it on to your default browser.
@@ -94,15 +80,15 @@ While styling and window manager settings are managed via the config file some t
 ### Default Applications
 If you are using pademelon you can customize the default apps with the `pademelon-settings` GUI tool.
 
-### Environment Variables
-The values below are not necessarily the defaults but rather examples.
-If you wonder where they go take a look at `~/.profile`.
+Alternatively you can set them up directly as environmental variables.
+For example by adding this to your `~/.profile`:
 ```sh
 # default applications
-BROWSER="firefox"
-FILEMANAGER="pcmanfm"
-TERMINAL="alacritty"
-DMENUCMD="rofi -show drun"
+export BROWSER="firefox"
+export FILEMANAGER="pcmanfm"
+export TERMINAL="alacritty"
+export DMENUCMD="rofi -show drun"
+export STATUSCMD="/path/to/my/statuscmd"
 ```
 
 ### Other Environment Variables
@@ -195,8 +181,8 @@ xmenu.selbackground:    #ebdbb2
 xmenu.selforeground:    #1d2021
 ```
 
-_Note that configuration via the `.Xresources` file or similar is also possible, although the config file mentioned above is preffered.
-To enable styling of other applications `~/.Xresources` is loaded on startup._
+*Note that configuration via the `.Xresources` file or similar is also possible, although the config file mentioned above is preffered.
+To enable styling of other applications `~/.Xresources` is loaded on startup.*
 
 
 ### Creating your own status script
@@ -204,14 +190,12 @@ The built-in `moonwm-status` script should be a good foundation for making your 
 It is easily extensible and you can simply add blocks with `add_block` in the `get_status` function.
 Make sure to escape '%' though, as it is interpreted by printf as escape sequence.
 
-To setup your own status command you should also set the according env variable in your `~/.profile`:
-```sh
-export MOONWM_STATUSCMD="/path/to/my/statuscmd"
-```
-This command gets asynchonously on MoonWMs startup with either `loop` as the first parameter or no parameters at all.
+Take a look at the ["Default Applications"](#default-applications) section for information on how to set it up.
+If you do *not* use `pademelon` you might also have to set it up to start automatically.
+This command gets asynchronously on MoonWMs startup with either `loop` as the first parameter or no parameters at all.
 For now it's best if your script can handle both scenarios.
 It should then repeatedly set the status to the WM_NAME (for example with `moonctl status`).
-Make sure to add in a `sleep` so it doesn't unnecessarily wastes resources.
+Make sure to add in a `sleep` so it doesn't unnecessarily waste resources.
 
 You can also define clickable blocks actions delimited by ascii chars that are smaller than space.
 For example:
