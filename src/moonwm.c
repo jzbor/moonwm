@@ -2953,9 +2953,6 @@ riodraw(Client *c)
 	int firstchar = 0;
 	int counter = 0;
 
-	if (!c)
-		return 0;
-
 	slopcommand(slopcmd);
 	FILE *fp = popen(slopcmd, "r");
 
@@ -3003,6 +3000,10 @@ void
 rioposition(Client *c, int x, int y, int w, int h)
 {
 	Monitor *m;
+
+	if (!c)
+		return;
+
 	if ((m = recttomon(x, y, w, h)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
