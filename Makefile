@@ -58,8 +58,8 @@ uninstall:
 		${DESTDIR}${PREFIX}/bin/moonctl
 	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
-install-scripts: moonwm-helper moonwm-menu moonwm-status moonwm-utils xdg-xmenu
-	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
+install-scripts: moonwm-helper moonwm-menu moonwm-status moonwm-utils
+	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils -t ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-helper
@@ -67,7 +67,6 @@ uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-status
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
-	rm -f ${DESTDIR}${PREFIX}/bin/xdg-xmenu
 
 install-docs: README.md CHANGELOG.md moonwm.1
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
@@ -83,11 +82,6 @@ install-all: install install-scripts install-docs
 
 uninstall-all: uninstall uninstall-scripts uninstall-docs
 
-pull-xdg-xmenu:
-	wget https://raw.githubusercontent.com/jzbor/mashup/master/utils/xdg-xmenu
-	mv xdg-xmenu scripts/xdg-xmenu
-
-
 .PHONY: all options clean dist install install-scripts uninstall uninstall-scripts install-all \
-	uninstall-all install-docs uninstall-docs pull-xdg-xmenu
+	uninstall-all install-docs uninstall-docs
 .NOTPARALLEL: clean
