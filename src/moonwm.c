@@ -694,9 +694,8 @@ center(const Arg *arg)
 void
 centerclient(Client *c)
 {
-	int barmod = (c->mon->topbar ? 1 : -1) * (c->mon->showbar && center_relbar ? bh : 0);
-	int cx = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
-	int cy = c->mon->my + barmod + (c->mon->mh - barmod - HEIGHT(c)) / 2;
+	int cx = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
+	int cy = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
 
 	resize(c, cx, cy, c->w, c->h, borderpx, 0);
 }
@@ -710,8 +709,6 @@ checkignorewin(Client *c, Atom window_type, int lr) {
 	Atom *win_types;
 	get_atoms(dpy);
 
-	/* FIXME getatomprop should return the number of items and a pointer to
-	 * the stored data instead of this workaround */
 	if (XGetWindowProperty(dpy, c->win, atoms[NetWMWindowType], 0L, sizeof(Atom), False, XA_ATOM,
 		&da, &di, &nitems, &dl, &p) == Success && p) {
 		win_types = (Atom *) p;
@@ -2407,7 +2404,6 @@ placemouse(const Arg *arg)
 	prevr = c;
 	px = c->x;
 	py = c->y;
-	XRaiseWindow(dpy, c->win);
 	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
 		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess) {
 		if (wasfullscreen)
@@ -2431,6 +2427,7 @@ placemouse(const Arg *arg)
 		return;
 	}
 
+	XRaiseWindow(dpy, c->win);
 	do {
 		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
 		switch (ev.type) {
@@ -2518,6 +2515,7 @@ placemouse(const Arg *arg)
 		}
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
+	XLowerWindow(dpy, c->win);
 
 	if ((m = recttomon(px, py, 1, 1)) && m != c->mon) {
 		detach(c);
@@ -2535,6 +2533,7 @@ placemouse(const Arg *arg)
 	}
 
 	focus(c);
+	restack(c->mon);
 	CMASKUNSET(c, M_BEINGMOVED);
 
 	if (nx != -9999)
@@ -2954,9 +2953,6 @@ riodraw(Client *c)
 	int firstchar = 0;
 	int counter = 0;
 
-	/* if (c && c->win) */
-	/* 	unmap(c, 0); */
-
 	slopcommand(slopcmd);
 	FILE *fp = popen(slopcmd, "r");
 
@@ -3004,6 +3000,10 @@ void
 rioposition(Client *c, int x, int y, int w, int h)
 {
 	Monitor *m;
+
+	if (!c)
+		return;
+
 	if ((m = recttomon(x, y, w, h)) && m != c->mon) {
 		detach(c);
 		detachstack(c);
@@ -3018,6 +3018,8 @@ rioposition(Client *c, int x, int y, int w, int h)
 		focus(c);
 	}
 
+	if (CMASKGET(c, M_FULLSCREEN))
+		setfullscreen(c, 0);
 	CMASKSET(c, M_FLOATING);
 	if (riodraw_borders)
 		resize(c, x, y, w - (borderpx * 2), h - (borderpx * 2), borderpx, 0);
@@ -3397,6 +3399,13 @@ settings(void) {
 
 	/* settingsenv(); */
 
+	/* updating insets and topbar */
+	for (Monitor *m = mons; m; m = m->next) {
+		m->topbar = topbar;
+		updatebarpos(m);
+		arrange(m);
+	}
+
 	/* sanity checks */
 	if (!framerate)
 		framerate = 60;
@@ -3443,6 +3452,10 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.gaps",			NULL,	NULL,	&gappov);
 	xrdb_get(db,	"moonwm.layout",		NULL,	NULL,	&defaultlayout);
 	xrdb_get(db,	"moonwm.mfact",			NULL,	NULL,	&imfact);
+	xrdb_get(db,	"moonwm.inset-top",		NULL,	NULL,	&inset_top);
+	xrdb_get(db,	"moonwm.inset-right",	NULL,	NULL,	&inset_right);
+	xrdb_get(db,	"moonwm.inset-bottom",	NULL,	NULL,	&inset_bottom);
+	xrdb_get(db,	"moonwm.inset-left",	NULL,	NULL,	&inset_left);
 
 	setmodkey(modstr);
 }
@@ -3749,15 +3762,10 @@ togglebar(const Arg *arg)
 	updatebarpos(selmon);
 	resizebarwin(selmon);
 	if (showsystray) {
-		XWindowChanges wc;
-		if (!selmon->showbar)
-			wc.y = -bh;
-		else if (selmon->showbar) {
-			wc.y = 0;
-			if (!selmon->topbar)
-				wc.y = selmon->mh - bh;
-		}
-		XConfigureWindow(dpy, systray->win, CWY, &wc);
+		if (selmon->showbar)
+			XMapWindow(dpy, systray->win);
+		else
+			XUnmapWindow(dpy, systray->win);
 	}
 	arrange(selmon);
 }
@@ -3976,14 +3984,28 @@ updatebars(void)
 void
 updatebarpos(Monitor *m)
 {
+	m->wx = m->mx;
 	m->wy = m->my;
+	m->ww = m->mw;
 	m->wh = m->mh;
+
 	if (m->showbar) {
+		XMapWindow(dpy, m->barwin);
 		m->wh -= bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh;
-		m->wy = m->topbar ? m->wy + bh : m->wy;
-	} else
-		m->by = -bh;
+		if (m->topbar) {
+			m->by = m->wy + inset_top;
+			m->wy = m->wy + bh;
+		} else {
+			m->by = m->my + m->mh - inset_bottom - bh;
+		}
+	} else {
+		XUnmapWindow(dpy, m->barwin);
+	}
+
+	m->wx += inset_left;
+	m->wy += inset_top;
+	m->ww -= inset_left + inset_right;
+	m->wh -= inset_top + inset_bottom;
 }
 
 void
@@ -4304,7 +4326,7 @@ updatesystray(void)
 	XWindowChanges wc;
 	Client *i;
 	Monitor *m = systraytomon(NULL);
-	unsigned int x = m->mx + m->mw;
+	unsigned int x = m->mx + m->mw - inset_right;
 	unsigned int w = 1;
 
 	if (!showsystray)

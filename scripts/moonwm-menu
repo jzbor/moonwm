@@ -4,11 +4,15 @@ MAINMENU="Applications
 $(xdg-xmenu -l | sed -e 's/^/	/')
 
 Power
-	Shutdown			systemctl poweroff || loginctl poweroff
+	Shutdown		systemctl poweroff || loginctl poweroff
 	Reboot			systemctl reboot || loginctl reboot
 	Suspend			moonwm-utils lock; loginctl suspend || systemctl suspend
 Log out			moonctl quit
 
+Settings
+	Pademelon		pademelon-settings
+	Audio Setup		pavucontrol
+	Display Setup	arandr
 Reload WM	killall -SIGUSR1 pademelon-daemon"
 
 MAINMENU_NF="  Applications
@@ -20,6 +24,10 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
 	  Suspend			moonwm-utils lock; loginctl suspend || systemctl suspend
   Log out			moonctl quit
 
+漣  Settings
+	煉  Pademelon		pademelon-settings
+	墳  Audio Setup		pavucontrol
+	  Display Setup	arandr
   Reload WM	killall -SIGUSR1 pademelon-daemon"
 
 CONTEXTMENU="Close			close
@@ -50,13 +58,6 @@ CONTEXTMENU_NF="  Close			close
 
 SLOPBW="$(moonctl borderwidth)" || SLOPBW="2"
 SLOPSTYLE="-b $SLOPBW -c ${MOONWM_WINSELECTION_COL:-0.98,0.28,0.20} -p -$SLOPBW -t 999999"
-
-if command -v pademelon-settings > /dev/null; then
-    MAINMENU="${MAINMENU}
-Settings (Pademelon)	pademelon-settings"
-    MAINMENU_NF="${MAINMENU_NF}
-漣  Settings 	pademelon-settings"
-fi
 
 context () {
     if [ "$MOONWM_NERDFONT" != "0" ]; then

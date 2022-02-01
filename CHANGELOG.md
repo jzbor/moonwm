@@ -21,7 +21,7 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## 8.0.0
+## Upcoming (8.0.0)
 * Merging `wmcommons` back into the project
 * Dropping the following functions of `moonwm-utils`:
     * `brightness`, `launch`, `monitors` `screenlayouts`, `screenstup`, `setup-keyboard`, `setwallpaper`, `start`, `volume`
@@ -33,6 +33,7 @@
     * Screen locking
 * Dropping support for `setxkbmap` options and custom `modmap`
 * Redoing the main menu
+* Adding options for insets to make space for external bars etc
 
 ## 7.3.3
 * Fixing cursor warping

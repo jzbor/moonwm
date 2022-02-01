@@ -3,34 +3,42 @@
 
 include config.mk
 
-VPATH = src
-SRC = drw.c moonwm.c util.c xwrappers.c
-OBJ = ${SRC:.c=.o}
+VPATH = src scripts
+MOONWM_OBJECTS 	= drw.o moonwm.o util.o xwrappers.o
+MOONCTL_OBJECTS = moonctl.o
 
-all: options moonwm moonctl
+all: options moonwm moonctl moonwm.1
 
 options:
 	@echo moonwm build options:
-	@echo "CFLAGS   = ${CFLAGS}"
-	@echo "LDFLAGS  = ${LDFLAGS}"
-	@echo "CC       = ${CC}"
+	@echo "CFLAGS   	= ${CFLAGS}"
+	@echo "LDFLAGS  	= ${LDFLAGS}"
+	@echo "CC       	= ${CC}"
+	@echo "MOONWM_LIBS	= ${MOONWM_LIBS}"
+	@echo "MOONCTL_LIBS	= ${MOONCTL_LIBS}"
 
-.c.o:
+%.o: %.c config.h rules.h config.mk
 	${CC} -c ${CFLAGS} $<
 
-${OBJ}: config.h config.mk common.h
+config.h: config.def.h
+	cp -a src/config.def.h src/config.h
 
-config.h:
-	cp config.def.h $@
+rules.h:
+	cp -a src/rules.def.h src/rules.h
 
-moonwm: ${OBJ}
-	${CC} -g -o $@ ${OBJ} ${LDFLAGS}
+moonwm: ${MOONWM_OBJECTS}
+	${CC} -g -o $@ $^ ${MOONWM_LIBS} ${LDFLAGS}
 
-moonctl: moonctl.c
-	${CC} -g -o $@ src/moonctl.c ${LDFLAGS}
+moonctl: ${MOONCTL_OBJECTS}
+	${CC} -g -o $@ $^ ${MOONCTL_LIBS} ${LDFLAGS}
+
+moonwm.1: README.md
+	go-md2man -in $< -out $@
 
 clean:
-	rm -f moonctl moonwm ${OBJ} moonctl.o moonwm-${VERSION}.tar.gz
+	rm -f moonctl moonwm moonwm-${VERSION}.tar.gz
+	rm -f ${MOONWM_OBJECTS} ${MOONCTL_OBJECTS}
+	rm -f src/config.h src/rules.h
 
 dist: clean
 	mkdir -p moonwm-${VERSION}
@@ -40,22 +48,17 @@ dist: clean
 	gzip moonwm-${VERSION}.tar
 	rm -rf moonwm-${VERSION}
 
-install: all
+install: moonwm moonctl
 	install -Dm755 moonwm moonctl -t ${DESTDIR}${PREFIX}/bin
-	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
-	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
-	install -Dm644 CHANGELOG.md README.md -t ${DESTDIR}${DOCPREFIX}/moonwm/
 	mkdir -p ${DESTDIR}${PREFIX}/share/xsessions/
 	sed "s/PREFIX/$(shell echo "${PREFIX}" | sed 's/\//\\\//g')/g" < moonwm.desktop > ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
 uninstall:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm \
-		${DESTDIR}${MANPREFIX}/man1/moonwm.1 \
 		${DESTDIR}${PREFIX}/bin/moonctl
 	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
-install-scripts:
+install-scripts: moonwm-helper moonwm-menu moonwm-status moonwm-utils xdg-xmenu
 	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils scripts/xdg-xmenu -t ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
@@ -66,8 +69,25 @@ uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
 	rm -f ${DESTDIR}${PREFIX}/bin/xdg-xmenu
 
+install-docs: README.md CHANGELOG.md
+	mkdir -p ${DESTDIR}${MANPREFIX}/man1
+	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1
+	install -Dm644 CHANGELOG.md README.md -t ${DESTDIR}${DOCPREFIX}/moonwm/
+
+uninstall-docs:
+	rm -rf ${DESTDIR}${DOCPREFIX}/moonwm
+	rm -f ${DESTDIR}${MANPREFIX}/man1/moonwm.1
+
+install-all: install install-scripts install-docs
+
+uninstall-all: uninstall uninstall-scripts uninstall-docs
+
 pull-xdg-xmenu:
 	wget https://raw.githubusercontent.com/jzbor/mashup/master/utils/xdg-xmenu
 	mv xdg-xmenu scripts/xdg-xmenu
 
-.PHONY: all options clean dist install install-scripts uninstall uninstall-scripts pull-xdg-xmenu
+
+.PHONY: all options clean dist install install-scripts uninstall uninstall-scripts install-all \
+	uninstall-all install-docs uninstall-docs pull-xdg-xmenu
+.NOTPARALLEL: clean
