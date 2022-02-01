@@ -69,7 +69,7 @@ uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
 	rm -f ${DESTDIR}${PREFIX}/bin/xdg-xmenu
 
-install-docs: README.md CHANGELOG.md
+install-docs: README.md CHANGELOG.md moonwm.1
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < moonwm.1 > ${DESTDIR}${MANPREFIX}/man1/moonwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/moonwm.1

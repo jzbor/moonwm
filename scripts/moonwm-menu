@@ -13,7 +13,7 @@ Settings
 	Pademelon		pademelon-settings
 	Audio Setup		pavucontrol
 	Display Setup	arandr
-Reload WM	killall -SIGUSR1 pademelon-daemon; sleep 3; killall -SIGUSR2 pademelon-daemon"
+Reload WM	killall -SIGUSR1 pademelon-daemon"
 
 MAINMENU_NF="  Applications
 $(xdg-xmenu -l | sed -e 's/^/	/')
@@ -28,7 +28,7 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
 	煉  Pademelon		pademelon-settings
 	墳  Audio Setup		pavucontrol
 	  Display Setup	arandr
-  Reload WM	killall -SIGUSR1 pademelon-daemon; sleep 3; killall -SIGUSR2 pademelon-daemon"
+  Reload WM	killall -SIGUSR1 pademelon-daemon"
 
 CONTEXTMENU="Close			close
 Move			mousemove
