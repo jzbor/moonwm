@@ -9,7 +9,7 @@ Power
 	Suspend			moonwm-utils lock; loginctl suspend || systemctl suspend
 Log out			moonctl quit
 
-Reload WM	killall -SIGUSR1 pademelon-daemon; sleep 3; killall -SIGUSR2 pademelon-daemon"
+Reload WM	killall -SIGUSR1 pademelon-daemon"
 
 MAINMENU_NF="  Applications
 $(xdg-xmenu -l | sed -e 's/^/	/')
@@ -20,7 +20,7 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
 	  Suspend			moonwm-utils lock; loginctl suspend || systemctl suspend
   Log out			moonctl quit
 
-  Reload WM	killall -SIGUSR1 pademelon-daemon; sleep 3; killall -SIGUSR2 pademelon-daemon"
+  Reload WM	killall -SIGUSR1 pademelon-daemon"
 
 CONTEXTMENU="Close			close
 Move			mousemove
