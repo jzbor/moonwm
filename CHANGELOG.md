@@ -4,7 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [8.0.0](#800)
+- [Upcoming (8.0.0)](#upcoming-800)
 - [7.3.3](#733)
 - [7.3.2](#732)
 - [7.3.1](#731)
@@ -26,7 +26,6 @@
 * Dropping the following functions of `moonwm-utils`:
     * `brightness`, `launch`, `monitors` `screenlayouts`, `screenstup`, `setup-keyboard`, `setwallpaper`, `start`, `volume`
 * Integrating `pademelon-tools` for volume, backlight and wallpaper
-* Launching status only when `MOONWM_LAUNCH_STATUS` is specified (temporary workaround)
 * Adding keybindings:
     * Increase and decrease nmaster (`MOD + a` / `MOD + x`)
 * Removing keybindings:
@@ -34,6 +33,8 @@
 * Dropping support for `setxkbmap` options and custom `modmap`
 * Redoing the main menu
 * Adding options for insets to make space for external bars etc
+* Launching status only when `MOONWM_LAUNCH_STATUS` is specified (temporary workaround)
+* Removing `xdg-xmenu`
 
 ## 7.3.3
 * Fixing cursor warping
