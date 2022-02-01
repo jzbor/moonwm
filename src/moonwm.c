@@ -3399,9 +3399,10 @@ settings(void) {
 
 	/* settingsenv(); */
 
-	/* updating insets and topbar */
+	/* updating insets, showbar and topbar */
 	for (Monitor *m = mons; m; m = m->next) {
 		m->topbar = topbar;
+		m->showbar = showbar;
 		updatebarpos(m);
 		arrange(m);
 	}
