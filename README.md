@@ -113,9 +113,11 @@ moonwm.modkey:      Super   # Alt is the default
 
 With these settings you can turn features on or off (listed with their default values):
 ```yaml
-moonwm.keys:        1   # enable/disable internal moonwm key handling
-moonwm.workspaces:  0   # use workspaces like i3 instead of tags (experimental)
-moonwm.swallow:     1   # enable/disable swallowing
+moonwm.keys:            1   # enable/disable internal moonwm key handling
+moonwm.workspaces:      0   # use workspaces like i3 instead of tags (experimental)
+moonwm.swallow:         1   # enable/disable swallowing
+moonwm.swallowfloating: 1   # enable/disable swallowing for floating windows
+moonwm.closeswallowed:  1   # close terminal windows instead of restoring them later
 # rules (take a look at src/rules.h)
 moonwm.rules:       1   # load rules to configure windows (eg. center dialogs)
 moonwm.tagrules:    0   # load tagrules to configure window tags (eg. Spotify on tag 8)

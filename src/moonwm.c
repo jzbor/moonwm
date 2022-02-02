@@ -110,6 +110,7 @@ static int checkignorewin(Client *c, Atom window_type, int lr);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
 static void clientmessage(XEvent *e);
+static void closeclient(Client *c);
 static int compareclients(const void *a, const void *b);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
@@ -577,15 +578,19 @@ unswallow(Client *c)
 	free(c->swallowing);
 	c->swallowing = NULL;
 
-	/* unfullscreen the client */
-	setfullscreen(c, 0);
-	updatetitle(c);
-	arrange(c->mon);
-	XMapWindow(dpy, c->win);
-	XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
-	window_set_state(dpy, c->win, NormalState);
-	focus(NULL);
-	arrange(c->mon);
+	if (closeswallowed) {
+		closeclient(c);
+	} else {
+		/* unfullscreen the client */
+		setfullscreen(c, 0);
+		updatetitle(c);
+		arrange(c->mon);
+		XMapWindow(dpy, c->win);
+		XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+		window_set_state(dpy, c->win, NormalState);
+		focus(NULL);
+		arrange(c->mon);
+	}
 }
 
 void
@@ -884,6 +889,21 @@ clientmessage(XEvent *e)
 		updateclienttags(c);
 	} else if (cme->message_type == atoms[NetWMMoveResize]) {
 		resizemouse(&((Arg) { .v = c }));
+	}
+}
+
+void closeclient(Client *c) {
+	if (!c)
+		return;
+
+	if (!send_event(dpy, c->win, atoms[WMDelete], NoEventMask, atoms[WMDelete], CurrentTime, 0 , 0, 0)) {
+		XGrabServer(dpy);
+		XSetErrorHandler(xerror_dummy);
+		XSetCloseDownMode(dpy, DestroyAll);
+		XKillClient(dpy, c->win);
+		XSync(dpy, False);
+		XSetErrorHandler(xerror);
+		XUngrabServer(dpy);
 	}
 }
 
@@ -1764,17 +1784,7 @@ fake_signal(void)
 void
 killclient(const Arg *arg)
 {
-	if (!selmon->sel)
-		return;
-	if (!send_event(dpy, selmon->sel->win, atoms[WMDelete], NoEventMask, atoms[WMDelete], CurrentTime, 0 , 0, 0)) {
-		XGrabServer(dpy);
-		XSetErrorHandler(xerror_dummy);
-		XSetCloseDownMode(dpy, DestroyAll);
-		XKillClient(dpy, selmon->sel->win);
-		XSync(dpy, False);
-		XSetErrorHandler(xerror);
-		XUngrabServer(dpy);
-	}
+	closeclient(selmon->sel);
 }
 
 void
@@ -3440,6 +3450,8 @@ settingsxrdb(XrmDatabase db) {
 	xrdb_get(db,	"moonwm.showbar",		NULL,	&showbar,			NULL);
 	xrdb_get(db,	"moonwm.smartgaps",		NULL,	&smartgaps,			NULL);
 	xrdb_get(db,	"moonwm.swallow",		NULL,	&swallowdefault,	NULL);
+	xrdb_get(db,	"moonwm.swallowfloating", NULL,	&swallowfloating,	NULL);
+	xrdb_get(db,	"moonwm.closeswallowed", NULL,	&closeswallowed,	NULL);
 	xrdb_get(db,	"moonwm.systray",		NULL,	&showsystray,		NULL);
 	xrdb_get(db,	"moonwm.tagrules",		NULL,	&usetagrules,		NULL);
 	xrdb_get(db,	"moonwm.topbar",		NULL,	&topbar,			NULL);
