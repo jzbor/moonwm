@@ -13,6 +13,7 @@ static const Rule rules[] = {
     { .class = "URxvt",             .monitor = -1,  .props = M_TERMINAL },
     { .class = "Gnome-terminal",    .monitor = -1,  .props = M_TERMINAL },
     { .class = "Xfce4-terminal",    .monitor = -1,  .props = M_TERMINAL },
+    { .class = "Buttermilk",        .monitor = -1,  .props = M_TERMINAL },
     /* Center */
     { .class = "discord",       .title = "Discord Updater", .monitor = -1, .props = M_CENTER|M_FLOATING },
     { .class = "jetbrains-idea", .title = "Welcome to",     .monitor = -1, .props = M_CENTER|M_FLOATING },
