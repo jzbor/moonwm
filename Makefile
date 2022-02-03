@@ -38,6 +38,7 @@ moonwm.1: README.md
 clean:
 	rm -f moonctl moonwm moonwm-${VERSION}.tar.gz
 	rm -f ${MOONWM_OBJECTS} ${MOONCTL_OBJECTS}
+	rm -f *.1
 	rm -f src/config.h src/rules.h
 
 dist: clean
