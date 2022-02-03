@@ -35,6 +35,7 @@
 * Adding options for insets to make space for external bars etc
 * Launching status only when `MOONWM_LAUNCH_STATUS` is specified (temporary workaround)
 * Removing `xdg-xmenu`
+* Adding `closeswallowed` option
 
 ## 7.3.3
 * Fixing cursor warping
