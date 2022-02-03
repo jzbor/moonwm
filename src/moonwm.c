@@ -1567,7 +1567,10 @@ focusmon(const Arg *arg)
 	unfocus(selmon->sel, 0);
 	selmon = m;
 	focus(NULL);
-	warp(selmon->sel, 0);
+	if (selmon->sel)
+		warp(selmon->sel, 0);
+	else
+		XWarpPointer(dpy, None, root, 0, 0, 0, 0, selmon->wx + selmon->ww / 2, selmon->wy + selmon->wh / 2);
 }
 
 void
@@ -4576,7 +4579,7 @@ warp(const Client *c, int edge)
 	Monitor *m;
 
 	/* avoid jumping on bar or empty space */
-	if (!get_pointer_pos(dpy, root, &x, &y))
+	if (!c || !get_pointer_pos(dpy, root, &x, &y))
 		return;
 	a = recttoclient(x, y, 1, 1);
 	m = recttomon(x, y, 1, 1);
