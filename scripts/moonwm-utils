@@ -1,12 +1,7 @@
 #!/bin/sh
 
-TEMPORARYDIR="${TMPDIR:-/tmp}/moonwm/${USER:-default}"
-[ -d "$TEMPORARYDIR" ] || mkdir -vp "$TEMPORARYDIR"
+# @TODO remove CONFIG_DIR if safe
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
-MODMAP_FILE="$CONFIG_DIR/modmap"
-QUICK_NOTIFICATION_TIMEOUT="1500"
-INTERNAL_DISPLAY_PATTERN='LVDS_*[0-9]\|Lvds_*[0-9]\|lvds_*[0-9]\|eDP_*[0-9]'
-
 LOCK_TMP_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/pademelon/background"
 
 autostart () {
@@ -73,10 +68,6 @@ env_def_true () {
 
 env_str () {
     eval echo "\$${MOONWM}_${1}"
-}
-
-get_primary_resolution () {
-    xrandr | grep '\*' | sed 's/^\s*\([0-9]*x[0-9]*\).*/\1/g' | head -n 1
 }
 
 load_env_defaults () {

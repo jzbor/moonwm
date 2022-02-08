@@ -4,7 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
-- [Upcoming (8.0.0)](#upcoming-800)
+- [8.0.0](#800)
 - [7.3.3](#733)
 - [7.3.2](#732)
 - [7.3.1](#731)
@@ -21,7 +21,7 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming (8.0.0)
+## 8.0.0
 * Merging `wmcommons` back into the project
 * Dropping the following functions of `moonwm-utils`:
     * `brightness`, `launch`, `monitors` `screenlayouts`, `screenstup`, `setup-keyboard`, `setwallpaper`, `start`, `volume`
