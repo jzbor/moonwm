@@ -3516,7 +3516,7 @@ setup(void)
 	XChangeProperty(dpy, wmcheckwin, atoms[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	XChangeProperty(dpy, wmcheckwin, atoms[NetWMName], atoms[Utf8], 8,
-		PropModeReplace, (unsigned char *) "moonwm", 3);
+		PropModeReplace, (unsigned char *) "moonwm", strlen("moonwm"));
 	XChangeProperty(dpy, root, atoms[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	/* EWMH support per view */

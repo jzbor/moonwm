@@ -108,9 +108,6 @@ load_xmenu_defaults () {
 }
 
 launch_minimal () {
-    # Configure X
-    moonctl wmname LG3D
-
     if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/xdg-xmenu" ]; then
         (sleep 120; nice xdg-xmenu -e > /dev/null 2>&1) &
     else
