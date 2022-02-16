@@ -125,6 +125,12 @@ favorites () {
         grep -v '^#.*' | xmenu $(menupos) | sh
 }
 
+favorites_pie () {
+    cat "${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/favorites.xmenu" | \
+        grep -v '^#.*' | pmenu | sh
+}
+
+
 layouts () {
     moonctl setlayout "$(layouts_classic)"
 }
@@ -152,6 +158,7 @@ menupos () {
 case $1 in
     1 | expose) expose ;;
     2 | favorites) favorites ;;
+    favorites-pie) favorites_pie ;;
     3 | main) mainmenu ;;
     '' | context) context client ;;
     select | context-select) context select ;;
