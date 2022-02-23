@@ -3778,10 +3778,17 @@ togglebar(const Arg *arg)
 	updatebarpos(selmon);
 	resizebarwin(selmon);
 	if (showsystray) {
-		if (selmon->showbar)
+		XWindowChanges wc;
+		if (selmon->showbar) {
+			wc.y = 0;
+			if (!selmon->topbar)
+				wc.y = selmon->mh - bh;
 			XMapWindow(dpy, systray->win);
-		else
+		} else {
+			wc.y = -bh;
 			XUnmapWindow(dpy, systray->win);
+		}
+		XConfigureWindow(dpy, systray->win, CWY, &wc);
 	}
 	arrange(selmon);
 }
@@ -4391,6 +4398,8 @@ updatesystray(void)
 	XMoveResizeWindow(dpy, systray->win, x, m->by, w, bh);
 	wc.x = x; wc.y = m->by; wc.width = w; wc.height = bh;
 	wc.stack_mode = Above; wc.sibling = m->barwin;
+	if (!selmon->showbar)
+		wc.y = -bh;
 	XConfigureWindow(dpy, systray->win, CWX|CWY|CWWidth|CWHeight|CWSibling|CWStackMode, &wc);
 	XMapWindow(dpy, systray->win);
 	XMapSubwindows(dpy, systray->win);
