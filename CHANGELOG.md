@@ -21,6 +21,14 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
+## Upcoming
+* Fixing systray hiding for togglebar
+* Deprecating `moonwm-utils launch-minimal`
+* Adding (`pmenu`)[https://github.com/phillbush/pmenu] as binding for middle click on desktop
+    * It will show your favorites (same as middle click on menu)
+    * `pmenu` will not be added as a dependency for now; if you want to use it just install it
+* Improving positioning of floating windows when adding monitors
+
 ## 8.0.0
 * Merging `wmcommons` back into the project
 * Dropping the following functions of `moonwm-utils`:
