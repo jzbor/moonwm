@@ -4126,6 +4126,10 @@ updategeom(void)
 				|| unique[i].x_org != m->mx || unique[i].y_org != m->my
 				|| unique[i].width != m->mw || unique[i].height != m->mh)
 				{
+					for (c = m->clients; c; c = c->next) { /* position floating windows relative to monitor */
+						if (ISFLOATING(c))
+							resize(c, unique[i].x_org + (c->x - m->mx), unique[i].y_org + (c->y - m->my), c->w, c->h, c->bw, 0);
+					}
 					dirty = 1;
 					m->num = i;
 					m->mx = m->wx = unique[i].x_org;
@@ -4145,7 +4149,7 @@ updategeom(void)
 					attachaside(c);
 					attachstack(c);
 					if (ISFLOATING(c))
-						resize(c, mons->wx + (c->x - m->wx), mons->wy + (c->y - m->wy), c->w, c->h, c->bw, 0);
+						resize(c, mons->mx + (c->x - m->mx), mons->wy + (c->y - m->wy), c->w, c->h, c->bw, 0);
 				}
 				if (m == selmon)
 					selmon = mons;
