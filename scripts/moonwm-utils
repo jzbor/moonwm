@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# @TODO remove CONFIG_DIR if safe
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/moonwm"
 LOCK_TMP_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/pademelon/background"
 
 autostart () {
@@ -108,14 +106,6 @@ load_xmenu_defaults () {
 }
 
 launch_minimal () {
-    if [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/xdg-xmenu" ]; then
-        (sleep 120; nice xdg-xmenu -e > /dev/null 2>&1) &
-    else
-        nice xdg-xmenu -f > /dev/null 2>&1 &
-    fi
-
-    load_xmenu_defaults
-    xrdb -merge ~/.Xresources
     exec moonwm
 }
 
@@ -213,7 +203,6 @@ commands:
     dmenu          Themed wrapper for dmenu (for use in scripts etc.)
     drun           Default application launcher
     help           Prints this help text
-    launch-minimal Wrapper to launch MoonWM properly (minimal version)
     lock           Locks the screen
     run            Launcher with all exectutables in \$PATH
     screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
