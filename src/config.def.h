@@ -243,6 +243,7 @@ static Key keys[] = {
     { 0,    XF86XK_AudioLowerVolume,    spawn,           SHCMD("pademelon-tools volume --dec 5") },
     { 0,    XF86XK_AudioRaiseVolume,    spawn,           SHCMD("pademelon-tools volume --inc 5") },
     { 0,    XF86XK_AudioMute,           spawn,           SHCMD("pademelon-tools volume --mute toggle") },
+    { 0,    XF86XK_AudioMicMute,        spawn,           SHCMD("pademelon-tools volume --mute-input toggle") },
     { 0,    XF86XK_AudioPrev,           spawn,           SHCMD("playerctl previous") },
     { 0,    XF86XK_AudioPlay,           spawn,           SHCMD("playerctl play-pause") },
     { 0,    XF86XK_AudioPause,          spawn,           SHCMD("playerctl play-pause") },
