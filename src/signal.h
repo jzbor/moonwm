@@ -76,6 +76,7 @@ static Signal signals[] = {
 	{ "setcfact",       setcfact },
 	{ "setlayout",      setlayoutex },
 	{ "setmfact",       setmfact },
+	{ "setswallow",		setswallow },
 	{ "shiftview",      shiftview },
 	{ "shiftviewclients", shiftviewclients },
 	{ "steal",          steal },

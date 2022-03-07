@@ -36,6 +36,7 @@ static const char *icommands[] = {
 	"resetfacts",
 	"resizex",
 	"resizey",
+	"setswallow",
 	"shiftview",
 	"shiftviewclients",
 	"steal",

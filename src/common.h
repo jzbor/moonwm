@@ -101,6 +101,7 @@ struct Client {
 	int oldx, oldy, oldw, oldh;
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
+	int swallow;
 	unsigned int tags;
 	unsigned int origtags;
 	int props;

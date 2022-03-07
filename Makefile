@@ -60,14 +60,15 @@ uninstall:
 	rm -f ${DESTDIR}${PREFIX}/share/xsessions/moonwm.desktop
 
 install-scripts: moonwm-helper moonwm-menu moonwm-status moonwm-utils
-	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils -t ${DESTDIR}${PREFIX}/bin
+	install -Dm755 scripts/moonwm-helper scripts/moonwm-menu scripts/moonwm-status scripts/moonwm-utils \
+		scripts/swallow -t ${DESTDIR}${PREFIX}/bin
 
 uninstall-scripts:
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-helper
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-menu
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-status
 	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
-	rm -f ${DESTDIR}${PREFIX}/bin/moonwm-utils
+	rm -f ${DESTDIR}${PREFIX}/bin/swallow
 
 install-docs: README.md CHANGELOG.md moonwm.1
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1

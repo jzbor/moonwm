@@ -212,6 +212,7 @@ static void setcfact(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setmodkey(char *modstr);
 static void setnumdesktops(void);
+static void setswallow(const Arg *arg);
 static void settings(void);
 static void settingsxrdb(XrmDatabase db);
 static void settingsenv(void);
@@ -545,9 +546,11 @@ void
 swallow(Client *p, Client *c)
 {
 
-	if (!swallowdefault || CMASKGET(c, M_NOSWALLOW) || CMASKGET(c, M_TERMINAL))
+	/* if (!(swallowdefault || p->swallow) || CMASKGET(c, M_NOSWALLOW) || CMASKGET(c, M_TERMINAL)) */
+	/* 	return; */
+	if (!(swallowdefault || p->swallow) || CMASKGET(c, M_NOSWALLOW) || CMASKGET(c, M_TERMINAL))
 		return;
-	if (!swallowfloating && CMASKGET(c, M_FLOATING))
+	if (!p->swallow && !swallowfloating && CMASKGET(c, M_FLOATING))
 		return;
 
 	detach(c);
@@ -3363,6 +3366,15 @@ setmodkey(char *modstr)
 			buttons[i].mask |= modkey;
 		}
 	}
+}
+
+void
+setswallow(const Arg *arg)
+{
+	if (!selmon->sel)
+		return;
+
+	selmon->sel->swallow = arg->i;
 }
 
 void
