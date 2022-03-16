@@ -2195,7 +2195,9 @@ moveorplace(const Arg *arg) {
 
 void
 movex(const Arg *arg) {
-	if (ISFLOATING(selmon->sel)) {
+	if (!selmon->sel) {
+		return;
+	} else if (ISFLOATING(selmon->sel)) {
 		movexfloating(arg);
 	} else if (usemovedir) {
 		if (arg->i < 0)
@@ -2209,7 +2211,9 @@ movex(const Arg *arg) {
 
 void
 movey(const Arg *arg) {
-	if (ISFLOATING(selmon->sel)) {
+	if (!selmon->sel) {
+		return;
+	} else if (ISFLOATING(selmon->sel)) {
 		arg = &(Arg) { .i = -arg->i };
 		moveyfloating(arg);
 	} else if (usemovedir) {
