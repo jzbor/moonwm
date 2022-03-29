@@ -166,6 +166,11 @@ screenshot () {
 
     if [ "$success" = 0 ]; then
         play /usr/share/sounds/freedesktop/stereo/screen-capture.oga
+
+        if command -v xclip > /dev/null && [ -z "$MOONWM_SCREENSHOT_NO_CLIP" ]; then
+            xclip -i -sel clip -t image/png "$dest/$filename"
+        fi
+
         if command -v dunstify > /dev/null 2>&1; then
             dunstify -a Screenshot -i "$dest/$filename" "Successfully taken screenshot" "file://$dest/$filename" \
                 --action "$FILEMANAGER $dest,open" | sh 2> /dev/null
