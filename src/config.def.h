@@ -278,8 +278,6 @@ static Button buttons[] = {
     WINBUTTON(MODKEY,       ShiftMask,      Button5,        pushstack,      {.i = INC(+1) })
     WINBUTTON(MODKEY,       ControlMask,    Button4,        scrollresize,   {.i = -20 })
     WINBUTTON(MODKEY,       ControlMask,    Button5,        scrollresize,   {.i = 20 })
-    WINBUTTON(MODKEY,		0,              Button6,        shiftview,      {.i = -1} )
-    WINBUTTON(MODKEY,		0,              Button7,        shiftview,      {.i = +1} )
     WINBUTTON(MODKEY,       0,              Button8,        pushstack,      {.i = INC(+1) })
     WINBUTTON(MODKEY,       0,              Button9,        pushstack,      {.i = INC(-1) })
     { ClkMenu,              0,              Button1,        spawn,          SHCMD("moonwm-menu 1") },
@@ -307,8 +305,8 @@ static Button buttons[] = {
     { ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
     { ClkLtSymbol,          0,              Button4,        cyclelayout,    {.i = +1 } },
     { ClkLtSymbol,          0,              Button5,        cyclelayout,    {.i = -1 } },
-    { ClkLtSymbol,          0,              Button6,        shiftview,      {.i = -1} },
-    { ClkLtSymbol,          0,              Button7,        shiftview,      {.i = +1} },
+    { ClkLtSymbol,          0,              Button6,        cyclelayout,    {.i = -1} },
+    { ClkLtSymbol,          0,              Button7,        cyclelayout,    {.i = +1} },
     { ClkWinTitle,          0,              Button1,        rioresize,      {0} },
     { ClkWinTitle,          0,              Button2,        center,			{0} },
     { ClkWinTitle,          0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
@@ -317,8 +315,6 @@ static Button buttons[] = {
     { ClkStatusText,        0,              Button3,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button4,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button5,        spawn,          {.v = statushandler } },
-    { ClkStatusText,        0,              Button6,        shiftview,      {.i = -1} },
-    { ClkStatusText,        0,              Button7,        shiftview,      {.i = +1} },
     { ClkStatusText,        0,              Button8,        spawn,          {.v = statushandler } },
     { ClkStatusText,        0,              Button9,        spawn,          {.v = statushandler } },
     { ClkClientWin,         MODKEY,         Button1,        moveorplace,    {.i = 0} },
@@ -329,8 +325,6 @@ static Button buttons[] = {
     { ClkClientWin,         MODKEY|ShiftMask, Button3,      spawn,          SHCMD("moonwm-menu context") },
     { ClkRootWin,			0,              Button2,        spawn,			SHCMD("moonwm-menu favorites-pie") },
     { ClkRootWin,           0,              Button3,        spawn,          SHCMD("moonwm-menu select") },
-    { ClkRootWin,			MODKEY,         Button6,        shiftview,      {.i = -1} },
-    { ClkRootWin,			MODKEY,         Button7,        shiftview,      {.i = +1} },
     { ClkRootWin,           0,              Button8,        riospawn,       SHCMD("$TERMINAL") },
     { ClkRootWin,           0,              Button9,        riospawn,       SHCMD("$BROWSER") },
     { ClkRootWin,           MODKEY,         Button9,        dmenu,          {0} },
