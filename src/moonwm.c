@@ -1949,8 +1949,6 @@ manage(Window w, XWindowAttributes *wa)
 		return;
 	if (checkignorewin(c, atoms[NetWMWindowTypeDock], 1))
 		return;
-	if (checkignorewin(c, atoms[KDENetWMWindowTypeOverride], 0))
-		return;
 
 	c->bw = borderpx;
 	initclientpos(c);
