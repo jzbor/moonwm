@@ -4,6 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **Table of Contents**
 
+- [8.1.0](#810)
 - [8.0.0](#800)
 - [7.3.3](#733)
 - [7.3.2](#732)
@@ -21,13 +22,17 @@
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
-## Upcoming
+## 8.1.0
+* Adding `swallow` command
 * Fixing systray hiding for togglebar
+* Copying screenshots to clipboard
+* Adding extra color setting for system tray (`moonwm.trayBg`)
 * Deprecating `moonwm-utils launch-minimal`
 * Adding (`pmenu`)[https://github.com/phillbush/pmenu] as binding for middle click on desktop
     * It will show your favorites (same as middle click on menu)
     * `pmenu` will not be added as a dependency for now; if you want to use it just install it
 * Improving positioning of floating windows when adding monitors
+* Removing handling for `_KDE_NET_WINDOW_TYPE_OVERRIDE`
 
 ## 8.0.0
 * Merging `wmcommons` back into the project

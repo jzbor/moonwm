@@ -1,5 +1,5 @@
 # moonwm version
-VERSION = 8.0.0
+VERSION = 8.1.0
 
 # Customize below to fit your system
 
