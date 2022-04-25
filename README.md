@@ -156,6 +156,7 @@ moonwm.occupiedTagBg:      #1d2021
 moonwm.occupiedTagFg:      #ebdbb2
 moonwm.statusBg:           #1d2021
 moonwm.statusFg:           #ebdbb2
+moonwm.trayBg:             #1d2021
 moonwm.unfocusedBorder:    #1d2021
 moonwm.unfocusedTitleBg:   #1d2021
 moonwm.unfocusedTitleFg:   #7c6f64

@@ -63,6 +63,7 @@ static char normtitlefg[]           = "#7c6f64";
 static char normtitlebg[]           = "#1d2021";
 static char statusfg[]              = "#ebdbb2";
 static char statusbg[]              = "#1d2021";
+static char traybg[]				= "#1d2021";
 static char normborderfg[]          = "#1d2021";
 static char menufg[]                = "#1d2021";
 static char menubg[]                = "#fb4934";
@@ -75,12 +76,12 @@ static char highborderfg[]          = "#ebdbb2";
 static char winselection[]          = "#fb4934";
 static char areaselection[]         = "#ebdbb2";
 
-static char *colors[][9] = {
+static char *colors[][10] = {
        /*               fg           bg           border   */
        [SchemeNorm] = { normtagfg, normtagbg, normtitlefg, normtitlebg, statusfg,
-           statusbg, normborderfg, menufg, menubg},
+           statusbg, traybg, normborderfg, menufg, menubg},
        [SchemeHigh] = { hightagfg, hightagbg, hightitlefg, hightitlebg, statusfg,
-           statusbg, highborderfg, winselection, areaselection},
+           statusbg, traybg, highborderfg, winselection, areaselection},
 };
 
 /* tagging */

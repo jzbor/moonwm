@@ -835,7 +835,7 @@ clientmessage(XEvent *e)
 			XSetClassHint(dpy, c->win, &ch);
 			XReparentWindow(dpy, c->win, systray->win, 0, 0);
 			/* use parents background color */
-			swa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
+			swa.background_pixel  = scheme[SchemeNorm][ColTrayBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
 			send_event(dpy, c->win, atoms[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			/* /1* FIXME not sure if I have to send these events, too *1/ */
@@ -1894,6 +1894,7 @@ loadxrdb(XrmDatabase db)
 	xrdb_get_color(db, "moonwm.unfocusedTitleBg", normtitlebg);
 	xrdb_get_color(db, "moonwm.statusFg", statusfg);
 	xrdb_get_color(db, "moonwm.statusBg", statusbg);
+	xrdb_get_color(db, "moonwm.trayBg", traybg);
 	xrdb_get_color(db, "moonwm.menuFg", menufg);
 	xrdb_get_color(db, "moonwm.menuBg", menubg);
 	xrdb_get_color(db, "moonwm.unfocusedBorder", normborderfg);
@@ -3519,7 +3520,7 @@ setup(void)
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (i = 0; i < LENGTH(colors); i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 9);
+		scheme[i] = drw_scm_create(drw, colors[i], 10);
 	/* init system tray */
 	updatesystray();
 	/* init bars */
@@ -4376,10 +4377,10 @@ updatesystray(void)
 		/* init systray */
 		if (!(systray = (Systray *)calloc(1, sizeof(Systray))))
 			die("fatal: could not malloc() %u bytes\n", sizeof(Systray));
-		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeHigh][ColStatusBg].pixel);
+		systray->win = XCreateSimpleWindow(dpy, root, x, m->by, w, bh, 0, 0, scheme[SchemeHigh][ColTrayBg].pixel);
 		wa.event_mask        = ButtonPressMask | ExposureMask;
 		wa.override_redirect = True;
-		wa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
+		wa.background_pixel  = scheme[SchemeNorm][ColTrayBg].pixel;
 		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
 		XChangeProperty(dpy, systray->win, atoms[NetSystemTrayOrientation], XA_CARDINAL, 32,
 				PropModeReplace, (unsigned char *)&atoms[NetSystemTrayOrientationHorz], 1);
@@ -4399,7 +4400,7 @@ updatesystray(void)
 	}
 	for (w = 0, i = systray->icons; i; i = i->next) {
 		/* make sure the background color stays the same */
-		wa.background_pixel  = scheme[SchemeNorm][ColStatusBg].pixel;
+		wa.background_pixel  = scheme[SchemeNorm][ColTrayBg].pixel;
 		XChangeWindowAttributes(dpy, i->win, CWBackPixel, &wa);
 		XMapRaised(dpy, i->win);
 		w += systrayspacing;
@@ -4422,7 +4423,7 @@ updatesystray(void)
 	XMapWindow(dpy, systray->win);
 	XMapSubwindows(dpy, systray->win);
 	/* redraw background */
-	XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColStatusBg].pixel);
+	XSetForeground(dpy, drw->gc, scheme[SchemeNorm][ColTrayBg].pixel);
 	XFillRectangle(dpy, systray->win, drw->gc, 0, 0, w, bh);
 	XSync(dpy, False);
 }
@@ -4695,7 +4696,7 @@ xrdb(const Arg *arg)
 	Monitor *m, *selmon_old;
 	settings();
 	for (int i = 0; i < LENGTH(colors); i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 9);
+		scheme[i] = drw_scm_create(drw, colors[i], 10);
 
 	/* make sure gaps are set on all monitors */
 	selmon_old = selmon;
