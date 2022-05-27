@@ -30,7 +30,7 @@ $(xdg-xmenu -l | sed -e 's/^/	/')
 	  Display Setup	arandr
   Reload			killall -SIGUSR1 pademelon-daemon"
 
-CONTEXTMENU="Close			close
+CONTEXTMENU_NF="Close			close
 Move			mousemove
 Resize			resize
 
@@ -38,10 +38,14 @@ Floating			float
 Center				center
 Fullscreen		fullscreen
 
+Layouts
+$(moonctl printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\tsetlayout \1/' | sed -e 's/^/	/')
 More
 	Close multiple		closemult
+	Draw resize			rioresize
 	Floating and move	floatingmove
-	Reset size hints		resetfacts"
+	Reset size hints		resetfacts
+"
 
 CONTEXTMENU_NF="  Close			close
   Move			mousemove
@@ -51,10 +55,14 @@ CONTEXTMENU_NF="  Close			close
   Center				center
   Fullscreen		fullscreen
 
-   More
+  Layouts
+$(moonctl printlayouts | nl -v0 -w1 | sed 's/\s*[a-z]*$//;s/\([[:digit:]]*\)\t\(.*\)/\2\tsetlayout \1/' | sed -e 's/^/	/')
+  More
 	  Close multiple		closemult
+	鉶  Draw resize			rioresize
 	  Floating and move	floatingmove
-	  Reset size hints		resetfacts"
+	  Reset size hints		resetfacts
+"
 
 SLOPBW="$(moonctl borderwidth)" || SLOPBW="2"
 SLOPSTYLE="-b $SLOPBW -c ${MOONWM_WINSELECTION_COL:-0.98,0.28,0.20} -p -$SLOPBW -t 999999"
@@ -105,6 +113,9 @@ context () {
                 moonctl killclient
             done
             ;;
+        *)
+            moonctl $action
+            ;;
     esac
 }
 
@@ -129,7 +140,6 @@ favorites_pie () {
     cat "${XDG_CONFIG_HOME:-$HOME/.config}/moonwm/favorites.xmenu" | \
         grep -v '^#.*' | pmenu | sh
 }
-
 
 layouts () {
     moonctl setlayout "$(layouts_classic)"
