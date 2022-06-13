@@ -2283,7 +2283,9 @@ initclientpos(Client *c)
 {
 	int mousex, mousey;
 
-	if (centerspawned || CMASKGET(c, M_CENTER)) {
+	if (c->x != 0 || c->y != 0) {
+		return;
+	} else if (centerspawned || CMASKGET(c, M_CENTER)) {
 		c->x = c->mon->wx + (c->mon->ww - WIDTH(c)) / 2;
 		c->y = c->mon->wy + (c->mon->wh - HEIGHT(c)) / 2;
 		centerclient(c);
