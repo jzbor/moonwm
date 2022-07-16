@@ -38,9 +38,21 @@ dmenu_drun () {
     esac
 }
 
+dmenu_windows () {
+    list="$(moonctl windows)"
+    selected="$(echo "$list" | $0 dmenu -p Windows -l 15 -i | cut -f1 -d' ')"
+    [ -z "$selected" ] && return
+    moonctl activate "$selected"
+}
+
 dmenu_wrapper () {
     if env_def_true THEMEDDMENU; then
-        exec dmenu -i -nb '#1d2021' -nf '#ebdbb2' -sb '#fb4934' -sf '#1d2021' -fn 'FiraCode Nerd Font:size=10' "$@"
+        normal_bg="$(xrdb_get_def "moonwm.statusBg" '#1d2021')"
+        normal_fg="$(xrdb_get_def "moonwm.statusFg" '#ebdbb2')"
+        selected_bg="$(xrdb_get_def "moonwm.menuBg" '#fb4934')"
+        selected_fg="$(xrdb_get_def "moonwm.menuFg" '#1d2021')"
+        exec dmenu -i -nb "$normal_bg" -nf "$normal_fg" -sb "$selected_bg" -sf "$selected_fg" \
+            -fn 'FiraCode Nerd Font:size=10' "$@"
     else
        	exec dmenu "$@"
    	fi
@@ -184,6 +196,14 @@ xrdb_get () {
     xrdb -query -all | grep "^$1": | sed 's/.*#/#/g' | sort | head -n 1
 }
 
+xrdb_get_def () {
+    if xrdb_has "$1"; then
+        xrdb_get "$1"
+    else
+        echo "$2"
+    fi
+}
+
 xrdb_has () {
     xrdb -query -all | grep "^$1": > /dev/null
 }
@@ -212,6 +232,7 @@ commands:
     run            Launcher with all exectutables in \$PATH
     screenshot     Take a screenshot (optionally takes 'screen' or 'focused' as arguments)
     start          Some internal jobs moonwm runs on startup
+    windows        Show window selector
     xrdb           Refresh xrdb values of moonwm and utils
 "
 
@@ -235,12 +256,13 @@ done
 case $1 in
     dmenu) shift; dmenu_wrapper "$@";;
     drun) shift; dmenu_drun "$@";;
+    windows) dmenu_windows "$@";;
     help) echo "$helptext"; exit;;
     launch-minimal) launch_minimal;;
     lock) lock;;
     run) shift; default_dmenu_run "$@";;
     screenshot) screenshot "$2";;
     xrdb) xrdb_refresh ;;
-    *) printf "Unknown operation '$1'.\nTry 'wmc-utils -h' for more information.\n"; exit 1;;
+    *) printf "Unknown operation '$1'.\nTry '$0 -h' for more information.\n"; exit 1;;
 esac
 
